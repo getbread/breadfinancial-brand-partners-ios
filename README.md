@@ -1,29 +1,64 @@
-# BreadPartnersSDK
+# Native Web View SDK
 
-[![CI Status](https://img.shields.io/travis/SHUBHAM SINGHAL/BreadPartnersSDK.svg?style=flat)](https://travis-ci.org/SHUBHAM SINGHAL/BreadPartnersSDK)
-[![Version](https://img.shields.io/cocoapods/v/BreadPartnersSDK.svg?style=flat)](https://cocoapods.org/pods/BreadPartnersSDK)
-[![License](https://img.shields.io/cocoapods/l/BreadPartnersSDK.svg?style=flat)](https://cocoapods.org/pods/BreadPartnersSDK)
-[![Platform](https://img.shields.io/cocoapods/p/BreadPartnersSDK.svg?style=flat)](https://cocoapods.org/pods/BreadPartnersSDK)
+---
 
-## Example
+## ToDo/Progress
+1. **Convert to Library**
+2. **Web view callbacks**
+---
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+## Agenda of Native SDK
+The goal of this SDK is to develop a native CocoaPod library that provides "Buy Now, Pay Later" functionality to multiple
+brands through our financial payment service. This library will enable these brands to integrate our services into their
+native applications. The native applications will interact with our API to receive an HTML response, which will be rendered
+in a text view. Part of the text view will include interactive buttons that, when clicked, open a popup view. The popup
+view may either: Display additional HTML content with buttons, or Directly display a WebView within the popup. The WebView
+will navigate to our CSP (Content Security Policy) website to facilitate "Buy Now, Pay Later" transactions. Any actions
+performed within the WebView will be monitored, and the respective success or failure events will trigger callbacks that
+are passed back to the brand's native application for further processing.
 
-## Requirements
+## Overview  
+The Native Web View SDK is a CocoaPod library designed to integrate "Buy Now, Pay Later" functionality into brand-native
+applications. This SDK simplifies the process of interacting with our financial payment services by rendering HTML content,
+managing WebView interactions, and providing callbacks for seamless integration.
 
-## Installation
+---
 
-BreadPartnersSDK is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+## Workflow
 
-```ruby
-pod 'BreadPartnersSDK'
-```
+1. **API Call**:  
+   - The brand-native app makes a request to the API and receives an HTML response.
 
-## Author
+2. **Text View Rendering**:  
+   - HTML content is displayed in a text view, including buttons for triggering popup views.
 
-SHUBHAM SINGHAL, shubham.singhal@breadfinancial.com
+3. **Popup Display**:  
+   - The popup may render additional HTML or a WebView for transactions.
 
-## License
+4. **WebView Navigation**:  
+   - The embedded WebView directs users to our CSP-compliant website to complete their transactions.
 
-BreadPartnersSDK is available under the MIT license. See the LICENSE file for more info.
+5. **Callback Handling**:  
+   - Actions performed in the WebView trigger success or failure callbacks, which are passed back to the brand-native app.
+
+---
+
+## POPUP View Hierarchy
+
+1. **`view` → `popupView`** (Parent View)
+2. **`popupView` Subviews:**
+   - `closeButton`
+   - `dividerTop`
+   - `overlayProductView`
+   - `dividerBottom`
+   - `actionButton`
+3. **`overlayProductView` Subviews:**
+   - `titleLabel`
+   - `subtitleLabel`
+   - `contentContainerView`
+   - `disclosureLabel`
+4. **`contentContainerView` Subviews:**
+   - `headerView`
+   - `contentStackView`
+
+---

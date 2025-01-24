@@ -1,0 +1,107 @@
+import UIKit
+
+internal class PopupElements: NSObject{
+    
+    static let shared = PopupElements()
+    
+    private override init() {
+        super.init()
+    }
+    
+    func addCloseButton(target: Any,color:UIColor,action: Selector)->UIButton {
+        let closeButton = UIButton(type: .system)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        let closeIcon = UIImage(systemName: "xmark")
+        closeButton.setImage(closeIcon, for: .normal)
+        closeButton.tintColor = color
+        closeButton.imageView?.contentMode = .scaleAspectFit
+        closeButton.addTarget(target, action:action, for: .touchUpInside)
+        return closeButton
+    }
+    
+    func createHorizontalDivider(color:UIColor) -> UIView {
+        let divider = UIView()
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        divider.backgroundColor = color
+        return divider
+    }
+    
+    func createContainerView(backgroundColor: UIColor, borderColor: CGColor? = nil, borderWidth: CGFloat = 0, cornerRadius: CGFloat = 12) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.backgroundColor = backgroundColor
+        containerView.layer.cornerRadius = cornerRadius
+        containerView.layer.masksToBounds = true
+        if let borderColor = borderColor {
+            containerView.layer.borderColor = borderColor
+            containerView.layer.borderWidth = borderWidth
+        }
+        
+        return containerView
+    }
+    
+    func createLabel(withText text: String,style:PopupTextStyle,align: NSTextAlignment = .center) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        label.applyTextStyle(style: style)
+        label.textAlignment = align
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        return label
+    }
+    
+    func createStackView(axis: NSLayoutConstraint.Axis, spacing: CGFloat) -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = axis
+        stackView.spacing = spacing
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.alignment = .fill
+        return stackView
+    }
+    
+    func createButton(target:Any,color:UIColor,title: String, action: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(target, action: action, for: .touchUpInside)
+        button.backgroundColor = color
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 5
+        return button
+    }
+    
+    func createHeaderView(label:String, bgColor:UIColor, headerTextStyle:PopupTextStyle) -> UIView {
+        let headerView = UIView()
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        headerView.backgroundColor = bgColor
+        
+        let headerLabel = createLabel(withText: label,style: headerTextStyle)
+        headerView.addSubview(headerLabel)
+        
+        NSLayoutConstraint.activate([
+            headerLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
+            headerLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            headerLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10),
+            headerLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -10)
+        ])
+        
+        return headerView
+    }
+    
+    
+    func createLabelForTag(tag: String, value: String,popupStyle:PopUpStyling) -> UILabel? {
+        switch tag.lowercased() {
+        case "h3":
+            return createLabel(withText: value,style: popupStyle.headingThreePopupTextStyle)
+        case "p":
+            return createLabel(withText: value,style: popupStyle.paragraphPopupTextStyle)
+        case "connector":
+            return createLabel(withText: value,style: popupStyle.connectorPopupTextStyle)
+        default:
+            return nil
+        }
+    }
+    
+    
+}
