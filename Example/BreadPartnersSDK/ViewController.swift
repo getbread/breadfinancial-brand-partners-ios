@@ -16,7 +16,6 @@ class ViewController: UIViewController {
                 buyer: BreadPartnerDefaults.shared.buyer,
                 enableLog: true))
 
-
         style = BreadPartnerDefaults.shared.styleSet1
 
         textPlacementStyling = TextPlacementStyling(
@@ -130,7 +129,16 @@ class ViewController: UIViewController {
                 ])
                 print("BreadPartnerSDK::Successfully rendered view.")
             case .renderPopupView(let view):
-                self.present(view, animated: true)
+                showYesNoAlert(from: self) { userTappedYes in
+                    if userTappedYes {
+                        // Handle the "Yes" case
+                        self.present(view, animated: true)
+
+                    } else {
+                        // Handle the "No" case
+                        print("User canceled")
+                    }
+                }
                 print("BreadPartnerSDK::Successfully rendered PopupView.")
             case .textClicked:
                 print("BreadPartnerSDK::Text element was clicked!")
@@ -152,16 +160,16 @@ class ViewController: UIViewController {
         }
     }
 
-    func hitSilentlyRTPS(){
-        
+    func hitSilentlyRTPS() {
+
     }
-    
+
     @IBOutlet weak var preScreenButton: UIButton!
 
     @IBAction func preScreenButton(_ sender: Any) {
 
         let placement = BreadPartnerDefaults.shared.textPlacementRequestType4
-        
+
         let placementsConfiguration = PlacementsConfiguration(
             configModel: placement,
             textPlacementStyling: textPlacementStyling,
@@ -195,4 +203,21 @@ class ViewController: UIViewController {
             }
         }
     }
+}
+
+func showYesNoAlert(from viewController: UIViewController,completion: @escaping (Bool) -> Void) {
+    let alertController = UIAlertController(
+        title: "Are you authenticated?",
+        message: nil,
+        preferredStyle: .alert
+    )
+    let yesAction = UIAlertAction(title: "Yes", style: .default) { _ in
+        completion(true)
+    }
+    let noAction = UIAlertAction(title: "No", style: .cancel) { _ in
+        completion(false)
+    }
+    alertController.addAction(yesAction)
+    alertController.addAction(noAction)
+    viewController.present(alertController, animated: true, completion: nil)
 }
