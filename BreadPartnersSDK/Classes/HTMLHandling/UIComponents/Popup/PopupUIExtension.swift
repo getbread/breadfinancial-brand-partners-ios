@@ -72,7 +72,7 @@ extension PopupController {
             if let url = URL(string: popupModel.webViewUrl) {
                 webView = webViewManager.createWebView(with: url)
                 webViewManager.onPageLoadCompleted = { result in
-                    self.loader.stopAnimating()
+                    self.loader?.stopAnimating()
                     switch result {
                     case .success(_): break
                     case .failure(let error):

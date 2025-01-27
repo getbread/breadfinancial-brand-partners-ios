@@ -16,16 +16,6 @@ class ViewController: UIViewController {
                 buyer: BreadPartnerDefaults.shared.buyer,
                 enableLog: true))
 
-        if let libraryBundle = Bundle(identifier: "com.breadfinancial.breadpartners.sdk") {
-            print("FRAMEWORK:Library Bundle Found: \(libraryBundle.bundleIdentifier ?? "No Identifier")")
-        } else {
-            print("FRAMEWORK:Library Bundle Not Found")
-        }
-
-        for framework in Bundle.allFrameworks {
-            print("FRAMEWORK:", framework.bundleIdentifier ?? "No Bundle Identifier")
-        }
-
         style = BreadPartnerDefaults.shared.styleSet1
 
         textPlacementStyling = TextPlacementStyling(
@@ -168,10 +158,6 @@ class ViewController: UIViewController {
                 print("BreadPartnerSDK::SDK encountered an error: \(error)")
             }
         }
-    }
-
-    func hitSilentlyRTPS() {
-
     }
 
     @IBOutlet weak var preScreenButton: UIButton!
