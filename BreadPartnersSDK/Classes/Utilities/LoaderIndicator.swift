@@ -3,13 +3,13 @@ import UIKit
 // MARK: BallSpinFadeLoader
 internal class LoaderIndicator: UIView {
     
-    private let sdkConfiguration: BreadPartnerSDKConfigurations
+    private let sdkConfiguration: PlacementsConfiguration
     private var ballLayers: [CALayer] = []
     private let ballCount = 8  // Number of balls
     private let radius: CGFloat = 30.0  // Radius of the circular path for balls
     private let ballSize: CGFloat = 20.0  // Size of each ball
     
-    init(frame: CGRect, sdkConfiguration:BreadPartnerSDKConfigurations) {
+    init(frame: CGRect, sdkConfiguration:PlacementsConfiguration) {
         self.sdkConfiguration = sdkConfiguration
         super.init(frame: frame)
         setupLoader()

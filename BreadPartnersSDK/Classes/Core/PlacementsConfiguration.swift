@@ -1,19 +1,16 @@
 import UIKit
 
-public struct BreadPartnerSDKConfigurations {
+public struct PlacementsConfiguration {
     let configModel: PlacementRequest
     var textPlacementStyling: TextPlacementStyling?
-    let enableLog: Bool
     var popUpStyling: PopUpStyling?
 
     public init(
         configModel: PlacementRequest,
-        enableLog: Bool,
         textPlacementStyling: TextPlacementStyling? = nil,
         popUpStyling: PopUpStyling? = nil
     ) {
         self.configModel = configModel
-        self.enableLog = enableLog
         self.textPlacementStyling = textPlacementStyling
         self.popUpStyling = popUpStyling
     }

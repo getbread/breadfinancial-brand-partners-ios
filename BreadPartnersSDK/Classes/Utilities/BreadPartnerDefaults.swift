@@ -1,10 +1,35 @@
 import UIKit
 
 public class BreadPartnerDefaults: NSObject {
-    
+
     public static let shared = BreadPartnerDefaults()
-    
+
     private override init() {}
+
+    public let buyer = Buyer(
+        givenName: "John",
+        familyName: "Smith",
+        additionalName: "C.",
+        birthDate: "1974-08-21",
+        email: "jsmith@breadfinance.com",
+        phone: "2123344141",
+        billingAddress: Address(
+            address1: "323 something lane",
+            address2: "apt. B",
+            country: "US",
+            locality: "NYC",
+            region: "NY",
+            postalCode: "11222"
+        ),
+        shippingAddress: Address(
+            address1: "323 something lane",
+            address2: "apt. B",
+            country: "US",
+            locality: "NYC",
+            region: "NY",
+            postalCode: "11222"
+        )
+    )
     
     public let textPlacementRequestType1 = PlacementRequest(
         placements: [
@@ -22,7 +47,7 @@ public class BreadPartnerDefaults: NSObject {
         ],
         brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
     )
-    
+
     /// Direct WebView when popup displayed
     public let textPlacementRequestType2 = PlacementRequest(
         placements: [
@@ -41,7 +66,7 @@ public class BreadPartnerDefaults: NSObject {
         ],
         brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
     )
-    
+
     /// Different text placement and click ApplyButton to show WebView
     public let textPlacementRequestType3 = PlacementRequest(
         placements: [
@@ -60,7 +85,7 @@ public class BreadPartnerDefaults: NSObject {
         ],
         brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
     )
-    
+
     /// PreScreen Placement Request
     public let textPlacementRequestType4 = PlacementRequest(
         placements: [
@@ -76,10 +101,10 @@ public class BreadPartnerDefaults: NSObject {
         ],
         brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
     )
-    
+
     public let dashboardWebViewURL =
-    "https://acquire1uat.comenity.net/unified/checkout-start?clientName&#x3D;aspire&amp;embedded&#x3D;true&amp;workflow&#x3D;unifiedPrequalCheckout&amp;mockPrequalApp&#x3D;success&amp;mockUD&#x3D;success&amp;mockBraintreeTokenize&#x3D;success&amp;mockVCI&#x3D;successWithIssuedCard&amp;mockBraintreeTokens&#x3D;success&amp;mockBuyer&#x3D;success&amp;mockUPC&#x3D;successWithPrepareCheckout&amp;mockVCIS&#x3D;success&amp;mockUO&#x3D;success&epId=6f42d67e-cff4-4575-802a-e90a838981bb&location=Category&channel=C&subchannel=X"
-    
+        "https://acquire1uat.comenity.net/unified/checkout-start?clientName&#x3D;aspire&amp;embedded&#x3D;true&amp;workflow&#x3D;unifiedPrequalCheckout&amp;mockPrequalApp&#x3D;success&amp;mockUD&#x3D;success&amp;mockBraintreeTokenize&#x3D;success&amp;mockVCI&#x3D;successWithIssuedCard&amp;mockBraintreeTokens&#x3D;success&amp;mockBuyer&#x3D;success&amp;mockUPC&#x3D;successWithPrepareCheckout&amp;mockVCIS&#x3D;success&amp;mockUO&#x3D;success&epId=6f42d67e-cff4-4575-802a-e90a838981bb&location=Category&channel=C&subchannel=X"
+
     public let styleSet1 = StyleStruct(
         parsedRedColor: UIColor(hex: "#d50132"),
         parsedGreyColor: UIColor(hex: "#ececec"),
@@ -89,13 +114,13 @@ public class BreadPartnerDefaults: NSObject {
         borderColor: UIColor(hex: "#ececec"),
         headerBgColor: UIColor(hex: "#ececec"),
         actionButtonColor: UIColor(hex: "#d50132"),
-        
+
         baseFontFamily: "Arial-BoldMT",
         textSizeBold: 16.0,
         textSizeSemiBold: 14.0,
         textSizeRegular: 12.0,
         textSizeSmall: 10.0,
-        
+
         normalTextColor: .black,
         clickableTextColor: UIColor(hex: "#d50132"),
         titleTextColor: .black,
@@ -104,7 +129,7 @@ public class BreadPartnerDefaults: NSObject {
         paragraphTextColor: .gray,
         connectorTextColor: .black,
         disclosureTextColor: .gray,
-        
+
         popupHeaderFont: UIFont(name: "Arial-BoldMT", size: 16),
         popupTitleFont: UIFont(name: "Arial-BoldMT", size: 16),
         popupSubTitleFont: UIFont(name: "Arial-BoldMT", size: 12),
@@ -112,7 +137,7 @@ public class BreadPartnerDefaults: NSObject {
         popupConnectorFont: UIFont(name: "Arial-BoldMT", size: 13),
         popupDisclosureFont: UIFont(name: "Arial-BoldMT", size: 11)
     )
-    
+
     public let styleSet2 = StyleStruct(
         parsedRedColor: UIColor(hex: "#FF935F"),
         parsedGreyColor: UIColor(hex: "#ececec"),
@@ -122,13 +147,13 @@ public class BreadPartnerDefaults: NSObject {
         borderColor: UIColor(hex: "#ececec"),
         headerBgColor: UIColor(hex: "#FFBE9F"),
         actionButtonColor: UIColor(hex: "#FF935F"),
-        
+
         baseFontFamily: "Arial-BoldMT",
         textSizeBold: 18.0,
         textSizeSemiBold: 16.0,
         textSizeRegular: 14.0,
         textSizeSmall: 12.0,
-        
+
         normalTextColor: .black,
         clickableTextColor: UIColor(hex: "#FF935F"),
         titleTextColor: .black,
@@ -137,7 +162,7 @@ public class BreadPartnerDefaults: NSObject {
         paragraphTextColor: .gray,
         connectorTextColor: .black,
         disclosureTextColor: .gray,
-        
+
         popupHeaderFont: UIFont(name: "Arial-BoldMT", size: 18),
         popupTitleFont: UIFont(name: "Arial-BoldMT", size: 18),
         popupSubTitleFont: UIFont(name: "Arial-BoldMT", size: 14),
@@ -145,7 +170,7 @@ public class BreadPartnerDefaults: NSObject {
         popupConnectorFont: UIFont(name: "Arial-BoldMT", size: 15),
         popupDisclosureFont: UIFont(name: "Arial-BoldMT", size: 13)
     )
-    
+
     public let textPlacementStyling = TextPlacementStyling(
         normalFont: UIFont(
             name: "Arial-BoldMT",
@@ -159,7 +184,7 @@ public class BreadPartnerDefaults: NSObject {
         clickableTextColor: UIColor(hex: "#d50132"),
         textViewFrame: CGRect(x: 20, y: 100, width: 350, height: 70)
     )
-    
+
     public let popUpStyling = PopUpStyling(
         loaderColor: UIColor(hex: "#0f2233"),
         crossColor: .black,
@@ -224,5 +249,5 @@ public class BreadPartnerDefaults: NSObject {
         ),
         actionButtonColor: UIColor(hex: "#d50132")
     )
-    
+
 }

@@ -3,7 +3,7 @@ import Foundation
 extension PopupController {
 
     func fetchWebViewPlacement() {
-        let configModel = sdkConfiguration?.configModel
+        let configModel = placementsConfiguration?.configModel
 
         let request = PlacementRequest(
             placements: [

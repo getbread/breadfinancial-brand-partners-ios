@@ -3,8 +3,7 @@ import UIKit
 
 protocol HTMLContentRendererProtocol {
     func handleTextPlacement(
-        responseModel: PlacementsResponse,
-        sdkConfiguration: BreadPartnerSDKConfigurations)
+        responseModel: PlacementsResponse)
     func createPopupOverlay(
         popupPlacementModel: PopupPlacementModel,
         overlayType: PlacementOverlayType
@@ -13,7 +12,8 @@ protocol HTMLContentRendererProtocol {
 
 internal class HTMLContentRenderer: HTMLContentRendererProtocol {
 
-    private var sdkConfiguration: BreadPartnerSDKConfigurations?
+    private var breadPartnersSDKSetup: BreadPartnersSDKSetup?
+    private var placementsConfiguration: PlacementsConfiguration?
     private let apiClient: APIClientProtocol
     private let alertHandler: AlertHandlerProtocol
     private let commonUtils: CommonUtilsProtocol
@@ -34,7 +34,8 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         logger: LoggerProtocol,
         htmlContentParser: HTMLContentParserProtocol,
         dispatchQueue: DispatchQueue,
-        sdkConfiguration: BreadPartnerSDKConfigurations?,
+        breadPartnersSDKSetup: BreadPartnersSDKSetup?,
+        placementsConfiguration: PlacementsConfiguration?,
         brandConfiguration: BrandConfigResponse?,
         recaptchaManager: RecaptchaManagerProtocol,
         callback: @escaping ((BreadPartnerEvents) -> Void)
@@ -46,17 +47,16 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         self.logger = logger
         self.htmlContentParser = htmlContentParser
         self.dispatchQueue = dispatchQueue
-        self.sdkConfiguration = sdkConfiguration
+        self.breadPartnersSDKSetup = breadPartnersSDKSetup
+        self.placementsConfiguration = placementsConfiguration
         self.brandConfiguration = brandConfiguration
         self.recaptchaManager = recaptchaManager
         self.callback = callback
     }
 
     func handleTextPlacement(
-        responseModel: PlacementsResponse,
-        sdkConfiguration: BreadPartnerSDKConfigurations
+        responseModel: PlacementsResponse
     ) {
-        self.sdkConfiguration = sdkConfiguration
         do {
             guard
                 let placementContent = responseModel.placementContent?.first?
@@ -84,7 +84,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             return createTextView(
                 with: textPlacementModel,
                 responseModel: responseModel,
-                textPlacementStyling: sdkConfiguration.textPlacementStyling!)
+                textPlacementStyling: (placementsConfiguration?.textPlacementStyling)!)
 
         } catch {
             alertHandler.showAlert(
@@ -215,7 +215,8 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
     ) {
         DispatchQueue.main.async {
             let popupViewController = PopupController(
-                sdkConfiguration: self.sdkConfiguration!,
+                breadPartnersSDKSetup: self.breadPartnersSDKSetup!,
+                sdkConfiguration: self.placementsConfiguration!,
                 popupModel: popupPlacementModel,
                 overlayType: overlayType,
                 apiClient: self.apiClient,

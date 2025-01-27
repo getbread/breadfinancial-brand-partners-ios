@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // Define the protocol for AnalyticsManager
 protocol AnalyticsManagerProtocol {
@@ -33,6 +34,10 @@ internal class AnalyticsManager: AnalyticsManagerProtocol {
     
     private func createAnalyticsPlacementPayload(name: String, placementResponse: PlacementsResponse) -> Analytics.Payload {
         let timestamp = commonUtils.getCurrentTimestamp()
+        let systemName = UIDevice.current.systemName      // e.g., "iOS"
+        let systemVersion = UIDevice.current.systemVersion // e.g., "17.2"
+        let deviceModel = UIDevice.current.model          // e.g., "iPhone"
+
         
         return Analytics.Payload(
             name: name,
@@ -44,20 +49,20 @@ internal class AnalyticsManager: AnalyticsManagerProtocol {
                         contentType: placementResponse.placementContent?.first?.contentType,
                         metadata: placementResponse.placementContent?.first?.metadata
                     ),
-                    metadata: ["location": "Product"],
+                    metadata: ["location": "Product"], // click placement
                     actionTarget: nil
                 ),
                 userProperties: [:]
             ),
             context: Analytics.Context(
                 timestamp: timestamp,
-                apiKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                apiKey: "config api key",
                 browserCtx: Analytics.BrowserCtx(
-                    library: Analytics.Library(name: "bread-payments-sdk", version: "1.0.371"),
-                    userAgent: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+                    library: Analytics.Library(name: "bread-partners-sdk-ios", version: "0.0.1"),
+                    userAgent: "\(deviceModel): \(systemName) \(systemVersion)", // iPhone; iOS 18.2
                     page: Analytics.Page(
-                        path: "/collections/living-room/products/benchwright-square-coffee-table",
-                        url: "https://aspire-ep-demo.myshopify.com/collections/living-room/products/benchwright-square-coffee-table"
+                        path: "ScreenName",
+                        url: nil
                     )
                 ),
                 trackingInfo: Analytics.TrackingInfo(userTrackingId: "6f42d67e-cff4-4575-802a-e90a838981bb", sessionTrackingId: "d5cfaf50-f05f-42a8-adea-22d70da25b73")

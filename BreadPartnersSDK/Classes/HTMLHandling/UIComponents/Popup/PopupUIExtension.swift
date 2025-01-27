@@ -4,7 +4,7 @@ extension PopupController {
 
     func setupUI() {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        let popupStyle = sdkConfiguration?.popUpStyling
+        let popupStyle = placementsConfiguration?.popUpStyling
 
         popupView = PopupElements.shared.createContainerView(
             backgroundColor: .white)
@@ -123,7 +123,7 @@ extension PopupController {
                     y: self.popupView.bounds.maxY * 0.45,
                     width: 50,
                     height: 50),
-                sdkConfiguration: self.sdkConfiguration!
+                sdkConfiguration: self.placementsConfiguration!
             )
             self.popupView.addSubview(self.loader)
         }

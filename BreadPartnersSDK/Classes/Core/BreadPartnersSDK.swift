@@ -19,7 +19,9 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var htmlContentRenderer: HTMLContentRendererProtocol
     var breadPartnerDefaults: BreadPartnerDefaults
     var callback: ((BreadPartnerEvents) -> Void) = { _ in }
-
+    var rtpsFlow:Bool = false
+    var prescreenId:String? = nil
+    
     private override init() {
         self.logger = Logger()
         self.alertHandler = AlertHandler(
@@ -45,7 +47,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            sdkConfiguration: self.sdkConfiguration,
+            breadPartnersSDKSetup: self.breadPartnersSDKSetup,
+            placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: brandConfiguration,
             recaptchaManager: recaptchaManager,
             callback: callback)
@@ -53,24 +56,18 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         super.init()
     }
 
-    var sdkConfiguration: BreadPartnerSDKConfigurations?
+    var breadPartnersSDKSetup: BreadPartnersSDKSetup?
+    var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
     var onResult: ((BreadPartnerEvents) -> Void)?
 
-    public func loadPlacementUI(
-        with configuration: BreadPartnerSDKConfigurations,
-        callback: @escaping (BreadPartnerEvents) -> Void
-    ) {
-        self.sdkConfiguration = configuration
-        self.brandConfiguration = BrandConfigResponse(config: Config())
-        self.callback = callback
-
-        if sdkConfiguration?.textPlacementStyling == nil {
-            sdkConfiguration?.textPlacementStyling =
+    func setUpInjectables() {
+        if self.placementsConfiguration?.textPlacementStyling == nil {
+            self.placementsConfiguration?.textPlacementStyling =
                 breadPartnerDefaults.textPlacementStyling
         }
-        if sdkConfiguration?.popUpStyling == nil {
-            sdkConfiguration?.popUpStyling =
+        if self.placementsConfiguration?.popUpStyling == nil {
+            self.placementsConfiguration?.popUpStyling =
                 breadPartnerDefaults.popUpStyling
         }
 
@@ -82,17 +79,42 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            sdkConfiguration: self.sdkConfiguration,
-            brandConfiguration: brandConfiguration,
-            recaptchaManager: recaptchaManager,
-            callback: callback
+            breadPartnersSDKSetup: self.breadPartnersSDKSetup,
+            placementsConfiguration: self.placementsConfiguration,
+            brandConfiguration: self.brandConfiguration,
+            recaptchaManager: self.recaptchaManager,
+            callback: self.callback
         )
+    }
 
-        logger.isLoggingEnabled = configuration.enableLog
+    public func setup(sdkSetup: BreadPartnersSDKSetup) {
+        self.breadPartnersSDKSetup = sdkSetup
+        self.logger.isLoggingEnabled = sdkSetup.enableLog
+    }
 
-        // MARK: remove fetchPlacementData once after bundle name is changed
-//        fetchBrandConfig
-        fetchPlacementData()
+    public func registerPlacements(
+        placementsConfiguration: PlacementsConfiguration,
+        callback: @escaping (BreadPartnerEvents) -> Void
+    ) {
+        self.placementsConfiguration = placementsConfiguration
+        self.callback = callback
+
+        setUpInjectables()
+
+        fetchBrandConfig()
+    }
+
+    public func submitRTPS(
+        placementsConfiguration: PlacementsConfiguration,
+        callback: @escaping (BreadPartnerEvents) -> Void
+    ) {
+        self.placementsConfiguration = placementsConfiguration
+        self.callback = callback
+        self.rtpsFlow = true
+        
+        setUpInjectables()
+
+        fetchBrandConfig()
     }
 
 }

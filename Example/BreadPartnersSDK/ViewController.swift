@@ -3,100 +3,112 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    var textPlacementStyling: TextPlacementStyling?
+    var popUpStyling: PopUpStyling?
+    var style: StyleStruct? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let configModel = BreadPartnerDefaults.shared.textPlacementRequestType1
+        BreadPartnersSDK.shared.setup(
+            sdkSetup: BreadPartnersSDKSetup(
+                integrationKey: "",
+                buyer: BreadPartnerDefaults.shared.buyer,
+                enableLog: true))
 
-        let styleStructSet = BreadPartnerDefaults.shared.styleSet1
 
-        let textPlacementStyling = TextPlacementStyling(
+        style = BreadPartnerDefaults.shared.styleSet1
+
+        textPlacementStyling = TextPlacementStyling(
             normalFont: UIFont(
-                name: styleStructSet.baseFontFamily,
-                size: styleStructSet.textSizeRegular
+                name: style!.baseFontFamily,
+                size: style!.textSizeRegular
             )!,
-            normalTextColor: styleStructSet.normalTextColor,
+            normalTextColor: style!.normalTextColor,
             clickableFont: UIFont(
-                name: styleStructSet.baseFontFamily,
-                size: styleStructSet.textSizeRegular
+                name: style!.baseFontFamily,
+                size: style!.textSizeRegular
             )!,
-            clickableTextColor: styleStructSet.clickableTextColor,
+            clickableTextColor: style!.clickableTextColor,
             textViewFrame: CGRect(x: 20, y: 70, width: 350, height: 70)
         )
 
         let popUpStyling = PopUpStyling(
-            loaderColor: styleStructSet.loaderColor,
-            crossColor: styleStructSet.crossColor,
-            dividerColor: styleStructSet.dividerColor,
-            borderColor: styleStructSet.borderColor.cgColor,
+            loaderColor: style!.loaderColor,
+            crossColor: style!.crossColor,
+            dividerColor: style!.dividerColor,
+            borderColor: style!.borderColor.cgColor,
             titlePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeBold
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeBold
                 ),
-                textColor: styleStructSet.titleTextColor,
-                textSize: styleStructSet.textSizeBold
+                textColor: style!.titleTextColor,
+                textSize: style!.textSizeBold
             ),
             subTitlePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeRegular
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeRegular
                 ),
-                textColor: styleStructSet.subTitleTextColor,
-                textSize: styleStructSet.textSizeRegular
+                textColor: style!.subTitleTextColor,
+                textSize: style!.textSizeRegular
             ),
             headerPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeSemiBold
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeSemiBold
                 ),
-                textColor: styleStructSet.headerTextColor,
-                textSize: styleStructSet.textSizeSemiBold
+                textColor: style!.headerTextColor,
+                textSize: style!.textSizeSemiBold
             ),
-            headerBgColor: styleStructSet.headerBgColor,
+            headerBgColor: style!.headerBgColor,
             headingThreePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeSemiBold
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeSemiBold
                 ),
-                textColor: styleStructSet.parsedRedColor,
-                textSize: styleStructSet.textSizeSemiBold
+                textColor: style!.parsedRedColor,
+                textSize: style!.textSizeSemiBold
             ),
             paragraphPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeSmall
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeSmall
                 ),
-                textColor: styleStructSet.paragraphTextColor,
-                textSize: styleStructSet.textSizeSmall
+                textColor: style!.paragraphTextColor,
+                textSize: style!.textSizeSmall
             ),
             connectorPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeSemiBold
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeSemiBold
                 ),
-                textColor: styleStructSet.connectorTextColor,
-                textSize: styleStructSet.textSizeSemiBold
+                textColor: style!.connectorTextColor,
+                textSize: style!.textSizeSemiBold
             ),
             disclosurePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: styleStructSet.baseFontFamily,
-                    size: styleStructSet.textSizeSmall
+                    name: style!.baseFontFamily,
+                    size: style!.textSizeSmall
                 ),
-                textColor: styleStructSet.disclosureTextColor,
-                textSize: styleStructSet.textSizeSmall
+                textColor: style!.disclosureTextColor,
+                textSize: style!.textSizeSmall
             ),
-            actionButtonColor: styleStructSet.actionButtonColor
+            actionButtonColor: style!.actionButtonColor
         )
 
-        let config = BreadPartnerSDKConfigurations(
-            configModel: configModel,
-            enableLog: true,
+        let placement = BreadPartnerDefaults.shared.textPlacementRequestType1
+
+        let placementsConfiguration = PlacementsConfiguration(
+            configModel: placement,
             textPlacementStyling: textPlacementStyling,
             popUpStyling: popUpStyling
         )
 
-        BreadPartnersSDK.shared.loadPlacementUI(with: config) {
+        BreadPartnersSDK.shared.registerPlacements(
+            placementsConfiguration: placementsConfiguration
+        ) {
             event in
             switch event {
             case .renderTextView(let view):
@@ -107,8 +119,8 @@ class ViewController: UIViewController {
                     view.heightAnchor.constraint(equalToConstant: 100),
                     view.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
-                    view.centerYAnchor.constraint(
-                        equalTo: self.view.centerYAnchor),
+                    //                    view.centerYAnchor.constraint(
+                    //                        equalTo: self.view.centerYAnchor),
                     view.topAnchor.constraint(
                         equalTo: self.view.topAnchor, constant: 100),
                     view.leadingAnchor.constraint(
@@ -140,9 +152,47 @@ class ViewController: UIViewController {
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func hitSilentlyRTPS(){
+        
     }
+    
+    @IBOutlet weak var preScreenButton: UIButton!
 
+    @IBAction func preScreenButton(_ sender: Any) {
+
+        let placement = BreadPartnerDefaults.shared.textPlacementRequestType4
+        
+        let placementsConfiguration = PlacementsConfiguration(
+            configModel: placement,
+            textPlacementStyling: textPlacementStyling,
+            popUpStyling: popUpStyling
+        )
+
+        BreadPartnersSDK.shared.submitRTPS(
+            placementsConfiguration: placementsConfiguration
+        ) {
+            event in
+            switch event {
+            case .renderPopupView(let view):
+                self.present(view, animated: true)
+                print("BreadPartnerSDK::Successfully rendered PopupView.")
+            case .actionButtonTapped:
+                print("BreadPartnerSDK::Popup action button was tapped!")
+            case .screenName(let name):
+                print("BreadPartnerSDK::Screen name: \(name)")
+            case .webViewSuccess(let result):
+                print("BreadPartnerSDK::WebView success with result: \(result)")
+            case .webViewFailure(let error):
+                print(
+                    "BreadPartnerSDK::WebView interaction failed with error: \(error)"
+                )
+            case .popupClosed:
+                print("BreadPartnerSDK::Popup closed!")
+            case .sdkError(let error):
+                print("BreadPartnerSDK::SDK encountered an error: \(error)")
+            default:
+                print("BreadPartnerSDK::Default")
+            }
+        }
+    }
 }
