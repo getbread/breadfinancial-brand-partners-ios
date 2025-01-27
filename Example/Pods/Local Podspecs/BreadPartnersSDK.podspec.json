@@ -1,9 +1,9 @@
 {
   "name": "BreadPartnersSDK",
   "version": "0.0.1",
-  "summary": "A short description of BreadPartnersSDK.",
+  "summary": "BreadPartnersSDK is a library for rendering HTML-based UI elements and handling web interactions in your iOS app.",
   "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/SHUBHAM SINGHAL/BreadPartnersSDK",
+  "homepage": "https://github.com/SHUBHAMSINGHAL/BreadPartnersSDK",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -19,6 +19,11 @@
     "ios": "13.0"
   },
   "source_files": "BreadPartnersSDK/Classes/**/*",
+  "resource_bundles": {
+    "BreadPartnersSDKResources": [
+      "BreadPartnersSDK/Resources/**/*"
+    ]
+  },
   "dependencies": {
     "SwiftSoup": [
       "~> 2.7.5"

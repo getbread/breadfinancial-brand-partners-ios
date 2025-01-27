@@ -29,7 +29,6 @@
 
 /* Begin PBXFileReference section */
 		198F385AA96D18A5C1A70BE7 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		2850157EB7ADB8A517875627 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4B39FD761985BF22C5970294 /* Pods-BreadPartnersSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Example/Pods-BreadPartnersSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		530E1B5201EED752CFF0A62E /* Pods-BreadPartnersSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Tests/Pods-BreadPartnersSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		5F1FBEF2C5A4D71BE5FF6381 /* Pods-BreadPartnersSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Tests/Pods-BreadPartnersSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -133,7 +132,6 @@
 			isa = PBXGroup;
 			children = (
 				9A17460150109AC2B569919E /* BreadPartnersSDK.podspec */,
-				2850157EB7ADB8A517875627 /* README.md */,
 				198F385AA96D18A5C1A70BE7 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
@@ -313,10 +311,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BreadPartnersSDK_Example/Pods-BreadPartnersSDK_Example-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/BreadPartnersSDK/BreadPartnersSDKResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RecaptchaEnterprise/RecaptchaEnterpriseResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/BreadPartnersSDKResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RecaptchaEnterpriseResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
