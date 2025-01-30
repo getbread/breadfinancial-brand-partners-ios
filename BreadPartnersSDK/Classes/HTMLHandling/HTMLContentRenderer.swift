@@ -12,7 +12,7 @@ protocol HTMLContentRendererProtocol {
 
 internal class HTMLContentRenderer: HTMLContentRendererProtocol {
 
-    private var breadPartnersSDKSetup: BreadPartnersSDKSetup?
+    private var setupConfig: BreadPartnersSetupConfig?
     private var placementsConfiguration: PlacementsConfiguration?
     private let apiClient: APIClientProtocol
     private let alertHandler: AlertHandlerProtocol
@@ -34,7 +34,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         logger: LoggerProtocol,
         htmlContentParser: HTMLContentParserProtocol,
         dispatchQueue: DispatchQueue,
-        breadPartnersSDKSetup: BreadPartnersSDKSetup?,
+        setupConfig: BreadPartnersSetupConfig?,
         placementsConfiguration: PlacementsConfiguration?,
         brandConfiguration: BrandConfigResponse?,
         recaptchaManager: RecaptchaManagerProtocol,
@@ -47,7 +47,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         self.logger = logger
         self.htmlContentParser = htmlContentParser
         self.dispatchQueue = dispatchQueue
-        self.breadPartnersSDKSetup = breadPartnersSDKSetup
+        self.setupConfig = setupConfig
         self.placementsConfiguration = placementsConfiguration
         self.brandConfiguration = brandConfiguration
         self.recaptchaManager = recaptchaManager
@@ -215,7 +215,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
     ) {
         DispatchQueue.main.async {
             let popupViewController = PopupController(
-                breadPartnersSDKSetup: self.breadPartnersSDKSetup!,
+                setupConfig: self.setupConfig!,
                 sdkConfiguration: self.placementsConfiguration!,
                 popupModel: popupPlacementModel,
                 overlayType: overlayType,

@@ -1,6 +1,5 @@
 import Foundation
 
-// Main request model
 public struct PlacementRequest: Codable {
     let placements: [PlacementRequestBody]?
     let brandId: String?
@@ -11,7 +10,6 @@ public struct PlacementRequest: Codable {
     }
 }
 
-// Placement model
 public struct PlacementRequestBody: Codable {
     let id: String?
     let context: ContextRequestBody?
@@ -22,7 +20,6 @@ public struct PlacementRequestBody: Codable {
     }
 }
 
-// Context model
 public struct ContextRequestBody: Codable {
     let SDK_TID: String?
     let ENV: String?
@@ -31,7 +28,7 @@ public struct ContextRequestBody: Codable {
     let PREQUAL_ID: String?
     let PREQUAL_CREDIT_LIMIT: String?
     let LOCATION: String?
-    let PRICE: Int?
+    let PRICE: Double?
     let EXISTING_CH: Bool?
     let OVERRIDE_KEY: String?
     let CLIENT_VAR_4: String?
@@ -50,7 +47,7 @@ public struct ContextRequestBody: Codable {
         PREQUAL_ID: String? = nil,
         PREQUAL_CREDIT_LIMIT: String? = nil,
         LOCATION: String? = nil,
-        PRICE: Int? = nil,
+        PRICE: Double? = nil,
         EXISTING_CH: Bool? = nil,
         OVERRIDE_KEY: String? = nil,
         CLIENT_VAR_4: String? = nil,

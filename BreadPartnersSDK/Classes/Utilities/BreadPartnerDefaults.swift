@@ -6,31 +6,72 @@ public class BreadPartnerDefaults: NSObject {
 
     private override init() {}
 
-    public let buyer = Buyer(
-        givenName: "John",
-        familyName: "Smith",
-        additionalName: "C.",
-        birthDate: "1974-08-21",
-        email: "jsmith@breadfinance.com",
-        phone: "2123344141",
-        billingAddress: Address(
-            address1: "323 something lane",
-            address2: "apt. B",
-            country: "US",
-            locality: "NYC",
-            region: "NY",
-            postalCode: "11222"
-        ),
-        shippingAddress: Address(
-            address1: "323 something lane",
-            address2: "apt. B",
-            country: "US",
-            locality: "NYC",
-            region: "NY",
-            postalCode: "11222"
-        )
+    public let setupConfig1 = BreadPartnersSetupConfig(
+        enableLog: true,
+        integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+        buyer: BreadPartnersBuyer(
+            givenName: "Jack",
+            familyName: "Seamus",
+            additionalName: "C.",
+            birthDate: "1974-08-21",
+            email: "johncseamus@gmail.com",
+            phone: "+13235323423",
+            billingAddress: BreadPartnersAddress(
+                address1: "323 something lane",
+                address2: "apt. B",
+                country: "USA",
+                locality: "NYC",
+                region: "NY",
+                postalCode: "11222"
+            ),
+            shippingAddress: nil
+        ), loyaltyID: "xxxxxx",
+        storeNumber: "1234567",
+        env: "STAGE",
+        channel: "P",
+        subchannel: "X"
     )
-    
+
+    public let placementConfig = BreadPartnersPlacementConfig(
+        financingType: .installments,
+        locationType: .category,
+        placementId: "03d69ff1-f90c-41b2-8a27-836af7f1eb98",
+        domID: "123",
+        order: Order(
+            subTotal: CurrencyValue(currency: "USD", value: 50000),
+            totalDiscounts: CurrencyValue(currency: "USD", value: 50000),
+            totalPrice: CurrencyValue(currency: "USD", value: 73900),
+            totalShipping: CurrencyValue(currency: "USD", value: 50000),
+            totalTax: CurrencyValue(currency: "USD", value: 50000),
+            discountCode: "string",
+            pickupInformation: PickupInformation(
+                name: Name(
+                    givenName: "John",
+                    familyName: "Doe"),
+                phone: "+14539842345",
+                address: Address(
+                    address1: "156 5th Avenue",
+                    locality: "New York",
+                    postalCode: "10019",
+                    region: "US-NY",
+                    country: "US"),
+                email: "john.doe@gmail.com"),
+            fulfillmentType: "type",
+            items: []))
+
+    let rtpsConfig = BreadPartnersRtpsConfig(
+        financingType: .card,
+        order: nil,
+        locationType: .cart,
+        cardType: nil,
+        country: "US",
+        prescreenId: nil,
+        correlationData: nil,
+        customerAcceptedOffer: true,
+        channel: "web",
+        subChannel: nil,
+        mockResponse: .success)
+
     public let textPlacementRequestType1 = PlacementRequest(
         placements: [
             PlacementRequestBody(
@@ -80,22 +121,6 @@ public class BreadPartnerDefaults: NSObject {
                     channel: "A",
                     subchannel: "X",
                     ALLOW_CHECKOUT: false
-                )
-            )
-        ],
-        brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
-    )
-
-    /// PreScreen Placement Request
-    public let textPlacementRequestType4 = PlacementRequest(
-        placements: [
-            PlacementRequestBody(
-                id: "",
-                context: ContextRequestBody(
-                    ENV: "STAGE",
-                    LOCATION: "RTPS-Approval",
-                    embeddedUrl:
-                        "https://acquire1uat.comenity.net/prescreen/offer?mockMO=success&mockPA=success&mockVL=success&embedded=true&clientKey=8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7&prescreenId=79233069&cardType=&urlPath=%2F&firstName=Carol&lastName=Jones&address1=3075%20Loyalty%20Cir&city=Columbus&state=OH&zip=43219&storeNumber=2009&location=checkout&channel=O"
                 )
             )
         ],
@@ -248,6 +273,61 @@ public class BreadPartnerDefaults: NSObject {
             textSize: 10.0
         ),
         actionButtonColor: UIColor(hex: "#d50132")
+    )
+
+    /// PreScreen Placement Request
+    public let textPlacementRequestType4 = PlacementRequest(
+        placements: [
+            PlacementRequestBody(
+                id: "",
+                context: ContextRequestBody(
+                    ENV: "STAGE",
+                    LOCATION: "RTPS-Approval",
+                    embeddedUrl:
+                        "https://acquire1uat.comenity.net/prescreen/offer?mockMO=success&mockPA=success&mockVL=success&embedded=true&clientKey=8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7&prescreenId=79233069&cardType=&urlPath=%2F&firstName=Carol&lastName=Jones&address1=3075%20Loyalty%20Cir&city=Columbus&state=OH&zip=43219&storeNumber=2009&location=checkout&channel=O"
+                )
+            )
+        ],
+        brandId: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7"
+    )
+    
+    let jsonResponse: [String: Any] = [
+        "urlPath": "/cart",
+        "firstName": "Carol",
+        "lastName": "Jones",
+        "address1": "3075 Loyalty Cir",
+        "city": "Columbus",
+        "state": "OH",
+        "zip": "43219",
+        "storeNumber": "2009",
+        "location": "checkout",
+        "channel": "O",
+        "subchannel": "M",
+        "reCaptchaToken": NSNull(),
+        "mockResponse": "success",
+        "overrideConfig": ["enhancedPresentment": true]
+    ]
+    
+    public let setupConfig2 = BreadPartnersSetupConfig(
+        enableLog:true,
+        integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+        buyer: BreadPartnersBuyer(
+            givenName: "Carol",
+            familyName: "Jones",
+            additionalName: "C.",
+            birthDate: "1974-08-21",
+            billingAddress: BreadPartnersAddress(
+                address1: "3075 Loyalty Cir",
+                locality: "Columbus",
+                region: "OH",
+                postalCode: "43219")
+        ),
+        storeNumber: "2009"
+    )
+
+    public let rtpsConfig1 = BreadPartnersRtpsConfig(
+        locationType: .checkout,
+        mockResponse: .success
     )
 
 }

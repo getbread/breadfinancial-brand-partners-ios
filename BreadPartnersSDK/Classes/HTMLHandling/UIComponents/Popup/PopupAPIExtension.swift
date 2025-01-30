@@ -3,17 +3,20 @@ import Foundation
 extension PopupController {
 
     func fetchWebViewPlacement() {
-        let configModel = placementsConfiguration?.configModel
+        let builder = PlacementRequestBuilder(
+            setupConfig: setupConfig,
+            placementConfig: placementsConfiguration?.placementConfig)
+        let placementRequest = builder.build()
 
         let request = PlacementRequest(
             placements: [
                 PlacementRequestBody(
                     id: popupModel.primaryActionButtonAttributes?
                         .dataContentFetch,
-                    context: configModel?.placements?.first?.context
+                    context: placementRequest.placements?.first?.context
                 )
             ],
-            brandId: configModel?.brandId
+            brandId: setupConfig?.integrationKey
         )
 
         fetchData(requestBody: request)
@@ -66,5 +69,5 @@ extension PopupController {
             )
         }
     }
-    
+
 }

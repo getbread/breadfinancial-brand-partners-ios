@@ -19,9 +19,9 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var htmlContentRenderer: HTMLContentRendererProtocol
     var breadPartnerDefaults: BreadPartnerDefaults
     var callback: ((BreadPartnerEvents) -> Void) = { _ in }
-    var rtpsFlow:Bool = false
-    var prescreenId:String? = nil
-    
+    var rtpsFlow: Bool = false
+    var prescreenId: String? = nil
+
     private override init() {
         self.logger = Logger()
         self.alertHandler = AlertHandler(
@@ -47,7 +47,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            breadPartnersSDKSetup: self.breadPartnersSDKSetup,
+            setupConfig: self.setupConfig,
             placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: brandConfiguration,
             recaptchaManager: recaptchaManager,
@@ -56,7 +56,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         super.init()
     }
 
-    var breadPartnersSDKSetup: BreadPartnersSDKSetup?
+    var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
     var onResult: ((BreadPartnerEvents) -> Void)?
@@ -79,7 +79,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            breadPartnersSDKSetup: self.breadPartnersSDKSetup,
+            setupConfig: self.setupConfig,
             placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: self.brandConfiguration,
             recaptchaManager: self.recaptchaManager,
@@ -87,9 +87,9 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         )
     }
 
-    public func setup(sdkSetup: BreadPartnersSDKSetup) {
-        self.breadPartnersSDKSetup = sdkSetup
-        self.logger.isLoggingEnabled = sdkSetup.enableLog
+    public func setup(setupConfig: BreadPartnersSetupConfig) {
+        self.setupConfig = setupConfig
+        self.logger.isLoggingEnabled = setupConfig.enableLog
     }
 
     public func registerPlacements(
@@ -111,7 +111,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.placementsConfiguration = placementsConfiguration
         self.callback = callback
         self.rtpsFlow = true
-        
+
         setUpInjectables()
 
         fetchBrandConfig()

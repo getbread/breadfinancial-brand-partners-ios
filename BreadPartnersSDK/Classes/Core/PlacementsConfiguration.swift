@@ -1,26 +1,29 @@
 import UIKit
 
 public struct PlacementsConfiguration {
-    let configModel: PlacementRequest
-    var textPlacementStyling: TextPlacementStyling?
-    var popUpStyling: PopUpStyling?
+    public let placementConfig: BreadPartnersPlacementConfig?
+    public let rtpsConfig: BreadPartnersRtpsConfig?
+    public var textPlacementStyling: TextPlacementStyling?
+    public var popUpStyling: PopUpStyling?
 
     public init(
-        configModel: PlacementRequest,
+        placementConfig: BreadPartnersPlacementConfig? = nil,
+        rtpsConfig: BreadPartnersRtpsConfig? = nil,
         textPlacementStyling: TextPlacementStyling? = nil,
         popUpStyling: PopUpStyling? = nil
     ) {
-        self.configModel = configModel
+        self.placementConfig = placementConfig
+        self.rtpsConfig = rtpsConfig
         self.textPlacementStyling = textPlacementStyling
         self.popUpStyling = popUpStyling
     }
 }
 public struct TextPlacementStyling {
-    let normalFont: UIFont
-    let normalTextColor: UIColor
-    let clickableFont: UIFont?
-    let clickableTextColor: UIColor
-    let textViewFrame: CGRect
+    public let normalFont: UIFont
+    public let normalTextColor: UIColor
+    public let clickableFont: UIFont?
+    public let clickableTextColor: UIColor
+    public let textViewFrame: CGRect
 
     public init(
         normalFont: UIFont,
@@ -38,19 +41,19 @@ public struct TextPlacementStyling {
 }
 
 public struct PopUpStyling {
-    let loaderColor: UIColor
-    let crossColor: UIColor
-    let dividerColor: UIColor
-    let borderColor: CGColor
-    let titlePopupTextStyle: PopupTextStyle
-    let subTitlePopupTextStyle: PopupTextStyle
-    let headerPopupTextStyle: PopupTextStyle
-    let headerBgColor: UIColor
-    let headingThreePopupTextStyle: PopupTextStyle
-    let paragraphPopupTextStyle: PopupTextStyle
-    let connectorPopupTextStyle: PopupTextStyle
-    let disclosurePopupTextStyle: PopupTextStyle
-    let actionButtonColor: UIColor
+    public let loaderColor: UIColor
+    public let crossColor: UIColor
+    public let dividerColor: UIColor
+    public let borderColor: CGColor
+    public let titlePopupTextStyle: PopupTextStyle
+    public let subTitlePopupTextStyle: PopupTextStyle
+    public let headerPopupTextStyle: PopupTextStyle
+    public let headerBgColor: UIColor
+    public let headingThreePopupTextStyle: PopupTextStyle
+    public let paragraphPopupTextStyle: PopupTextStyle
+    public let connectorPopupTextStyle: PopupTextStyle
+    public let disclosurePopupTextStyle: PopupTextStyle
+    public let actionButtonColor: UIColor
 
     public init(
         loaderColor: UIColor = .black,
@@ -84,9 +87,9 @@ public struct PopUpStyling {
 }
 
 public struct PopupTextStyle {
-    var font: UIFont? = nil
-    var textColor: UIColor? = nil
-    var textSize: CGFloat? = nil
+    public var font: UIFont? = nil
+    public var textColor: UIColor? = nil
+    public var textSize: CGFloat? = nil
     
     public init(font: UIFont? = nil, textColor: UIColor? = nil, textSize: CGFloat? = nil) {
         self.font = font

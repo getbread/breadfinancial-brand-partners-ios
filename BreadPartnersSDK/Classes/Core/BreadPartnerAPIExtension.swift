@@ -3,11 +3,10 @@ extension BreadPartnersSDK {
     func fetchBrandConfig() {
         let apiUrl = APIUrl(
             urlType: .brandConfig(
-                brandId: placementsConfiguration?.configModel.brandId ?? "")
+                brandId: setupConfig?.integrationKey ?? "")
         ).url
         apiClient.request(
-            urlString: apiUrl, method: .POST,
-            body: placementsConfiguration?.configModel
+            urlString: apiUrl, method: .GET, body: nil
         ) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -16,8 +15,8 @@ extension BreadPartnersSDK {
                     brandConfiguration = try commonUtils.decodeJSON(
                         from: response, to: BrandConfigResponse.self)
                     if rtpsFlow {
-//                        executeSecurityCheck()
-//                        preScreenLookupCall(token: "")
+                        //                        executeSecurityCheck()
+                        //                        preScreenLookupCall(token: "")
                         fetchPlacementData()
                     } else {
                         fetchPlacementData()
@@ -47,7 +46,7 @@ extension BreadPartnersSDK {
             siteKey: siteKey,
             action: .init(customAction: "checkout"),
             timeout: 10000,
-            debug: breadPartnersSDKSetup?.enableLog ?? false
+            debug: setupConfig?.enableLog ?? false
         ) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -66,29 +65,15 @@ extension BreadPartnersSDK {
                 : .virtualLookup
         ).url
 
-        var rtpsRequest = RTPSRequest(
-            urlPath: "/cart",
-            firstName: "Carol",
-            lastName: "Jones",
-            address1: "3075 Loyalty Cir",
-            city: "Columbus",
-            state: "OH",
-            zip: "43219",
-            storeNumber: "2009",
-            location: "checkout",
-            channel: "O",
-            subchannel: "M",
-            reCaptchaToken: token,
-            mockResponse: "success",
-            overrideConfig: RTPSRequest.OverrideConfig(
-                enhancedPresentment: true),
-            prescreenId: nil
-        )
-        rtpsRequest.reCaptchaToken = token
+        let requestBuilder = RTPSRequestBuilder(
+            setupConfig: setupConfig!,
+            rtpsConfig: (placementsConfiguration?.rtpsConfig)!)
+        var rtpsRequestBuilt = requestBuilder.build()
+        rtpsRequestBuilt.reCaptchaToken = token
 
         apiClient.request(
             urlString: apiUrl, method: .POST,
-            body: rtpsRequest
+            body: rtpsRequestBuilt
         ) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -118,10 +103,39 @@ extension BreadPartnersSDK {
     func fetchPlacementData() {
 
         let apiUrl = APIUrl(urlType: .generatePlacements).url
+        var request: Any? = nil
+        if placementsConfiguration?.placementConfig != nil {
+            let builder = PlacementRequestBuilder(
+                setupConfig: setupConfig,
+                placementConfig: placementsConfiguration?.placementConfig)
+            request = builder.build()
+        } else {
+            let rtpsWebURL = commonUtils.buildRTPSWebURL(
+                setupConfig: setupConfig!,
+                rtpsConfig: (placementsConfiguration?
+                    .rtpsConfig)!)?.absoluteString
+            let location =
+                switch placementsConfiguration?.rtpsConfig?.locationType {
+                case .checkout:
+                    "RTPS-Approval"
+                default:
+                    ""
+                }
+            request = PlacementRequest(
+                placements: [
+                    PlacementRequestBody(
+                        context: ContextRequestBody(
+                            ENV: "",
+                            LOCATION: location,
+                            embeddedUrl: rtpsWebURL
+                        )
+                    )
+                ], brandId: setupConfig?.integrationKey)
+        }
 
         apiClient.request(
             urlString: apiUrl, method: .POST,
-            body: placementsConfiguration?.configModel
+            body: request
         ) { [weak self] result in
             guard let self = self else { return }
             switch result {

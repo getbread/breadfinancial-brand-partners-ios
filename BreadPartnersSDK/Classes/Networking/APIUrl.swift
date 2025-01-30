@@ -2,6 +2,8 @@ import Foundation
 
 /// Enum to define different types of API URLs.
 internal enum APIUrlType {
+    case baseUrl
+    case rtpsWebUrl(type:String)
     case brandStyle(brandId: String)
     case brandConfig(brandId: String)
     case generatePlacements
@@ -15,7 +17,7 @@ internal enum APIUrlType {
 internal class APIUrl {
     // Base URL
     private let baseURL: String = "https://brands.kmsmep.com"
-    private let rtpsBaseURL: String = "https://acquire1uat.comenity.net/api"
+    private let rtpsBaseURL: String = "https://acquire1uat.comenity.net"
 
     /// The URL type that defines what kind of URL to generate.
     private let urlType: APIUrlType
@@ -28,6 +30,10 @@ internal class APIUrl {
     /// Generates the correct URL based on the URL type.
     public var url: String {
         switch urlType {
+        case .baseUrl:
+            return baseURL
+        case .rtpsWebUrl(let type):
+            return "\(rtpsBaseURL)/prescreen/\(type)"
         case .brandStyle(let brandId):
             return "\(baseURL)/brands/\(brandId)/style"
         case .brandConfig(let brandId):
@@ -39,9 +45,9 @@ internal class APIUrl {
         case .clickPlacement:
             return "\(baseURL)/ep/v1/click-placement"
         case .prescreen:
-            return "\(rtpsBaseURL)/prescreen"
+            return "\(rtpsBaseURL)/api/prescreen"
         case .virtualLookup:
-            return "\(rtpsBaseURL)/virtual_lookup"
+            return "\(rtpsBaseURL)/api/virtual_lookup"
         }
     }
 }

@@ -11,10 +11,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         BreadPartnersSDK.shared.setup(
-            sdkSetup: BreadPartnersSDKSetup(
-                integrationKey: "",
-                buyer: BreadPartnerDefaults.shared.buyer,
-                enableLog: true))
+            setupConfig: BreadPartnerDefaults.shared.setupConfig1)
 
         style = BreadPartnerDefaults.shared.styleSet1
 
@@ -97,10 +94,10 @@ class ViewController: UIViewController {
             actionButtonColor: style!.actionButtonColor
         )
 
-        let placement = BreadPartnerDefaults.shared.textPlacementRequestType1
+        let placement = BreadPartnerDefaults.shared.placementConfig
 
         let placementsConfiguration = PlacementsConfiguration(
-            configModel: placement,
+            placementConfig: placement,
             textPlacementStyling: textPlacementStyling,
             popUpStyling: popUpStyling
         )
@@ -164,10 +161,13 @@ class ViewController: UIViewController {
 
     @IBAction func preScreenButton(_ sender: Any) {
 
-        let placement = BreadPartnerDefaults.shared.textPlacementRequestType4
+        BreadPartnersSDK.shared.setup(
+            setupConfig: BreadPartnerDefaults.shared.setupConfig2)
+        
+        let rtpsConfig = BreadPartnerDefaults.shared.rtpsConfig1
 
         let placementsConfiguration = PlacementsConfiguration(
-            configModel: placement,
+            rtpsConfig: rtpsConfig,
             textPlacementStyling: textPlacementStyling,
             popUpStyling: popUpStyling
         )

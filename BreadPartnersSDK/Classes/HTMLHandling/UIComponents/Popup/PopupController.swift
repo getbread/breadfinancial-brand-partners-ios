@@ -37,7 +37,7 @@ internal class PopupController: UIViewController {
 
     var loader: LoaderIndicator!
 
-    var breadPartnersSDKSetup: BreadPartnersSDKSetup?
+    var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
     var recaptchaManager: RecaptchaManagerProtocol
@@ -48,7 +48,7 @@ internal class PopupController: UIViewController {
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
-        breadPartnersSDKSetup: BreadPartnersSDKSetup,
+        setupConfig: BreadPartnersSetupConfig,
         sdkConfiguration: PlacementsConfiguration,
         popupModel: PopupPlacementModel,
         overlayType: PlacementOverlayType,
@@ -59,7 +59,7 @@ internal class PopupController: UIViewController {
         recaptchaManager: RecaptchaManagerProtocol,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
-        self.breadPartnersSDKSetup = breadPartnersSDKSetup
+        self.setupConfig = setupConfig
         self.placementsConfiguration = sdkConfiguration
         self.brandConfiguration = brandConfiguration
         self.popupModel = popupModel
