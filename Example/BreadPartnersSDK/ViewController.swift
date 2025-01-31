@@ -13,20 +13,32 @@ class ViewController: UIViewController {
         BreadPartnersSDK.shared.setup(
             setupConfig: BreadPartnerDefaults.shared.setupConfig1)
 
-        style = BreadPartnerDefaults.shared.styleSet1
+        style = BreadPartnerDefaults.shared.styleSet3
 
+        preScreenButton.tintColor = style?.clickableTextColor
+
+        // MARK: Add styling for any type of text placement
         textPlacementStyling = TextPlacementStyling(
             normalFont: UIFont(
                 name: style!.baseFontFamily,
-                size: style!.textSizeRegular
+                size: style!.textSizeBold
             )!,
             normalTextColor: style!.normalTextColor,
             clickableFont: UIFont(
                 name: style!.baseFontFamily,
-                size: style!.textSizeRegular
+                size: style!.textSizeBold
             )!,
             clickableTextColor: style!.clickableTextColor,
-            textViewFrame: CGRect(x: 20, y: 70, width: 350, height: 70)
+            textViewFrame: .zero,
+            buttonFont: UIFont(
+                name: style!.baseFontFamily,
+                size: style!.textSizeSemiBold
+            )!,
+            buttonTextColor: .white,
+            buttonFrame: .zero,
+            buttonPadding: .zero,
+            buttonBackgroundColor: style!.clickableTextColor,
+            buttonCornerRadius: 25.0
         )
 
         let popUpStyling = PopUpStyling(
@@ -91,7 +103,14 @@ class ViewController: UIViewController {
                 textColor: style!.disclosureTextColor,
                 textSize: style!.textSizeSmall
             ),
-            actionButtonColor: style!.actionButtonColor
+            actionButtonStyle: PopupActionButtonStyle(
+                font: UIFont.boldSystemFont(ofSize: 18),
+                textColor: .white,
+                frame: CGRect(x: 20, y: 100, width: 100, height: 50),
+                backgroundColor: style!.clickableTextColor,
+                cornerRadius: 25.0,
+                padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            )
         )
 
         let placement = BreadPartnerDefaults.shared.placementConfig
@@ -103,20 +122,21 @@ class ViewController: UIViewController {
         )
 
         BreadPartnersSDK.shared.registerPlacements(
-            placementsConfiguration: placementsConfiguration
+            placementsConfiguration: placementsConfiguration,
+            splitTextAndAction: true
         ) {
             event in
             switch event {
-            case .renderTextView(let view):
+            case .renderTextViewWithLink(let view):
                 self.view.addSubview(view)
                 view.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    //                    view.widthAnchor.constraint(equalToConstant: 100),
+                    // MARK: Text View with Link
+                    // view.widthAnchor.constraint(equalToConstant: 100),
                     view.heightAnchor.constraint(equalToConstant: 100),
                     view.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
-                    //                    view.centerYAnchor.constraint(
-                    //                        equalTo: self.view.centerYAnchor),
+                    // view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
                     view.topAnchor.constraint(
                         equalTo: self.view.topAnchor, constant: 100),
                     view.leadingAnchor.constraint(
@@ -125,34 +145,46 @@ class ViewController: UIViewController {
                         equalTo: self.view.trailingAnchor, constant: -20),
                 ])
                 print("BreadPartnerSDK::Successfully rendered view.")
-            case .renderPopupView(let view):
-                showYesNoAlert(from: self) { userTappedYes in
-                    if userTappedYes {
-                        // Handle the "Yes" case
-                        self.present(view, animated: true)
+            case .renderSeparateTextAndButton(let textView, let button):
+                self.view.addSubview(textView)
+                self.view.addSubview(button)
+                textView.translatesAutoresizingMaskIntoConstraints = false
+                button.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    // MARK: Splitted Text View
+                    // view.widthAnchor.constraint(equalToConstant: 100),
+                    textView.heightAnchor.constraint(equalToConstant: 20),
+                    textView.centerXAnchor.constraint(
+                        equalTo: self.view.centerXAnchor),
+                    // view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+                    textView.topAnchor.constraint(
+                        equalTo: self.view.topAnchor, constant: 100),
+                    textView.leadingAnchor.constraint(
+                        equalTo: self.view.leadingAnchor, constant: 20),
+                    textView.trailingAnchor.constraint(
+                        equalTo: self.view.trailingAnchor, constant: -20),
 
+                    // MARK: Splitted Button View
+                    button.widthAnchor.constraint(equalToConstant: 150),
+                    button.heightAnchor.constraint(equalToConstant: 50),
+                    button.leftAnchor.constraint(
+                        equalTo: self.view.leftAnchor, constant: 25),
+                    button.topAnchor.constraint(
+                        equalTo: textView.bottomAnchor, constant: 20),
+
+                ])
+                print("BreadPartnerSDK::Successfully rendered view.")
+            case .renderPopupView(let view):
+                self.showYesNoAlert(from: self) { userTappedYes in
+                    if userTappedYes {
+                        self.present(view, animated: true)
                     } else {
-                        // Handle the "No" case
                         print("User canceled")
                     }
                 }
                 print("BreadPartnerSDK::Successfully rendered PopupView.")
-            case .textClicked:
-                print("BreadPartnerSDK::Text element was clicked!")
-            case .actionButtonTapped:
-                print("BreadPartnerSDK::Popup action button was tapped!")
-            case .screenName(let name):
-                print("BreadPartnerSDK::Screen name: \(name)")
-            case .webViewSuccess(let result):
-                print("BreadPartnerSDK::WebView success with result: \(result)")
-            case .webViewFailure(let error):
-                print(
-                    "BreadPartnerSDK::WebView interaction failed with error: \(error)"
-                )
-            case .popupClosed:
-                print("BreadPartnerSDK::Popup closed!")
-            case .sdkError(let error):
-                print("BreadPartnerSDK::SDK encountered an error: \(error)")
+            default:
+                print("BreadPartnerSDK::Event: \(event)")
             }
         }
     }
@@ -163,7 +195,7 @@ class ViewController: UIViewController {
 
         BreadPartnersSDK.shared.setup(
             setupConfig: BreadPartnerDefaults.shared.setupConfig2)
-        
+
         let rtpsConfig = BreadPartnerDefaults.shared.rtpsConfig1
 
         let placementsConfiguration = PlacementsConfiguration(
@@ -187,9 +219,7 @@ class ViewController: UIViewController {
             case .webViewSuccess(let result):
                 print("BreadPartnerSDK::WebView success with result: \(result)")
             case .webViewFailure(let error):
-                print(
-                    "BreadPartnerSDK::WebView interaction failed with error: \(error)"
-                )
+                print("BreadPartnerSDK::WebView failed with error: \(error)")
             case .popupClosed:
                 print("BreadPartnerSDK::Popup closed!")
             case .sdkError(let error):
@@ -199,21 +229,27 @@ class ViewController: UIViewController {
             }
         }
     }
-}
 
-func showYesNoAlert(from viewController: UIViewController,completion: @escaping (Bool) -> Void) {
-    let alertController = UIAlertController(
-        title: "Are you authenticated?",
-        message: nil,
-        preferredStyle: .alert
-    )
-    let yesAction = UIAlertAction(title: "Yes", style: .default) { _ in
-        completion(true)
+    func showYesNoAlert(
+        from viewController: UIViewController,
+        completion: @escaping (Bool) -> Void
+    ) {
+        let alertController = UIAlertController(
+            title: "Are you authenticated?",
+            message: nil,
+            preferredStyle: .alert
+        )
+        let yesAction = UIAlertAction(title: "Yes", style: .default) { _ in
+            completion(true)
+        }
+        let noAction = UIAlertAction(title: "No", style: .cancel) { _ in
+            completion(false)
+        }
+        yesAction.setValue(style?.clickableTextColor, forKey: "titleTextColor")
+        noAction.setValue(style?.clickableTextColor, forKey: "titleTextColor")
+
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        viewController.present(alertController, animated: true, completion: nil)
     }
-    let noAction = UIAlertAction(title: "No", style: .cancel) { _ in
-        completion(false)
-    }
-    alertController.addAction(yesAction)
-    alertController.addAction(noAction)
-    viewController.present(alertController, animated: true, completion: nil)
 }

@@ -33,10 +33,15 @@ extension PopupController {
             headerTextStyle: popupStyle!.headerPopupTextStyle)
         contentStackView = PopupElements.shared.createStackView(
             axis: .vertical, spacing: 10)
-        actionButton = PopupElements.shared.createButton(
-            target: self, color: popupStyle!.actionButtonColor,
-            title: popupModel.primaryActionButtonAttributes?.buttonText
-                ?? "Action", action: #selector(actionButtonTapped))
+
+        if let actionButtonStyle = popupStyle?.actionButtonStyle {
+            actionButton = PopupElements.shared.createButton(
+                target: self,
+                title: popupModel.primaryActionButtonAttributes?.buttonText
+                    ?? "Action",
+                buttonStyle: actionButtonStyle,
+                action: #selector(actionButtonTapped))
+        }
 
         view.addSubview(popupView)
 
@@ -251,7 +256,12 @@ extension PopupController {
             actionButton.bottomAnchor.constraint(
                 equalTo: popupView.bottomAnchor,
                 constant: -paddingVerticalTwenty),
-            actionButton.widthAnchor.constraint(equalToConstant: 100),
+            actionButton.widthAnchor.constraint(
+                equalToConstant: placementsConfiguration?.popUpStyling?
+                    .actionButtonStyle?.frame?.width ?? 120),
+            actionButton.heightAnchor.constraint(
+                equalToConstant: placementsConfiguration?.popUpStyling?
+                    .actionButtonStyle?.frame?.height ?? 55),
             actionButton.trailingAnchor.constraint(
                 equalTo: popupView.trailingAnchor,
                 constant: -paddingHorizontalTen),

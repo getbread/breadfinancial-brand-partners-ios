@@ -12,19 +12,20 @@ protocol HTMLContentRendererProtocol {
 
 internal class HTMLContentRenderer: HTMLContentRendererProtocol {
 
-    private var setupConfig: BreadPartnersSetupConfig?
-    private var placementsConfiguration: PlacementsConfiguration?
-    private let apiClient: APIClientProtocol
-    private let alertHandler: AlertHandlerProtocol
-    private let commonUtils: CommonUtilsProtocol
-    private let analyticsManager: AnalyticsManagerProtocol
-    private let logger: LoggerProtocol
-    private let htmlContentParser: HTMLContentParserProtocol
-    private let dispatchQueue: DispatchQueue
-    private let brandConfiguration: BrandConfigResponse?
-    private let recaptchaManager: RecaptchaManagerProtocol
+    var setupConfig: BreadPartnersSetupConfig?
+    var placementsConfiguration: PlacementsConfiguration?
+    let apiClient: APIClientProtocol
+    let alertHandler: AlertHandlerProtocol
+    let commonUtils: CommonUtilsProtocol
+    let analyticsManager: AnalyticsManagerProtocol
+    let logger: LoggerProtocol
+    let htmlContentParser: HTMLContentParserProtocol
+    let dispatchQueue: DispatchQueue
+    let brandConfiguration: BrandConfigResponse?
+    let recaptchaManager: RecaptchaManagerProtocol
+    var splitTextAndAction: Bool = false
 
-    private let callback: ((BreadPartnerEvents) -> Void)
+    let callback: ((BreadPartnerEvents) -> Void)
 
     init(
         apiClient: APIClientProtocol,
@@ -38,6 +39,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         placementsConfiguration: PlacementsConfiguration?,
         brandConfiguration: BrandConfigResponse?,
         recaptchaManager: RecaptchaManagerProtocol,
+        splitTextAndAction: Bool = false,
         callback: @escaping ((BreadPartnerEvents) -> Void)
     ) {
         self.apiClient = apiClient
@@ -51,12 +53,19 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         self.placementsConfiguration = placementsConfiguration
         self.brandConfiguration = brandConfiguration
         self.recaptchaManager = recaptchaManager
+        self.splitTextAndAction = splitTextAndAction
         self.callback = callback
     }
+
+    var textPlacementModel: TextPlacementModel? = nil
+    var responseModel: PlacementsResponse? = nil
+    var textPlacementStyling: TextPlacementStyling? = nil
 
     func handleTextPlacement(
         responseModel: PlacementsResponse
     ) {
+        self.responseModel = responseModel
+        
         do {
             guard
                 let placementContent = responseModel.placementContent?.first?
@@ -68,7 +77,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             }
 
             guard
-                let textPlacementModel =
+                let parseTextPlacementModel =
                     try htmlContentParser.extractTextPlacementModel(
                         htmlContent: placementContent)
             else {
@@ -78,97 +87,28 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
                     showOkButton: true)
             }
 
+            textPlacementModel = parseTextPlacementModel
+            textPlacementStyling = placementsConfiguration?.textPlacementStyling
+            guard let textPlacementModel = textPlacementModel,
+                  let textPlacementStyling = textPlacementStyling else {
+                return
+            }
             logger.logTextPlacementModelDetails(textPlacementModel)
             analyticsManager.sendViewPlacement(placementResponse: responseModel)
 
-            return createTextView(
-                with: textPlacementModel,
-                responseModel: responseModel,
-                textPlacementStyling: (placementsConfiguration?.textPlacementStyling)!)
+            DispatchQueue.main.async {
+                if self.splitTextAndAction {
+                    return self.renderTextAndButton()
+                } else {
+                    return self.renderSingleTextView()
+                }
+            }
 
         } catch {
             alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription), showOkButton: true)
-        }
-    }
-
-    func createTextView(
-        with textPlacementModel: TextPlacementModel,
-        responseModel: PlacementsResponse,
-        textPlacementStyling: TextPlacementStyling
-    ) {
-        DispatchQueue.main.async {
-            let textView = InteractiveText(
-                frame: textPlacementStyling.textViewFrame)
-
-            let normalAttributes: [NSAttributedString.Key: Any] = [
-                .font: textPlacementStyling.normalFont,
-                .foregroundColor: textPlacementStyling.normalTextColor,
-            ]
-
-            let clickableAttributes: [NSAttributedString.Key: Any] = [
-                .underlineStyle: NSUnderlineStyle.single.rawValue,
-                .font: textPlacementStyling.clickableFont!,
-                .foregroundColor: textPlacementStyling.clickableTextColor,
-                .link: textPlacementModel.actionLink ?? "",
-            ]
-
-            let normalText = NSAttributedString(
-                string: textPlacementModel.contentText ?? "",
-                attributes: normalAttributes
-            )
-
-            let clickableText = NSAttributedString(
-                string: textPlacementModel.actionLink ?? "",
-                attributes: clickableAttributes
-            )
-
-            let combinedText = NSMutableAttributedString()
-            combinedText.append(normalText)
-            combinedText.append(clickableText)
-
-            textView.linkTextAttributes = [
-                .foregroundColor: textPlacementStyling.clickableTextColor,
-                .underlineStyle: NSUnderlineStyle.single.rawValue,
-            ]
-
-            textView.configure(with: combinedText) { link in
-                self.handleLinkInteraction(
-                    link: link,
-                    textPlacementModel: textPlacementModel,
-                    responseModel: responseModel
-                )
-            }
-
-            self.callback(.renderTextView(view: textView))
-        }
-    }
-
-    private func handleLinkInteraction(
-        link: String,
-        textPlacementModel: TextPlacementModel,
-        responseModel: PlacementsResponse
-    ) {
-        if let actionType = htmlContentParser.handleActionType(
-            from: textPlacementModel.actionType ?? "")
-        {
-            switch actionType {
-            case .showOverlay:
-                handlePopupPlacement(
-                    responseModel: responseModel,
-                    textPlacementModel: textPlacementModel)
-            default:
-                return alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.missingTextPlacementError,
-                    showOkButton: true)
-            }
-        } else {
-            return alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.noTextPlacementError, showOkButton: true)
         }
     }
 
@@ -184,7 +124,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             let popupPlacementModel =
                 try? htmlContentParser.extractPopupPlacementModel(
                     from: popupPlacementHTMLContent.contentData?.htmlContent
-                        ?? "")
+                    ?? "")
         else {
             return alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),

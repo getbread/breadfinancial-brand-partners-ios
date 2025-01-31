@@ -196,6 +196,40 @@ public class BreadPartnerDefaults: NSObject {
         popupDisclosureFont: UIFont(name: "Arial-BoldMT", size: 13)
     )
 
+    public let styleSet3 = StyleStruct(
+        parsedRedColor: UIColor(hex: "#000000"),
+        parsedGreyColor: UIColor(hex: "#ececec"),
+        loaderColor: UIColor(hex: "#0f2233"),
+        crossColor: .black,
+        dividerColor: UIColor(hex: "#ececec"),
+        borderColor: UIColor(hex: "#ececec"),
+        headerBgColor: UIColor(hex: "#ececec"),
+        actionButtonColor: UIColor(hex: "#000000"),
+
+        baseFontFamily: "Arial-BoldMT",
+        textSizeBold: 18.0,
+        textSizeSemiBold: 16.0,
+        textSizeRegular: 14.0,
+        textSizeSmall: 12.0,
+
+        normalTextColor: .black,
+        clickableTextColor: UIColor(hex: "#000000"),
+        titleTextColor: .black,
+        subTitleTextColor: .gray,
+        headerTextColor: .gray,
+        paragraphTextColor: .gray,
+        connectorTextColor: .black,
+        disclosureTextColor: .gray,
+
+        popupHeaderFont: UIFont(name: "Arial-BoldMT", size: 16),
+        popupTitleFont: UIFont(name: "Arial-BoldMT", size: 16),
+        popupSubTitleFont: UIFont(name: "Arial-BoldMT", size: 12),
+        popupParagraphFont: UIFont(name: "Arial-BoldMT", size: 11),
+        popupConnectorFont: UIFont(name: "Arial-BoldMT", size: 13),
+        popupDisclosureFont: UIFont(name: "Arial-BoldMT", size: 11)
+    )
+
+    
     public let textPlacementStyling = TextPlacementStyling(
         normalFont: UIFont(
             name: "Arial-BoldMT",
@@ -207,9 +241,18 @@ public class BreadPartnerDefaults: NSObject {
             size: 12.0
         )!,
         clickableTextColor: UIColor(hex: "#d50132"),
-        textViewFrame: CGRect(x: 20, y: 100, width: 350, height: 70)
+        textViewFrame: CGRect(x: 20, y: 100, width: 350, height: 70),
+        buttonFont: UIFont(
+            name: "Arial-BoldMT",
+            size: 12.0
+        )!,
+        buttonTextColor: .white,
+        buttonFrame: .zero,
+        buttonPadding: .zero,
+        buttonBackgroundColor: UIColor(hex: "#d50132"),
+        buttonCornerRadius: 15.0
     )
-
+ 
     public let popUpStyling = PopUpStyling(
         loaderColor: UIColor(hex: "#0f2233"),
         crossColor: .black,
@@ -271,10 +314,18 @@ public class BreadPartnerDefaults: NSObject {
             ),
             textColor: .gray,
             textSize: 10.0
-        ),
-        actionButtonColor: UIColor(hex: "#d50132")
+        )
     )
 
+    let actionButtonStyle = PopupActionButtonStyle(
+        font: UIFont.boldSystemFont(ofSize: 18),
+        textColor: .white,
+        frame: CGRect(x: 20, y: 100, width: 200, height: 50),
+        backgroundColor: UIColor(hex: "#d50132"),
+        cornerRadius: 8.0,
+        padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+    )
+    
     /// PreScreen Placement Request
     public let textPlacementRequestType4 = PlacementRequest(
         placements: [

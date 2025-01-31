@@ -68,53 +68,60 @@ internal class BreadFinancialWebViewInterstitial: NSObject, WKNavigationDelegate
             onPageLoadCompleted?(.success(url))
         }
 
-        webView.evaluateJavaScript(jsScript) { result, error in
-            if let error = error {
-                print("JavaScript evaluation failed: \(error)")
-            } else {
-                print("JavaScript successfully injected.")
-            }
-        }
+//        webView.evaluateJavaScript(jsScript) { result, error in
+//            if let error = error {
+//                print("JavaScript evaluation failed: \(error)")
+//            } else {
+//                print("JavaScript successfully injected.")
+//            }
+//        }
     }
-
+    
     let jsScript = """
-        window.addEventListener('load', () => {
-            try {
-                window.webkit.messageHandlers.message.postMessage(
-                    JSON.stringify({
-                        action: {
-                            type: "IS_LOADED",
-                            payload: {
-                                name: "Page loaded",
-                                ack: false
-                            },
+    setTimeout(function() {
+        try {
+            // Post initial message after 10 seconds
+            window.webkit.messageHandlers.message.postMessage(
+                {
+                    action: {
+                        type: "SAY_HELLO",
+                        payload: {
+                            name: "Sdk",
+                            ack: false
                         },
-                        fmcMessage: true
-                    })
-                );
-            } catch (err) {
-                console.error('Error sending message:', err);
-            }
-        });
+                    },
+                    fmcMessage: true
+                },
+                "*"
+            );
+        } catch (err) {
+            console.error('Error sending initial message:', err);
+        }
+
+        // Add message event listener to post HANDSHAKE message on each message event
         window.addEventListener('message', (event) => {
             try {
                 window.webkit.messageHandlers.message.postMessage(
-                    JSON.stringify({
+                    {
                         action: {
-                            type: "HANDSHAKE",
+                            type: "message",
                             payload: {
                                 name: event.data,
                                 ack: false
                             },
                         },
                         fmcMessage: true
-                    })
+                    },
+                    "*"
                 );
             } catch (err) {
-                console.error('Error sending message:', err);
+                console.error('Error sending HANDSHAKE message:', err);
             }
         });
-        """
+    }, 10000);  // Timeout of 10 seconds
+    """
+
+
 
     func userContentController(
         _ userContentController: WKUserContentController,

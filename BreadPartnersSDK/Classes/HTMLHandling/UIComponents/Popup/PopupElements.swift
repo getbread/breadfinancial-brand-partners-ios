@@ -60,14 +60,22 @@ internal class PopupElements: NSObject{
         return stackView
     }
     
-    func createButton(target:Any,color:UIColor,title: String, action: Selector) -> UIButton {
+    func createButton(target:Any,
+                              title: String,
+                              buttonStyle:PopupActionButtonStyle,
+                              action: Selector
+                              ) -> UIButton {
         let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = buttonStyle.font
+        button.setTitleColor(buttonStyle.textColor, for: .normal)
+        button.frame = buttonStyle.frame ?? .zero
+        button.backgroundColor = buttonStyle.backgroundColor
+        button.layer.cornerRadius = buttonStyle.cornerRadius ?? 0.0
+        button.layer.masksToBounds = true
+        button.titleEdgeInsets = buttonStyle.padding ?? .zero
         button.addTarget(target, action: action, for: .touchUpInside)
-        button.backgroundColor = color
-        button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 5
         return button
     }
     

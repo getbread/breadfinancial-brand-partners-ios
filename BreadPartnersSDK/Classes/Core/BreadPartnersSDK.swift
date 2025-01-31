@@ -21,6 +21,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var callback: ((BreadPartnerEvents) -> Void) = { _ in }
     var rtpsFlow: Bool = false
     var prescreenId: String? = nil
+    var splitTextAndAction: Bool = false
 
     private override init() {
         self.logger = Logger()
@@ -70,7 +71,13 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             self.placementsConfiguration?.popUpStyling =
                 breadPartnerDefaults.popUpStyling
         }
+        
+        if self.placementsConfiguration?.popUpStyling?.actionButtonStyle == nil {
+            self.placementsConfiguration?.popUpStyling?.actionButtonStyle =
+                breadPartnerDefaults.actionButtonStyle
+        }
 
+    
         self.htmlContentRenderer = HTMLContentRenderer(
             apiClient: self.apiClient,
             alertHandler: self.alertHandler,
@@ -83,6 +90,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: self.brandConfiguration,
             recaptchaManager: self.recaptchaManager,
+            splitTextAndAction: self.splitTextAndAction,
             callback: self.callback
         )
     }
@@ -94,9 +102,11 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     public func registerPlacements(
         placementsConfiguration: PlacementsConfiguration,
+        splitTextAndAction: Bool = false,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
         self.placementsConfiguration = placementsConfiguration
+        self.splitTextAndAction = splitTextAndAction
         self.callback = callback
 
         setUpInjectables()
