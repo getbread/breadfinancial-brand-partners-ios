@@ -10,36 +10,15 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        BreadPartnersSDK.shared.setup(
-            setupConfig: BreadPartnerDefaults.shared.setupConfig1)
+        BreadPartnersSDK.shared.setup(integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",enableLog: true)
 
+        do {
+            sleep(1)
+        }
+        
         style = BreadPartnerDefaults.shared.styleSet3
 
         preScreenButton.tintColor = style?.clickableTextColor
-
-        // MARK: Add styling for any type of text placement
-        textPlacementStyling = TextPlacementStyling(
-            normalFont: UIFont(
-                name: style!.baseFontFamily,
-                size: style!.textSizeBold
-            )!,
-            normalTextColor: style!.normalTextColor,
-            clickableFont: UIFont(
-                name: style!.baseFontFamily,
-                size: style!.textSizeBold
-            )!,
-            clickableTextColor: style!.clickableTextColor,
-            textViewFrame: .zero,
-            buttonFont: UIFont(
-                name: style!.baseFontFamily,
-                size: style!.textSizeSemiBold
-            )!,
-            buttonTextColor: .white,
-            buttonFrame: .zero,
-            buttonPadding: .zero,
-            buttonBackgroundColor: style!.clickableTextColor,
-            buttonCornerRadius: 25.0
-        )
 
         let popUpStyling = PopUpStyling(
             loaderColor: style!.loaderColor,
@@ -117,46 +96,63 @@ class ViewController: UIViewController {
 
         let placementsConfiguration = PlacementsConfiguration(
             placementConfig: placement,
-            textPlacementStyling: textPlacementStyling,
             popUpStyling: popUpStyling
         )
 
         BreadPartnersSDK.shared.registerPlacements(
+            setupConfig: BreadPartnerDefaults.shared.setupConfig1,
             placementsConfiguration: placementsConfiguration,
             splitTextAndAction: true
         ) {
             event in
             switch event {
-            case .renderTextViewWithLink(let view):
-                self.view.addSubview(view)
-                view.translatesAutoresizingMaskIntoConstraints = false
+            case .renderTextViewWithLink(let textView):
+               
+                textView.font = UIFont(name: "JosefinSans-Bold", size: 20)
+                textView.textColor = UIColor.black
+                textView.linkTextAttributes = [.foregroundColor: self.style?.clickableTextColor ?? UIColor.red]
+                
+                self.view.addSubview(textView)
+                
+                textView.translatesAutoresizingMaskIntoConstraints = false
+                
                 NSLayoutConstraint.activate([
+                  
                     // MARK: Text View with Link
-                    // view.widthAnchor.constraint(equalToConstant: 100),
-                    view.heightAnchor.constraint(equalToConstant: 100),
-                    view.centerXAnchor.constraint(
+                    textView.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
-                    // view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-                    view.topAnchor.constraint(
+                    textView.topAnchor.constraint(
                         equalTo: self.view.topAnchor, constant: 100),
-                    view.leadingAnchor.constraint(
+                    textView.leadingAnchor.constraint(
                         equalTo: self.view.leadingAnchor, constant: 20),
-                    view.trailingAnchor.constraint(
+                    textView.trailingAnchor.constraint(
                         equalTo: self.view.trailingAnchor, constant: -20),
                 ])
                 print("BreadPartnerSDK::Successfully rendered view.")
+                
             case .renderSeparateTextAndButton(let textView, let button):
+                
+                textView.font = UIFont(name: "JosefinSans-Bold", size: 20)
+                textView.textColor = UIColor.black
+                
+                button.setTitleColor(UIColor.white, for: .normal)
+//                button.titleLabel?.font =  .systemFont(ofSize: 19.0, weight: .bold)
+                button.titleLabel?.font = UIFont(name: "JosefinSans-Bold", size: 24)
+                button.titleEdgeInsets = UIEdgeInsets(top: 0,left: 5,bottom: 0,right: 5)
+                button.backgroundColor = self.style?.clickableTextColor ?? UIColor.red
+                button.layer.cornerRadius = 10.0
+                
                 self.view.addSubview(textView)
                 self.view.addSubview(button)
+                
                 textView.translatesAutoresizingMaskIntoConstraints = false
                 button.translatesAutoresizingMaskIntoConstraints = false
+                
                 NSLayoutConstraint.activate([
+                    
                     // MARK: Splitted Text View
-                    // view.widthAnchor.constraint(equalToConstant: 100),
-                    textView.heightAnchor.constraint(equalToConstant: 20),
                     textView.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
-                    // view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
                     textView.topAnchor.constraint(
                         equalTo: self.view.topAnchor, constant: 100),
                     textView.leadingAnchor.constraint(
@@ -165,15 +161,17 @@ class ViewController: UIViewController {
                         equalTo: self.view.trailingAnchor, constant: -20),
 
                     // MARK: Splitted Button View
-                    button.widthAnchor.constraint(equalToConstant: 150),
+                    button.widthAnchor.constraint(equalToConstant: 200),
+                    button.leadingAnchor.constraint(
+                        equalTo: self.view.leadingAnchor, constant: 20),
                     button.heightAnchor.constraint(equalToConstant: 50),
-                    button.leftAnchor.constraint(
-                        equalTo: self.view.leftAnchor, constant: 25),
+//                    button.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 25),
                     button.topAnchor.constraint(
                         equalTo: textView.bottomAnchor, constant: 20),
 
                 ])
                 print("BreadPartnerSDK::Successfully rendered view.")
+                
             case .renderPopupView(let view):
                 self.showYesNoAlert(from: self) { userTappedYes in
                     if userTappedYes {
@@ -193,18 +191,15 @@ class ViewController: UIViewController {
 
     @IBAction func preScreenButton(_ sender: Any) {
 
-        BreadPartnersSDK.shared.setup(
-            setupConfig: BreadPartnerDefaults.shared.setupConfig2)
-
         let rtpsConfig = BreadPartnerDefaults.shared.rtpsConfig1
 
         let placementsConfiguration = PlacementsConfiguration(
             rtpsConfig: rtpsConfig,
-            textPlacementStyling: textPlacementStyling,
             popUpStyling: popUpStyling
         )
 
         BreadPartnersSDK.shared.submitRTPS(
+            setupConfig: BreadPartnerDefaults.shared.setupConfig1,
             placementsConfiguration: placementsConfiguration
         ) {
             event in

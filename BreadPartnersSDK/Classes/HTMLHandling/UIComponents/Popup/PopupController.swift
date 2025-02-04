@@ -4,6 +4,7 @@ import WebKit
 
 internal class PopupController: UIViewController {
 
+    var integrationKey: String
     var popupModel: PopupPlacementModel
     var overlayType: PlacementOverlayType
 
@@ -48,6 +49,7 @@ internal class PopupController: UIViewController {
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
+        integrationKey: String,
         setupConfig: BreadPartnersSetupConfig,
         sdkConfiguration: PlacementsConfiguration,
         popupModel: PopupPlacementModel,
@@ -59,6 +61,7 @@ internal class PopupController: UIViewController {
         recaptchaManager: RecaptchaManagerProtocol,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
+        self.integrationKey = integrationKey
         self.setupConfig = setupConfig
         self.placementsConfiguration = sdkConfiguration
         self.brandConfiguration = brandConfiguration

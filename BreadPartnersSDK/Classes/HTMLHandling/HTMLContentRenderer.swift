@@ -12,6 +12,7 @@ protocol HTMLContentRendererProtocol {
 
 internal class HTMLContentRenderer: HTMLContentRendererProtocol {
 
+    var integrationKey: String = ""
     var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
     let apiClient: APIClientProtocol
@@ -28,6 +29,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
+        integrationKey: String,
         apiClient: APIClientProtocol,
         alertHandler: AlertHandlerProtocol,
         commonUtils: CommonUtilsProtocol,
@@ -42,6 +44,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         splitTextAndAction: Bool = false,
         callback: @escaping ((BreadPartnerEvents) -> Void)
     ) {
+        self.integrationKey = integrationKey
         self.apiClient = apiClient
         self.alertHandler = alertHandler
         self.commonUtils = commonUtils
@@ -65,7 +68,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
         responseModel: PlacementsResponse
     ) {
         self.responseModel = responseModel
-        
+
         do {
             guard
                 let placementContent = responseModel.placementContent?.first?
@@ -88,9 +91,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             }
 
             textPlacementModel = parseTextPlacementModel
-            textPlacementStyling = placementsConfiguration?.textPlacementStyling
-            guard let textPlacementModel = textPlacementModel,
-                  let textPlacementStyling = textPlacementStyling else {
+            guard let textPlacementModel = textPlacementModel else {
                 return
             }
             logger.logTextPlacementModelDetails(textPlacementModel)
@@ -100,7 +101,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
                 if self.splitTextAndAction {
                     return self.renderTextAndButton()
                 } else {
-                    return self.renderSingleTextView()
+                    return self.renderTextViewWithLink()
                 }
             }
 
@@ -124,7 +125,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             let popupPlacementModel =
                 try? htmlContentParser.extractPopupPlacementModel(
                     from: popupPlacementHTMLContent.contentData?.htmlContent
-                    ?? "")
+                        ?? "")
         else {
             return alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
@@ -155,6 +156,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
     ) {
         DispatchQueue.main.async {
             let popupViewController = PopupController(
+                integrationKey: self.integrationKey,
                 setupConfig: self.setupConfig!,
                 sdkConfiguration: self.placementsConfiguration!,
                 popupModel: popupPlacementModel,

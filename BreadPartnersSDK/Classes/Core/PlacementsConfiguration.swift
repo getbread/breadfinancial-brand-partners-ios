@@ -3,30 +3,19 @@ import UIKit
 public struct PlacementsConfiguration {
     public let placementConfig: BreadPartnersPlacementConfig?
     public let rtpsConfig: BreadPartnersRtpsConfig?
-    public var textPlacementStyling: TextPlacementStyling?
     public var popUpStyling: PopUpStyling?
 
     public init(
         placementConfig: BreadPartnersPlacementConfig? = nil,
         rtpsConfig: BreadPartnersRtpsConfig? = nil,
-        textPlacementStyling: TextPlacementStyling? = nil,
         popUpStyling: PopUpStyling? = nil
     ) {
         self.placementConfig = placementConfig
         self.rtpsConfig = rtpsConfig
-        self.textPlacementStyling = textPlacementStyling
         self.popUpStyling = popUpStyling
     }
 }
 public struct TextPlacementStyling {
-    public let normalFont: UIFont
-    public let normalTextColor: UIColor
-
-    public let clickableFont: UIFont?
-    public let clickableTextColor: UIColor
-
-    public let textViewFrame: CGRect
-
     public let buttonFont: UIFont?
     public let buttonTextColor: UIColor?
     public let buttonFrame: CGRect?
@@ -35,11 +24,6 @@ public struct TextPlacementStyling {
     public let buttonCornerRadius: CGFloat?
 
     public init(
-        normalFont: UIFont,
-        normalTextColor: UIColor = .black,
-        clickableFont: UIFont? = nil,
-        clickableTextColor: UIColor = .blue,
-        textViewFrame: CGRect,
         buttonFont: UIFont? = nil,
         buttonTextColor: UIColor = .blue,
         buttonFrame: CGRect? = CGRect(x: 0, y: 0, width: 200, height: 45),
@@ -47,11 +31,6 @@ public struct TextPlacementStyling {
         buttonBackgroundColor: UIColor = .blue,
         buttonCornerRadius: CGFloat = 10.0
     ) {
-        self.normalFont = normalFont
-        self.normalTextColor = normalTextColor
-        self.clickableFont = clickableFont
-        self.clickableTextColor = clickableTextColor
-        self.textViewFrame = textViewFrame
         self.buttonFont = buttonFont
         self.buttonTextColor = buttonTextColor
         self.buttonFrame = buttonFrame

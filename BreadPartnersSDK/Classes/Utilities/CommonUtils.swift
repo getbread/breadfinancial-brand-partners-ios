@@ -9,6 +9,7 @@ protocol CommonUtilsProtocol {
     func decodeJSON<T: Decodable>(from response: Any, to type: T.Type) throws
         -> T
     func buildRTPSWebURL(
+        integrationKey: String,
         setupConfig: BreadPartnersSetupConfig,
         rtpsConfig: BreadPartnersRtpsConfig
     ) -> URL?
@@ -87,6 +88,7 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
     }
 
     func buildRTPSWebURL(
+        integrationKey: String,
         setupConfig: BreadPartnersSetupConfig,
         rtpsConfig: BreadPartnersRtpsConfig
     ) -> URL? {
@@ -95,7 +97,7 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
             "mockPA": rtpsConfig.mockResponse?.rawValue,
             "mockVL": rtpsConfig.mockResponse?.rawValue,
             "embedded": "true",
-            "clientKey": setupConfig.integrationKey,
+            "clientKey": integrationKey,
             "prescreenId": rtpsConfig.prescreenId,
             "cardType": rtpsConfig.cardType,
             "urlPath": "screen name",

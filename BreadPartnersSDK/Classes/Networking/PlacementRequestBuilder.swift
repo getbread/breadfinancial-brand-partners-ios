@@ -1,13 +1,16 @@
 import Foundation
 
 class PlacementRequestBuilder {
+    private var integrationKey: String = ""
     private var placements: [PlacementRequestBody] = []
     private var brandId: String = ""
+    
     init(
+        integrationKey: String,
         setupConfig: BreadPartnersSetupConfig?,
         placementConfig: BreadPartnersPlacementConfig?
     ) {
-        self.brandId = setupConfig?.integrationKey ?? ""
+        self.brandId = integrationKey
         self.createPlacementRequestBody(
             setupConfig: setupConfig, placementConfig: placementConfig)
     }

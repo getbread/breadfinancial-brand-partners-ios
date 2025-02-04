@@ -7,8 +7,6 @@ public class BreadPartnerDefaults: NSObject {
     private override init() {}
 
     public let setupConfig1 = BreadPartnersSetupConfig(
-        enableLog: true,
-        integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
         buyer: BreadPartnersBuyer(
             givenName: "Jack",
             familyName: "Seamus",
@@ -231,17 +229,6 @@ public class BreadPartnerDefaults: NSObject {
 
     
     public let textPlacementStyling = TextPlacementStyling(
-        normalFont: UIFont(
-            name: "Arial-BoldMT",
-            size: 12.0
-        )!,
-        normalTextColor: .black,
-        clickableFont: UIFont(
-            name: "Arial-BoldMT",
-            size: 12.0
-        )!,
-        clickableTextColor: UIColor(hex: "#d50132"),
-        textViewFrame: CGRect(x: 20, y: 100, width: 350, height: 70),
         buttonFont: UIFont(
             name: "Arial-BoldMT",
             size: 12.0
@@ -360,8 +347,6 @@ public class BreadPartnerDefaults: NSObject {
     ]
     
     public let setupConfig2 = BreadPartnersSetupConfig(
-        enableLog:true,
-        integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
         buyer: BreadPartnersBuyer(
             givenName: "Carol",
             familyName: "Jones",

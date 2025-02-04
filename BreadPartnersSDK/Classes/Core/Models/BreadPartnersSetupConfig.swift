@@ -1,8 +1,6 @@
 import Foundation
 
 public struct BreadPartnersSetupConfig {
-    public var enableLog: Bool = false
-    public var integrationKey: String?
     public var buyer: BreadPartnersBuyer?
     public var loyaltyID: String?
     public var storeNumber: String?
@@ -35,8 +33,6 @@ public struct BreadPartnersSetupConfig {
     }
 
     public init(
-        enableLog: Bool = false,
-        integrationKey: String? = nil,
         buyer: BreadPartnersBuyer? = nil,
         loyaltyID: String? = nil,
         storeNumber: String? = nil,
@@ -61,8 +57,6 @@ public struct BreadPartnersSetupConfig {
         skipVerification: Bool? = nil,
         custom: [String: Any]? = nil
     ) {
-        self.enableLog = enableLog
-        self.integrationKey = integrationKey
         self.buyer = buyer
         self.loyaltyID = loyaltyID
         self.storeNumber = storeNumber
