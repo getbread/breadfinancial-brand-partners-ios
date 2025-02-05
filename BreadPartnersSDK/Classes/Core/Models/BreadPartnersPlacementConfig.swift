@@ -1,5 +1,15 @@
 import Foundation
 
+/// Configuration for defining placement options in BreadPartners.
+///
+/// - `financingType`: Specifies the type of financing for the placement.
+/// - `locationType`: Specifies the location type where the placement is rendered.
+/// - `placementId`: A unique identifier for the placement.
+/// - `domID`: A required identifier for the DOM element.
+/// - `allowCheckout`: Specifies whether checkout is allowed for this placement.
+/// - `order`: Represents the order configuration associated with the placement.
+/// - `defaultSelectedCardKey`: Key for the default selected card, if any.
+/// - `selectedCardKey`: Key for the currently selected card, if any.
 public class BreadPartnersPlacementConfig {
     public var financingType: FinancingType?
     public var locationType: LocationType?
@@ -27,6 +37,7 @@ public class BreadPartnersPlacementConfig {
     }
 }
 
+/// Specifies the location type where the placement is rendered.
 public enum LocationType: String {
     case bag
     case banner
@@ -44,10 +55,12 @@ public enum LocationType: String {
     case search
 }
 
+/// Specifies the type of financing for the placement.
 public enum FinancingType: String {
     case card, installments, versatile
 }
 
+/// Specifies the order configuration associated with the placement.
 public class Order {
     public var subTotal: CurrencyValue?
     public var totalDiscounts: CurrencyValue?
@@ -79,6 +92,7 @@ public class Order {
     }
 }
 
+/// Specifies a currency value.
 public class CurrencyValue {
     public var currency: String?
     public var value: Double?
@@ -89,6 +103,7 @@ public class CurrencyValue {
     }
 }
 
+/// Specifies pickup information for an order.
 public class PickupInformation {
     public var name: Name?
     public var phone: String?
@@ -106,6 +121,7 @@ public class PickupInformation {
     }
 }
 
+/// Specifies a person's name.
 public class Name {
     public var givenName: String?
     public var familyName: String?
@@ -121,6 +137,7 @@ public class Name {
     }
 }
 
+/// Specifies a person's address.
 public class Address {
     public var address1: String?
     public var address2: String?

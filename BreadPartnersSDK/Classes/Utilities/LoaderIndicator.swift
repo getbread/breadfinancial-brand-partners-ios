@@ -1,6 +1,8 @@
 import UIKit
 
-// MARK: BallSpinFadeLoader
+/// BallSpinFadeLoader class.
+///
+/// Handles the animation or behavior for a ball spin fade loader, typically used for showing loading states.
 internal class LoaderIndicator: UIView {
     
     private let sdkConfiguration: PlacementsConfiguration

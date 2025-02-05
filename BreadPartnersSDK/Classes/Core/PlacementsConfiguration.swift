@@ -1,5 +1,10 @@
 import UIKit
 
+/// Structure that used to provide configurations for  `registerPlacement` or `submitRTPS` methods.
+/// - Parameters:
+///   - placementConfig: Defines text placements on the brand partner screen for the `registerPlacementFlow`.
+///   - rtpsConfig: Specifies the real-time pre-screen configuration for the prescreen flow.
+///   - popUpStyling: Configures the popup styling for each element rendered within the popup.
 public struct PlacementsConfiguration {
     public let placementConfig: BreadPartnersPlacementConfig?
     public let rtpsConfig: BreadPartnersRtpsConfig?
@@ -15,31 +20,12 @@ public struct PlacementsConfiguration {
         self.popUpStyling = popUpStyling
     }
 }
-public struct TextPlacementStyling {
-    public let buttonFont: UIFont?
-    public let buttonTextColor: UIColor?
-    public let buttonFrame: CGRect?
-    public let buttonPadding: UIEdgeInsets?
-    public let buttonBackgroundColor: UIColor?
-    public let buttonCornerRadius: CGFloat?
 
-    public init(
-        buttonFont: UIFont? = nil,
-        buttonTextColor: UIColor = .blue,
-        buttonFrame: CGRect? = CGRect(x: 0, y: 0, width: 200, height: 45),
-        buttonPadding: UIEdgeInsets = .zero,
-        buttonBackgroundColor: UIColor = .blue,
-        buttonCornerRadius: CGFloat = 10.0
-    ) {
-        self.buttonFont = buttonFont
-        self.buttonTextColor = buttonTextColor
-        self.buttonFrame = buttonFrame
-        self.buttonPadding = buttonPadding
-        self.buttonBackgroundColor = buttonBackgroundColor
-        self.buttonCornerRadius = buttonCornerRadius
-    }
-}
-
+/// Structure used to provides styling configurations for the `PopupController`.
+///
+/// - Colors are defined using `UIColor` or `CGColor` for various popup elements like header background, border..
+/// - Text style are configured using `PopupTextStyle`structure  for titles, headers, and other text elements.
+/// - Button style can be optionally specified using `PopupActionButtonStyle`.
 public struct PopUpStyling {
     public let loaderColor: UIColor
     public let crossColor: UIColor
@@ -86,6 +72,11 @@ public struct PopUpStyling {
     }
 }
 
+/// Structure that defines text styling config for popup elements.
+///
+/// - `font`: Specifies the font family and font size for the text.
+/// - `textColor`: Specifies the color of the text.
+/// - `textSize`: Specifies the size of the text.
 public struct PopupTextStyle {
     public var font: UIFont? = nil
     public var textColor: UIColor? = nil
@@ -100,6 +91,14 @@ public struct PopupTextStyle {
     }
 }
 
+/// Structure that defines style configurations for action buttons in popups.
+///
+/// - `font`: Specifies the font for the button title.
+/// - `textColor`: Specifies the color of the button title text.
+/// - `frame`: Specifies the frame dimensions for the button.
+/// - `backgroundColor`: Specifies the background color of the button.
+/// - `cornerRadius`: Specifies the corner radius for rounded button edges.
+/// - `padding`: Specifies the padding within the button and title.
 public struct PopupActionButtonStyle {
     public var font: UIFont?
     public var textColor: UIColor?
@@ -122,101 +121,5 @@ public struct PopupActionButtonStyle {
         self.backgroundColor = backgroundColor
         self.cornerRadius = cornerRadius
         self.padding = padding
-    }
-}
-
-// MARK: Will be used for development/testing purpose
-public struct StyleStruct {
-    // Colors
-    public let parsedRedColor: UIColor
-    public let parsedGreyColor: UIColor
-    public let loaderColor: UIColor
-    public let crossColor: UIColor
-    public let dividerColor: UIColor
-    public let borderColor: UIColor
-    public let headerBgColor: UIColor
-    public let actionButtonColor: UIColor
-
-    // Fonts
-    public let baseFontFamily: String
-    public let textSizeBold: CGFloat
-    public let textSizeSemiBold: CGFloat
-    public let textSizeRegular: CGFloat
-    public let textSizeSmall: CGFloat
-
-    // Text Colors
-    public let normalTextColor: UIColor
-    public let clickableTextColor: UIColor
-    public let titleTextColor: UIColor
-    public let subTitleTextColor: UIColor
-    public let headerTextColor: UIColor
-    public let paragraphTextColor: UIColor
-    public let connectorTextColor: UIColor
-    public let disclosureTextColor: UIColor
-
-    // Popup-specific elements
-    public let popupHeaderFont: UIFont?
-    public let popupTitleFont: UIFont?
-    public let popupSubTitleFont: UIFont?
-    public let popupParagraphFont: UIFont?
-    public let popupConnectorFont: UIFont?
-    public let popupDisclosureFont: UIFont?
-
-    public init(
-        parsedRedColor: UIColor,
-        parsedGreyColor: UIColor,
-        loaderColor: UIColor,
-        crossColor: UIColor,
-        dividerColor: UIColor,
-        borderColor: UIColor,
-        headerBgColor: UIColor,
-        actionButtonColor: UIColor,
-        baseFontFamily: String,
-        textSizeBold: CGFloat,
-        textSizeSemiBold: CGFloat,
-        textSizeRegular: CGFloat,
-        textSizeSmall: CGFloat,
-        normalTextColor: UIColor,
-        clickableTextColor: UIColor,
-        titleTextColor: UIColor,
-        subTitleTextColor: UIColor,
-        headerTextColor: UIColor,
-        paragraphTextColor: UIColor,
-        connectorTextColor: UIColor,
-        disclosureTextColor: UIColor,
-        popupHeaderFont: UIFont? = nil,
-        popupTitleFont: UIFont? = nil,
-        popupSubTitleFont: UIFont? = nil,
-        popupParagraphFont: UIFont? = nil,
-        popupConnectorFont: UIFont? = nil,
-        popupDisclosureFont: UIFont? = nil
-    ) {
-        self.parsedRedColor = parsedRedColor
-        self.parsedGreyColor = parsedGreyColor
-        self.loaderColor = loaderColor
-        self.crossColor = crossColor
-        self.dividerColor = dividerColor
-        self.borderColor = borderColor
-        self.headerBgColor = headerBgColor
-        self.actionButtonColor = actionButtonColor
-        self.baseFontFamily = baseFontFamily
-        self.textSizeBold = textSizeBold
-        self.textSizeSemiBold = textSizeSemiBold
-        self.textSizeRegular = textSizeRegular
-        self.textSizeSmall = textSizeSmall
-        self.normalTextColor = normalTextColor
-        self.clickableTextColor = clickableTextColor
-        self.titleTextColor = titleTextColor
-        self.subTitleTextColor = subTitleTextColor
-        self.headerTextColor = headerTextColor
-        self.paragraphTextColor = paragraphTextColor
-        self.connectorTextColor = connectorTextColor
-        self.disclosureTextColor = disclosureTextColor
-        self.popupHeaderFont = popupHeaderFont
-        self.popupTitleFont = popupTitleFont
-        self.popupSubTitleFont = popupSubTitleFont
-        self.popupParagraphFont = popupParagraphFont
-        self.popupConnectorFont = popupConnectorFont
-        self.popupDisclosureFont = popupDisclosureFont
     }
 }

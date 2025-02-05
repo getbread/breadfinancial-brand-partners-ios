@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		12A79DA62D51FD800016A5A8 /* JosefinSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12A79DA52D51FD800016A5A8 /* JosefinSans-Bold.ttf */; };
-		12A79DA72D51FD800016A5A8 /* JosefinSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12A79DA52D51FD800016A5A8 /* JosefinSans-Bold.ttf */; };
+		12D9F1E82D53932600799C72 /* JosefinSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1E62D53932600799C72 /* JosefinSans-Bold.ttf */; };
+		12D9F1EA2D53932600799C72 /* JosefinSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1E62D53932600799C72 /* JosefinSans-Bold.ttf */; };
+		12D9F1EF2D5394E000799C72 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1EE2D5394E000799C72 /* Lato-Bold.ttf */; };
+		12D9F1F02D5394E000799C72 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1EE2D5394E000799C72 /* Lato-Bold.ttf */; };
+		12D9F1F22D53956800799C72 /* Poppins-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1F12D53956800799C72 /* Poppins-Bold.otf */; };
+		12D9F1F32D53956800799C72 /* Poppins-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1F12D53956800799C72 /* Poppins-Bold.otf */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -30,7 +34,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		12A79DA52D51FD800016A5A8 /* JosefinSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "JosefinSans-Bold.ttf"; sourceTree = "<group>"; };
+		12D9F1E62D53932600799C72 /* JosefinSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "JosefinSans-Bold.ttf"; sourceTree = "<group>"; };
+		12D9F1EE2D5394E000799C72 /* Lato-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Lato-Bold.ttf"; sourceTree = "<group>"; };
+		12D9F1F12D53956800799C72 /* Poppins-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Bold.otf"; sourceTree = "<group>"; };
 		135195E025997369FF6499DD /* Pods-BreadPartnersSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Tests/Pods-BreadPartnersSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		1469BBF46180D765F71B4C3C /* Pods-BreadPartnersSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Example/Pods-BreadPartnersSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		198F385AA96D18A5C1A70BE7 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -74,7 +80,9 @@
 		12A79DA42D51FD700016A5A8 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				12A79DA52D51FD800016A5A8 /* JosefinSans-Bold.ttf */,
+				12D9F1F12D53956800799C72 /* Poppins-Bold.otf */,
+				12D9F1EE2D5394E000799C72 /* Lato-Bold.ttf */,
+				12D9F1E62D53932600799C72 /* JosefinSans-Bold.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -256,8 +264,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12D9F1F32D53956800799C72 /* Poppins-Bold.otf in Resources */,
+				12D9F1EA2D53932600799C72 /* JosefinSans-Bold.ttf in Resources */,
+				12D9F1EF2D5394E000799C72 /* Lato-Bold.ttf in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
-				12A79DA62D51FD800016A5A8 /* JosefinSans-Bold.ttf in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
@@ -267,7 +277,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12A79DA72D51FD800016A5A8 /* JosefinSans-Bold.ttf in Resources */,
+				12D9F1F22D53956800799C72 /* Poppins-Bold.otf in Resources */,
+				12D9F1E82D53932600799C72 /* JosefinSans-Bold.ttf in Resources */,
+				12D9F1F02D5394E000799C72 /* Lato-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

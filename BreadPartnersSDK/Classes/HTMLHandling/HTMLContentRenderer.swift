@@ -62,7 +62,6 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
 
     var textPlacementModel: TextPlacementModel? = nil
     var responseModel: PlacementsResponse? = nil
-    var textPlacementStyling: TextPlacementStyling? = nil
 
     func handleTextPlacement(
         responseModel: PlacementsResponse

@@ -21,13 +21,13 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var htmlContentRenderer: HTMLContentRendererProtocol
     var breadPartnerDefaults: BreadPartnerDefaults
     var callback:
+    (
         (
-            (
-                BreadPartnerEvents
-            ) -> Void
-        ) = {
-            _ in
-        }
+            BreadPartnerEvents
+        ) -> Void
+    ) = {
+        _ in
+    }
     var rtpsFlow: Bool = false
     var prescreenId: String? = nil
     var splitTextAndAction: Bool = false
@@ -36,7 +36,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.logger = Logger()
         self.alertHandler = AlertHandler(
             windowScene: UIApplication.shared.connectedScenes.first
-                as? UIWindowScene
+            as? UIWindowScene
         )
         self.commonUtils = CommonUtils(
             dispatchQueue: .main,
@@ -85,22 +85,98 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
     var onResult:
+    (
         (
-            (
-                BreadPartnerEvents
-            ) -> Void
-        )?
+            BreadPartnerEvents
+        ) -> Void
+    )?
 
     func setUpInjectables() {
+
+        /// Default Popup action button style
+        let actionButtonStyle = PopupActionButtonStyle(
+            font: UIFont.boldSystemFont(ofSize: 18),
+            textColor: .white,
+            frame: CGRect(x: 20, y: 100, width: 200, height: 50),
+            backgroundColor: UIColor(hex: "#d50132"),
+            cornerRadius: 8.0,
+            padding: UIEdgeInsets(
+                top: 8, left: 16, bottom: 8, right: 16)
+        )
+
+        /// Default Popup Style
+        let popupStyle = PopUpStyling(
+            loaderColor: UIColor(hex: "#0f2233"),
+            crossColor: .black,
+            dividerColor: UIColor(hex: "#ececec"),
+            borderColor: UIColor(hex: "#ececec").cgColor,
+            titlePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 16.0
+                ),
+                textColor: .black,
+                textSize: 16.0
+            ),
+            subTitlePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 12.0
+                ),
+                textColor: .gray,
+                textSize: 12.0
+            ),
+            headerPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 14.0
+                ),
+                textColor: .gray,
+                textSize: 14.0
+            ),
+            headerBgColor: UIColor(hex: "#ececec"),
+            headingThreePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 14.0
+                ),
+                textColor: UIColor(hex: "#d50132"),
+                textSize: 14.0
+            ),
+            paragraphPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 10.0
+                ),
+                textColor: .gray,
+                textSize: 10.0
+            ),
+            connectorPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 14.0
+                ),
+                textColor: .black,
+                textSize: 14.0
+            ),
+            disclosurePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: "Arial-BoldMT",
+                    size: 10.0
+                ),
+                textColor: .gray,
+                textSize: 10.0
+            ),
+            actionButtonStyle: actionButtonStyle
+        )
+
         if self.placementsConfiguration?.popUpStyling == nil {
-            self.placementsConfiguration?.popUpStyling =
-                breadPartnerDefaults.popUpStyling
+            self.placementsConfiguration?.popUpStyling = popupStyle
         }
 
-        if self.placementsConfiguration?.popUpStyling?.actionButtonStyle == nil
-        {
+        if self.placementsConfiguration?.popUpStyling?.actionButtonStyle == nil {
             self.placementsConfiguration?.popUpStyling?.actionButtonStyle =
-                breadPartnerDefaults.actionButtonStyle
+            actionButtonStyle
         }
 
         self.htmlContentRenderer = HTMLContentRenderer(
@@ -196,7 +272,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                             "Brand configurations are missing or unavailable.",
                         code: 404)))
         }
-        
+
         //                        executeSecurityCheck()
         //                        preScreenLookupCall(token: "")
         fetchPlacementData()

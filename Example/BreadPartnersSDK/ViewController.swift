@@ -3,122 +3,193 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    var textPlacementStyling: TextPlacementStyling?
-    var popUpStyling: PopUpStyling?
-    var style: StyleStruct? = nil
+    @IBOutlet weak var preScreenButton: UIButton!
+    var style: [String: Any] = ["": ""]
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        BreadPartnersSDK.shared.setup(integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",enableLog: true)
+        // MARK: For development purposes
+        // These configurations are used to test different types of placement requests.
+        // Each placement type corresponds to a specific configuration that includes parameters
+        // like placement ID, SDK transaction ID, environment, price, and brand ID.
+        // This allows testing of various placement setups by fetching specific configurations
+        // based on the placement type key.
+        let placementRequestType = BreadPartnerDefaults.shared
+            .placementConfigurations["textPlacementRequestType1"]
+        let placementID = placementRequestType!["placementID"] as! String
+        let price = (placementRequestType!["price"] as! Int)
+        let brandId = placementRequestType!["brandId"] as! String
 
+        // MARK: For development purposes
+        style = BreadPartnerDefaults.shared.styleStruct["cadet"]!
+        let primaryColor = style["primaryColor"] as! String
+        let secondaryColor = style["secondaryColor"] as! String
+        let tertiaryColor = style["tertiaryColor"] as! String
+        let blackColor = "#000000"
+
+        let fontFamily = style["fontFamily"] as! String
+
+        let smallTextSize = style["small"] as! Int
+        let mediumTextSize = style["medium"] as! Int
+        let largeTextSize = style["large"] as! Int
+        let xlargeTextSize = style["xlarge"] as! Int
+
+        // MARK: For development purposes to showcase pre-screen flow.
+        preScreenButton.titleLabel?.font = UIFont(
+            name: fontFamily, size: CGFloat(xlargeTextSize))
+        preScreenButton.tintColor = UIColor(hex: primaryColor)
+
+        /// ``setup`` method must be placed at app launch.
+        /// - Parameters:
+        ///     - integrationKey: A unique key specific to the brand.
+        BreadPartnersSDK.shared.setup(
+            integrationKey: brandId,
+            enableLog: true)
+
+        /// To add a delay before making registering placements.
         do {
-            sleep(1)
+            sleep(2)
         }
-        
-        style = BreadPartnerDefaults.shared.styleSet3
 
-        preScreenButton.tintColor = style?.clickableTextColor
-
+        /// Prepare popup styling configuration object for each style elemnt
         let popUpStyling = PopUpStyling(
-            loaderColor: style!.loaderColor,
-            crossColor: style!.crossColor,
-            dividerColor: style!.dividerColor,
-            borderColor: style!.borderColor.cgColor,
+            loaderColor: UIColor(hex: primaryColor),
+            crossColor: UIColor(hex: primaryColor),
+            dividerColor: UIColor(hex: tertiaryColor),
+            borderColor: UIColor(hex: tertiaryColor).cgColor,
             titlePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeBold
-                ),
-                textColor: style!.titleTextColor,
-                textSize: style!.textSizeBold
+                    name: fontFamily, size: Double(xlargeTextSize)),
+                textColor: UIColor(hex: blackColor)
             ),
             subTitlePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeRegular
-                ),
-                textColor: style!.subTitleTextColor,
-                textSize: style!.textSizeRegular
+                    name: fontFamily, size: Double(mediumTextSize)),
+                textColor: UIColor(hex: secondaryColor)
             ),
             headerPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeSemiBold
-                ),
-                textColor: style!.headerTextColor,
-                textSize: style!.textSizeSemiBold
+                    name: fontFamily, size: Double(mediumTextSize)),
+                textColor: UIColor(hex: blackColor)
             ),
-            headerBgColor: style!.headerBgColor,
+            headerBgColor: UIColor(hex: tertiaryColor),
             headingThreePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeSemiBold
-                ),
-                textColor: style!.parsedRedColor,
-                textSize: style!.textSizeSemiBold
+                    name: fontFamily, size: Double(largeTextSize)),
+                textColor: UIColor(hex: primaryColor)
             ),
             paragraphPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeSmall
-                ),
-                textColor: style!.paragraphTextColor,
-                textSize: style!.textSizeSmall
+                    name: fontFamily, size: Double(smallTextSize)),
+                textColor: UIColor(hex: secondaryColor)
             ),
             connectorPopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeSemiBold
-                ),
-                textColor: style!.connectorTextColor,
-                textSize: style!.textSizeSemiBold
+                    name: fontFamily, size: Double(smallTextSize)),
+                textColor: UIColor(hex: primaryColor)
             ),
             disclosurePopupTextStyle: PopupTextStyle(
                 font: UIFont(
-                    name: style!.baseFontFamily,
-                    size: style!.textSizeSmall
-                ),
-                textColor: style!.disclosureTextColor,
-                textSize: style!.textSizeSmall
+                    name: fontFamily, size: Double(smallTextSize)),
+                textColor: UIColor(hex: secondaryColor)
             ),
             actionButtonStyle: PopupActionButtonStyle(
-                font: UIFont.boldSystemFont(ofSize: 18),
+                font: UIFont(
+                    name: fontFamily, size: Double(mediumTextSize)),
                 textColor: .white,
                 frame: CGRect(x: 20, y: 100, width: 100, height: 50),
-                backgroundColor: style!.clickableTextColor,
+                backgroundColor: UIColor(hex: primaryColor),
                 cornerRadius: 25.0,
                 padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
             )
         )
 
-        let placement = BreadPartnerDefaults.shared.placementConfig
+        /// Configuration for defining placement options in BreadPartners.
+        /// - Parameters:
+        ///     - Modify the Placement ID and total price to test different placements.
+        let placement = BreadPartnersPlacementConfig(
+            financingType: .installments,
+            locationType: .category,
+            placementId: placementID,
+            domID: "123",
+            order: Order(
+                subTotal: CurrencyValue(currency: "USD", value: 0),
+                totalDiscounts: CurrencyValue(currency: "USD", value: 0),
+                totalPrice: CurrencyValue(
+                    currency: "USD", value: Double(price)),
+                totalShipping: CurrencyValue(currency: "USD", value: 0),
+                totalTax: CurrencyValue(currency: "USD", value: 0),
+                discountCode: "string",
+                pickupInformation: PickupInformation(
+                    name: Name(
+                        givenName: "John",
+                        familyName: "Doe"),
+                    phone: "+14539842345",
+                    address: Address(
+                        address1: "156 5th Avenue",
+                        locality: "New York",
+                        postalCode: "10019",
+                        region: "US-NY",
+                        country: "US"),
+                    email: "john.doe@gmail.com"),
+                fulfillmentType: "type",
+                items: []))
 
+        /// Provide configurations for  `registerPlacement` and `submitRTPS` methods.
         let placementsConfiguration = PlacementsConfiguration(
             placementConfig: placement,
             popUpStyling: popUpStyling
         )
 
         BreadPartnersSDK.shared.registerPlacements(
-            setupConfig: BreadPartnerDefaults.shared.setupConfig1,
+            setupConfig: BreadPartnersSetupConfig(
+                buyer: BreadPartnersBuyer(
+                    givenName: "Jack",
+                    familyName: "Seamus",
+                    additionalName: "C.",
+                    birthDate: "1974-08-21",
+                    email: "johncseamus@gmail.com",
+                    phone: "+13235323423",
+                    billingAddress: BreadPartnersAddress(
+                        address1: "323 something lane",
+                        address2: "apt. B",
+                        country: "USA",
+                        locality: "NYC",
+                        region: "NY",
+                        postalCode: "11222"
+                    ),
+                    shippingAddress: nil
+                ), loyaltyID: "xxxxxx",
+                storeNumber: "1234567",
+                env: "STAGE",
+                channel: "P",
+                subchannel: "X"
+            ),
             placementsConfiguration: placementsConfiguration,
             splitTextAndAction: true
         ) {
             event in
             switch event {
             case .renderTextViewWithLink(let textView):
-               
-                textView.font = UIFont(name: "JosefinSans-Bold", size: 20)
+                print("BreadPartnerSDK::Successfully rendered text with link.")
+
+                /// Handles rendering of a text view with a clickable link.
+                /// - Modifies the font, text color, and link color for the text view.
+                /// - Adds the text view to the main view and sets up its layout constraints.
+
+                textView.font = UIFont(
+                    name: fontFamily, size: Double(mediumTextSize))
                 textView.textColor = UIColor.black
-                textView.linkTextAttributes = [.foregroundColor: self.style?.clickableTextColor ?? UIColor.red]
-                
+                textView.linkTextAttributes = [
+                    .foregroundColor: UIColor(hex: primaryColor)
+                ]
+
                 self.view.addSubview(textView)
-                
+
                 textView.translatesAutoresizingMaskIntoConstraints = false
-                
+
                 NSLayoutConstraint.activate([
-                  
-                    // MARK: Text View with Link
                     textView.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
                     textView.topAnchor.constraint(
@@ -128,29 +199,34 @@ class ViewController: UIViewController {
                     textView.trailingAnchor.constraint(
                         equalTo: self.view.trailingAnchor, constant: -20),
                 ])
-                print("BreadPartnerSDK::Successfully rendered view.")
-                
+
             case .renderSeparateTextAndButton(let textView, let button):
-                
-                textView.font = UIFont(name: "JosefinSans-Bold", size: 20)
-                textView.textColor = UIColor.black
-                
+                print("BreadPartnerSDK::Successfully rendered text and button.")
+
+                /// Handles rendering of a text view and a button, placed separately.
+                /// - Modifies the font, text color for the text view, and the button's title color, font, and background.
+                /// - Adds the text view and button to the main view and sets up their layout constraints.
+                textView.font = UIFont(
+                    name: fontFamily, size: Double(mediumTextSize))
+                textView.textColor = UIColor(hex: blackColor)
+
                 button.setTitleColor(UIColor.white, for: .normal)
-//                button.titleLabel?.font =  .systemFont(ofSize: 19.0, weight: .bold)
-                button.titleLabel?.font = UIFont(name: "JosefinSans-Bold", size: 24)
-                button.titleEdgeInsets = UIEdgeInsets(top: 0,left: 5,bottom: 0,right: 5)
-                button.backgroundColor = self.style?.clickableTextColor ?? UIColor.red
-                button.layer.cornerRadius = 10.0
-                
+                button.titleLabel?.font = UIFont(
+                    name: fontFamily, size: Double(mediumTextSize))
+                button.titleEdgeInsets = UIEdgeInsets(
+                    top: 0, left: 0, bottom: 0, right: 0)
+                button.backgroundColor =
+                    UIColor(hex: primaryColor)
+                button.layer.cornerRadius = 25.0
+
                 self.view.addSubview(textView)
                 self.view.addSubview(button)
-                
+
                 textView.translatesAutoresizingMaskIntoConstraints = false
                 button.translatesAutoresizingMaskIntoConstraints = false
-                
+
                 NSLayoutConstraint.activate([
-                    
-                    // MARK: Splitted Text View
+
                     textView.centerXAnchor.constraint(
                         equalTo: self.view.centerXAnchor),
                     textView.topAnchor.constraint(
@@ -160,19 +236,24 @@ class ViewController: UIViewController {
                     textView.trailingAnchor.constraint(
                         equalTo: self.view.trailingAnchor, constant: -20),
 
-                    // MARK: Splitted Button View
-                    button.widthAnchor.constraint(equalToConstant: 200),
-                    button.leadingAnchor.constraint(
-                        equalTo: self.view.leadingAnchor, constant: 20),
+                    button.widthAnchor.constraint(equalToConstant: 150),
+                    button.trailingAnchor.constraint(
+                        equalTo: self.view.trailingAnchor, constant: -20),
                     button.heightAnchor.constraint(equalToConstant: 50),
-//                    button.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 25),
                     button.topAnchor.constraint(
                         equalTo: textView.bottomAnchor, constant: 20),
 
                 ])
-                print("BreadPartnerSDK::Successfully rendered view.")
-                
+
             case .renderPopupView(let view):
+                print("BreadPartnerSDK::Successfully rendered PopupView.")
+
+                /// Handles rendering of a popup view.
+                ///
+                /// Example:
+                /// Implement some process prior to loading the Web View popup
+                /// (e.g checking if the customer is authenticated).
+
                 self.showYesNoAlert(from: self) { userTappedYes in
                     if userTappedYes {
                         self.present(view, animated: true)
@@ -180,26 +261,39 @@ class ViewController: UIViewController {
                         print("User canceled")
                     }
                 }
-                print("BreadPartnerSDK::Successfully rendered PopupView.")
             default:
+                // MARK: Other events.
                 print("BreadPartnerSDK::Event: \(event)")
             }
         }
     }
 
-    @IBOutlet weak var preScreenButton: UIButton!
-
     @IBAction func preScreenButton(_ sender: Any) {
 
-        let rtpsConfig = BreadPartnerDefaults.shared.rtpsConfig1
+        let rtpsConfig = BreadPartnersRtpsConfig(
+            locationType: .checkout,
+            mockResponse: .success
+        )
 
         let placementsConfiguration = PlacementsConfiguration(
-            rtpsConfig: rtpsConfig,
-            popUpStyling: popUpStyling
+            rtpsConfig: rtpsConfig
         )
 
         BreadPartnersSDK.shared.submitRTPS(
-            setupConfig: BreadPartnerDefaults.shared.setupConfig1,
+            setupConfig: BreadPartnersSetupConfig(
+                buyer: BreadPartnersBuyer(
+                    givenName: "Carol",
+                    familyName: "Jones",
+                    additionalName: "C.",
+                    birthDate: "1974-08-21",
+                    billingAddress: BreadPartnersAddress(
+                        address1: "3075 Loyalty Cir",
+                        locality: "Columbus",
+                        region: "OH",
+                        postalCode: "43219")
+                ),
+                storeNumber: "2009"
+            ),
             placementsConfiguration: placementsConfiguration
         ) {
             event in
@@ -207,20 +301,8 @@ class ViewController: UIViewController {
             case .renderPopupView(let view):
                 self.present(view, animated: true)
                 print("BreadPartnerSDK::Successfully rendered PopupView.")
-            case .actionButtonTapped:
-                print("BreadPartnerSDK::Popup action button was tapped!")
-            case .screenName(let name):
-                print("BreadPartnerSDK::Screen name: \(name)")
-            case .webViewSuccess(let result):
-                print("BreadPartnerSDK::WebView success with result: \(result)")
-            case .webViewFailure(let error):
-                print("BreadPartnerSDK::WebView failed with error: \(error)")
-            case .popupClosed:
-                print("BreadPartnerSDK::Popup closed!")
-            case .sdkError(let error):
-                print("BreadPartnerSDK::SDK encountered an error: \(error)")
             default:
-                print("BreadPartnerSDK::Default")
+                print("BreadPartnerSDK::Event: \(event)")
             }
         }
     }
@@ -229,6 +311,10 @@ class ViewController: UIViewController {
         from viewController: UIViewController,
         completion: @escaping (Bool) -> Void
     ) {
+
+        // MARK: For development purposes
+        let primaryColor = style["primaryColor"] as! String
+
         let alertController = UIAlertController(
             title: "Are you authenticated?",
             message: nil,
@@ -240,8 +326,8 @@ class ViewController: UIViewController {
         let noAction = UIAlertAction(title: "No", style: .cancel) { _ in
             completion(false)
         }
-        yesAction.setValue(style?.clickableTextColor, forKey: "titleTextColor")
-        noAction.setValue(style?.clickableTextColor, forKey: "titleTextColor")
+        yesAction.setValue(UIColor(hex: primaryColor), forKey: "titleTextColor")
+        noAction.setValue(UIColor(hex: primaryColor), forKey: "titleTextColor")
 
         alertController.addAction(yesAction)
         alertController.addAction(noAction)

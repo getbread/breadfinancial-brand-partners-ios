@@ -7,6 +7,10 @@ protocol AnalyticsManagerProtocol {
     func sendClickPlacement(placementResponse: PlacementsResponse)
 }
 
+/// AnalyticsManager logs user interactions with placements in the app.
+/// It tracks two events:
+/// 1. **Click Placement**: When the user clicks on the placement.
+/// 2. **View Placement**: When the user sees or interacts with the placement without clicking.
 internal class AnalyticsManager: AnalyticsManagerProtocol {
         
     private let apiClient: APIClientProtocol
@@ -37,7 +41,6 @@ internal class AnalyticsManager: AnalyticsManagerProtocol {
         let systemName = UIDevice.current.systemName      // e.g., "iOS"
         let systemVersion = UIDevice.current.systemVersion // e.g., "17.2"
         let deviceModel = UIDevice.current.model          // e.g., "iPhone"
-
         
         return Analytics.Payload(
             name: name,
@@ -49,7 +52,7 @@ internal class AnalyticsManager: AnalyticsManagerProtocol {
                         contentType: placementResponse.placementContent?.first?.contentType,
                         metadata: placementResponse.placementContent?.first?.metadata
                     ),
-                    metadata: ["location": "Product"], // click placement
+                    metadata: ["location": "Product"],
                     actionTarget: nil
                 ),
                 userProperties: [:]

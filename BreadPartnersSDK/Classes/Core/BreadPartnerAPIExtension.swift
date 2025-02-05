@@ -106,12 +106,12 @@ extension BreadPartnersSDK {
     /// This method is called to fetch placement data,
     /// which will be displayed as a text view with a clickable button in the brand partner's UI.
     func fetchPlacementData() {
-        
+
         let apiUrl = APIUrl(urlType: .generatePlacements).url
         var request: Any? = nil
         if placementsConfiguration?.placementConfig != nil {
             let builder = PlacementRequestBuilder(
-                integrationKey:integrationKey,
+                integrationKey: integrationKey,
                 setupConfig: setupConfig,
                 placementConfig: placementsConfiguration?.placementConfig)
             request = builder.build()

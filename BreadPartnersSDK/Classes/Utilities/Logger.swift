@@ -10,6 +10,7 @@ protocol LoggerProtocol {
     func logReCaptchaToken(token: String)
 }
 
+/// Class responsible for logging information for debugging and tracking purposes.
 internal class Logger: NSObject, LoggerProtocol {
     
     override init() {

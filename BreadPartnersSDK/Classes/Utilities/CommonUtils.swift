@@ -15,6 +15,7 @@ protocol CommonUtilsProtocol {
     ) -> URL?
 }
 
+/// `CommonUtils` class provides utility methods for common operations across the BreadPartner SDK.
 internal class CommonUtils: NSObject, CommonUtilsProtocol {
 
     private let dispatchQueue: DispatchQueue
@@ -87,6 +88,12 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
         return try decoder.decode(T.self, from: jsonData)
     }
 
+    /// Builds a URL for RTPS Web based on the provided integration and configuration details.
+    /// - Parameters:
+    ///   - integrationKey: The unique integration key for the request.
+    ///   - setupConfig: Configuration details for the buyer and store.
+    ///   - rtpsConfig: Configuration for RTPS settings, including mock responses and prescreen data.
+    /// - Returns: A URL constructed with the given parameters, or nil if the URL could not be built.
     func buildRTPSWebURL(
         integrationKey: String,
         setupConfig: BreadPartnersSetupConfig,

@@ -1,5 +1,8 @@
 import Foundation
 
+/// `PlacementRequestBuilder` helps create a request for placements by collecting
+/// necessary details like pricing and settings. It uses given configurations to
+/// build and organize placement data..
 class PlacementRequestBuilder {
     private var integrationKey: String = ""
     private var placements: [PlacementRequestBody] = []

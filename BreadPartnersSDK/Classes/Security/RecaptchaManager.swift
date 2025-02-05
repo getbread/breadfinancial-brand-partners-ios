@@ -9,6 +9,8 @@ protocol RecaptchaManagerProtocol {
         completion: @escaping (Result<String, Error>) -> Void
     )
 }
+
+/// `RecaptchaManager` handles the process of executing a reCAPTCHA for verifying user actions.
 internal class RecaptchaManager: RecaptchaManagerProtocol {
     
     private let logger: LoggerProtocol
