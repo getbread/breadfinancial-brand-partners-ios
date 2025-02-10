@@ -44,6 +44,7 @@ class ViewController: UIViewController {
         /// - Parameters:
         ///     - integrationKey: A unique key specific to the brand.
         BreadPartnersSDK.shared.setup(
+            environment: .stage,
             integrationKey: brandId,
             enableLog: true)
 

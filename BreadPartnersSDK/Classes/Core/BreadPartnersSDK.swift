@@ -202,9 +202,11 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ///   - integrationKey: A unique key specific to the brand.
     ///   - enableLog: Set this to `true` if you want to see debug logs.
     public func setup(
+        environment: BreadSDKEnvironment = .prod,
         integrationKey: String,
         enableLog: Bool
     ) {
+        APIUrl.setEnvironment(environment)
         self.integrationKey = integrationKey
         self.logger.isLoggingEnabled = enableLog
 

@@ -2,8 +2,7 @@ import Foundation
 
 /// Enum to define different types of API URLs.
 internal enum APIUrlType {
-    case baseUrl
-    case rtpsWebUrl(type:String)
+    case rtpsWebUrl(type: String)
     case brandStyle(brandId: String)
     case brandConfig(brandId: String)
     case generatePlacements
@@ -13,25 +12,36 @@ internal enum APIUrlType {
     case virtualLookup
 }
 
-/// A centralized class for constructing and managing API URLs.
 internal class APIUrl {
-    // Base URL
-    private let baseURL: String = "https://brands.kmsmep.com"
-    private let rtpsBaseURL: String = "https://acquire1uat.comenity.net"
 
-    /// The URL type that defines what kind of URL to generate.
+    private static var currentEnvironment: BreadSDKEnvironment = .prod
+
+    private let baseURL: String
+    private let rtpsBaseURL: String
     private let urlType: APIUrlType
 
-    /// Initializer for APIUrl with a configurable URL type.
-    public init(urlType: APIUrlType) {
+    /// Initializer for APIUrl with a configurable URL type
+    init(urlType: APIUrlType) {
         self.urlType = urlType
+
+        switch APIUrl.currentEnvironment {
+        case .stage:
+            self.baseURL = "https://brands.kmsmep.com"
+            self.rtpsBaseURL = "https://acquire1uat.comenity.net"
+        case .prod:
+            self.baseURL = "https://brands.kmsmep.com"
+            self.rtpsBaseURL = "https://acquire1uat.comenity.net"
+        }
     }
 
-    /// Generates the correct URL based on the URL type.
-    public var url: String {
+    /// Set the environment
+    static func setEnvironment(_ environment: BreadSDKEnvironment) {
+        currentEnvironment = environment
+    }
+
+    /// Generates the correct URL based on the URL type
+    var url: String {
         switch urlType {
-        case .baseUrl:
-            return baseURL
         case .rtpsWebUrl(let type):
             return "\(rtpsBaseURL)/prescreen/\(type)"
         case .brandStyle(let brandId):
