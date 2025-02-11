@@ -1,58 +1,39 @@
 extension BreadPartnersSDK {
 
     /// Retrieve brand-specific configurations, such as the Recaptcha key.
-    func fetchBrandConfig() {
-        let apiUrl = APIUrl(
-            urlType: .brandConfig(
-                brandId: integrationKey)
-        ).url
-        apiClient.request(
-            urlString: apiUrl, method: .GET, body: nil
-        ) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let response):
-                do {
-                    brandConfiguration = try commonUtils.decodeJSON(
-                        from: response, to: BrandConfigResponse.self)
-                    return
-                } catch {
-                    alertHandler.showAlert(
-                        title: Constants.nativeSDKAlertTitle(),
-                        message: Constants.catchError(
-                            message: error.localizedDescription),
-                        showOkButton: true)
+    func fetchBrandConfig() async -> Void {
+        let apiUrl = APIUrl(urlType: .brandConfig(brandId: integrationKey)).url
 
-                }
-            case .failure(let error):
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.apiError(
-                        message: error.localizedDescription), showOkButton: true
-                )
-            }
+        do {
+            let response = try await apiClient.request(
+                urlString: apiUrl, method: .GET, body: nil)
+            brandConfiguration = try await commonUtils.decodeJSON(
+                from: response, to: BrandConfigResponse.self)
+            return
+        } catch {
+            await alertHandler.showAlert(
+                title: Constants.nativeSDKAlertTitle(),
+                message: Constants.apiError(
+                    message: error.localizedDescription),
+                showOkButton: true
+            )
         }
-        return
     }
-
     /// This method does bot behavior check using the Recaptcha v3 SDK,
     /// to protect against malicious attacks.
-    private func executeSecurityCheck() {
-        //        let siteKey = self.brandConfiguration?.config.recaptchaSiteKeyQA
+    private func executeSecurityCheck() async {
         let siteKey = "6Ld1Aa0qAAAAALp2csZ6qg83ImmBTwqNaNxaHx1Z"
-        recaptchaManager.executeReCaptcha(
-            siteKey: siteKey,
-            action: .init(customAction: "checkout"),
-            timeout: 10000,
-            debug: logger.isLoggingEnabled
-        ) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let token):
-                preScreenLookupCall(token: token)
-            case .failure(let error):
-                commonUtils.handleSecurityCheckFailure(error: error)
-            }
+
+        do {
+            let token = try await recaptchaManager.executeReCaptcha(
+                siteKey: siteKey,
+                action: .init(customAction: "checkout"),
+                timeout: 10000,
+                debug: logger.isLoggingEnabled
+            )
+            await preScreenLookupCall(token: token)
+        } catch {
+            await commonUtils.handleSecurityCheckFailure(error: error)
         }
     }
 
@@ -61,73 +42,68 @@ extension BreadPartnersSDK {
     ///      then trigger `virtualLookup`.
     /// - Else call pre-screen endpoint to fetch `prescreenId`.
     /// - Both endpoints require user details to build request payload.
-    private func preScreenLookupCall(token: String) {
+    private func preScreenLookupCall(token: String) async {
         let apiUrl = APIUrl(
-            urlType: prescreenId == nil
-                ? .prescreen
-                : .virtualLookup
+            urlType: prescreenId == nil ? .prescreen : .virtualLookup
         ).url
 
         let requestBuilder = RTPSRequestBuilder(
             setupConfig: setupConfig!,
-            rtpsConfig: (placementsConfiguration?.rtpsConfig)!)
+            rtpsConfig: placementsConfiguration!.rtpsConfig!
+        )
+
         var rtpsRequestBuilt = requestBuilder.build()
         rtpsRequestBuilt.reCaptchaToken = token
 
-        apiClient.request(
-            urlString: apiUrl, method: .POST,
-            body: rtpsRequestBuilt
-        ) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let response):
-                do {
-                    let preScreenLookupResponse = try commonUtils.decodeJSON(
-                        from: response, to: RTPSResponse.self)
-                    print("PreScreenID::\(preScreenLookupResponse.prescreenId)")
-                    fetchPlacementData()
-                } catch {
-                    alertHandler.showAlert(
-                        title: Constants.nativeSDKAlertTitle(),
-                        message: Constants.catchError(
-                            message: error.localizedDescription),
-                        showOkButton: true)
-                }
-            case .failure(let error):
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.apiError(
-                        message: error.localizedDescription), showOkButton: true
+        do {
+            let response = try await apiClient.request(
+                urlString: apiUrl,
+                method: .POST,
+                body: rtpsRequestBuilt
+            )
+
+            let preScreenLookupResponse: RTPSResponse =
+                try await commonUtils.decodeJSON(
+                    from: response, to: RTPSResponse.self
                 )
-            }
+            print("PreScreenID: \(preScreenLookupResponse.prescreenId)")
+            await fetchPlacementData()
+        } catch {
+            await alertHandler.showAlert(
+                title: Constants.nativeSDKAlertTitle(),
+                message: Constants.catchError(
+                    message: error.localizedDescription
+                ),
+                showOkButton: true
+            )
         }
     }
 
     /// This method is called to fetch placement data,
     /// which will be displayed as a text view with a clickable button in the brand partner's UI.
-    func fetchPlacementData() {
-
+    func fetchPlacementData() async {
         let apiUrl = APIUrl(urlType: .generatePlacements).url
         var request: Any? = nil
-        if placementsConfiguration?.placementConfig != nil {
+
+        if let placementConfig = placementsConfiguration?.placementConfig {
             let builder = PlacementRequestBuilder(
                 integrationKey: integrationKey,
                 setupConfig: setupConfig,
-                placementConfig: placementsConfiguration?.placementConfig)
+                placementConfig: placementConfig
+            )
             request = builder.build()
         } else {
-            let rtpsWebURL = commonUtils.buildRTPSWebURL(
+            let rtpsWebURL = await commonUtils.buildRTPSWebURL(
                 integrationKey: integrationKey,
                 setupConfig: setupConfig!,
-                rtpsConfig: (placementsConfiguration?
-                    .rtpsConfig)!)?.absoluteString
+                rtpsConfig: placementsConfiguration!.rtpsConfig!
+            )?.absoluteString
+
             let location =
-                switch placementsConfiguration?.rtpsConfig?.locationType {
-                case .checkout:
-                    "RTPS-Approval"
-                default:
-                    ""
-                }
+                placementsConfiguration?.rtpsConfig?.locationType == .checkout
+                ? "RTPS-Approval"
+                : ""
+
             request = PlacementRequest(
                 placements: [
                     PlacementRequestBody(
@@ -137,35 +113,33 @@ extension BreadPartnersSDK {
                             embeddedUrl: rtpsWebURL
                         )
                     )
-                ], brandId: integrationKey)
+                ], brandId: integrationKey
+            )
         }
 
-        apiClient.request(
-            urlString: apiUrl, method: .POST,
-            body: request
-        ) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let response):
-                handlePlacementResponse(response)
-            case .failure(let error):
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.apiError(
-                        message: error.localizedDescription),
-                    showOkButton: true
-                )
-            }
+        do {
+            let response = try await apiClient.request(
+                urlString: apiUrl, method: .POST, body: request
+            )
+            await handlePlacementResponse(response)
+        } catch {
+            await alertHandler.showAlert(
+                title: Constants.nativeSDKAlertTitle(),
+                message: Constants.apiError(
+                    message: error.localizedDescription),
+                showOkButton: true
+            )
         }
-
     }
 
-    private func handlePlacementResponse(
-        _ response: Any
-    ) {
+    private func handlePlacementResponse(_ response: Any) async {
         do {
-            let responseModel: PlacementsResponse = try self.commonUtils
-                .decodeJSON(from: response, to: PlacementsResponse.self)
+            let responseModel: PlacementsResponse =
+                try await commonUtils.decodeJSON(
+                    from: response,
+                    to: PlacementsResponse.self
+                )
+
             if rtpsFlow {
                 let popupPlacementModel = PopupPlacementModel(
                     overlayType: "EMBEDDED_OVERLAY",
@@ -181,26 +155,28 @@ extension BreadPartnersSDK {
                     dynamicBodyModel: PopupPlacementModel.DynamicBodyModel(
                         bodyDiv: [
                             "": PopupPlacementModel.DynamicBodyContent(
-                                tagValuePairs: [
-                                    "": ""
-                                ]
+                                tagValuePairs: ["": ""]
                             )
-                        ]),
-                    disclosure: "")
-                return htmlContentRenderer.createPopupOverlay(
+                        ]
+                    ),
+                    disclosure: ""
+                )
+                await htmlContentRenderer.createPopupOverlay(
                     popupPlacementModel: popupPlacementModel,
-                    overlayType: .embeddedOverlay)
+                    overlayType: .embeddedOverlay
+                )
             } else {
-                return htmlContentRenderer.handleTextPlacement(
-                    responseModel: responseModel)
+                await htmlContentRenderer.handleTextPlacement(
+                    responseModel: responseModel
+                )
             }
-
         } catch {
-            return alertHandler.showAlert(
+            await alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
-                    message: error.localizedDescription), showOkButton: true)
+                    message: error.localizedDescription),
+                showOkButton: true
+            )
         }
     }
-
 }

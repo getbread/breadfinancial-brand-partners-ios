@@ -41,10 +41,10 @@ internal class PopupController: UIViewController {
     var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
-    var recaptchaManager: RecaptchaManagerProtocol
-    var apiClient: APIClientProtocol
-    var alertHandler: AlertHandlerProtocol
-    var commonUtils: CommonUtilsProtocol
+    var recaptchaManager: RecaptchaManager
+    var apiClient: APIClient
+    var alertHandler: AlertHandler
+    var commonUtils: CommonUtils
 
     let callback: ((BreadPartnerEvents) -> Void)
 
@@ -54,11 +54,11 @@ internal class PopupController: UIViewController {
         sdkConfiguration: PlacementsConfiguration,
         popupModel: PopupPlacementModel,
         overlayType: PlacementOverlayType,
-        apiClient: APIClientProtocol,
-        alertHandler: AlertHandlerProtocol,
-        commonUtils: CommonUtilsProtocol,
+        apiClient: APIClient,
+        alertHandler: AlertHandler,
+        commonUtils: CommonUtils,
         brandConfiguration: BrandConfigResponse?,
-        recaptchaManager: RecaptchaManagerProtocol,
+        recaptchaManager: RecaptchaManager,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
         self.integrationKey = integrationKey
@@ -81,19 +81,23 @@ internal class PopupController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        Task {
+            await setupUI()
+        }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if self.popupView.bounds != .zero, overlayType == .embeddedOverlay,
-            (self.loader?.isHidden) == nil
-        {
+
+        guard let popupView = popupView, popupView.bounds != .zero else {
+            return
+        }
+
+        if overlayType == .embeddedOverlay, loader?.isHidden == nil {
             setupLoader()
         }
-        if popupModel.location == "RTPS-Approval" {
-            closeButton.isHidden = true
-        }
+
+        closeButton.isHidden = (popupModel.location == "RTPS-Approval")
     }
 
     func displayEmbeddedOverlay(popupModel: PopupPlacementModel) {

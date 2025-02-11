@@ -1,46 +1,38 @@
 import Foundation
 import UIKit
 
-protocol HTMLContentRendererProtocol {
-    func handleTextPlacement(
-        responseModel: PlacementsResponse)
-    func createPopupOverlay(
-        popupPlacementModel: PopupPlacementModel,
-        overlayType: PlacementOverlayType
-    )
-}
-
-internal class HTMLContentRenderer: HTMLContentRendererProtocol {
+@MainActor
+internal class HTMLContentRenderer {
 
     var integrationKey: String = ""
     var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
-    let apiClient: APIClientProtocol
-    let alertHandler: AlertHandlerProtocol
-    let commonUtils: CommonUtilsProtocol
-    let analyticsManager: AnalyticsManagerProtocol
-    let logger: LoggerProtocol
-    let htmlContentParser: HTMLContentParserProtocol
+    let apiClient: APIClient
+    let alertHandler: AlertHandler
+    let commonUtils: CommonUtils
+    let analyticsManager: AnalyticsManager
+    let logger: Logger
+    let htmlContentParser: HTMLContentParser
     let dispatchQueue: DispatchQueue
     let brandConfiguration: BrandConfigResponse?
-    let recaptchaManager: RecaptchaManagerProtocol
+    let recaptchaManager: RecaptchaManager
     var splitTextAndAction: Bool = false
 
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
         integrationKey: String,
-        apiClient: APIClientProtocol,
-        alertHandler: AlertHandlerProtocol,
-        commonUtils: CommonUtilsProtocol,
-        analyticsManager: AnalyticsManagerProtocol,
-        logger: LoggerProtocol,
-        htmlContentParser: HTMLContentParserProtocol,
+        apiClient: APIClient,
+        alertHandler: AlertHandler,
+        commonUtils: CommonUtils,
+        analyticsManager: AnalyticsManager,
+        logger: Logger,
+        htmlContentParser: HTMLContentParser,
         dispatchQueue: DispatchQueue,
         setupConfig: BreadPartnersSetupConfig?,
         placementsConfiguration: PlacementsConfiguration?,
         brandConfiguration: BrandConfigResponse?,
-        recaptchaManager: RecaptchaManagerProtocol,
+        recaptchaManager: RecaptchaManager,
         splitTextAndAction: Bool = false,
         callback: @escaping ((BreadPartnerEvents) -> Void)
     ) {
@@ -63,9 +55,7 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
     var textPlacementModel: TextPlacementModel? = nil
     var responseModel: PlacementsResponse? = nil
 
-    func handleTextPlacement(
-        responseModel: PlacementsResponse
-    ) {
+    func handleTextPlacement(responseModel: PlacementsResponse) async {
         self.responseModel = responseModel
 
         do {
@@ -73,63 +63,66 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
                 let placementContent = responseModel.placementContent?.first?
                     .contentData?.htmlContent
             else {
-                return alertHandler.showAlert(
+                return await alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.noTextPlacementError, showOkButton: true)
+                    message: Constants.noTextPlacementError,
+                    showOkButton: true
+                )
             }
 
             guard
                 let parseTextPlacementModel =
-                    try htmlContentParser.extractTextPlacementModel(
+                    try await htmlContentParser.extractTextPlacementModel(
                         htmlContent: placementContent)
             else {
-                return alertHandler.showAlert(
+                return await alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),
                     message: Constants.textPlacementParsingError,
-                    showOkButton: true)
+                    showOkButton: true
+                )
             }
 
             textPlacementModel = parseTextPlacementModel
-            guard let textPlacementModel = textPlacementModel else {
-                return
-            }
+            guard let textPlacementModel = textPlacementModel else { return }
+
             logger.logTextPlacementModelDetails(textPlacementModel)
-            analyticsManager.sendViewPlacement(placementResponse: responseModel)
+            await analyticsManager.sendViewPlacement(
+                placementResponse: responseModel)
 
-            DispatchQueue.main.async {
-                if self.splitTextAndAction {
-                    return self.renderTextAndButton()
-                } else {
-                    return self.renderTextViewWithLink()
-                }
+            if self.splitTextAndAction {
+                renderTextAndButton()
+            } else {
+                renderTextViewWithLink()
             }
-
         } catch {
-            alertHandler.showAlert(
+            await alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
-                    message: error.localizedDescription), showOkButton: true)
+                    message: error.localizedDescription),
+                showOkButton: true
+            )
         }
     }
 
     func handlePopupPlacement(
         responseModel: PlacementsResponse,
         textPlacementModel: TextPlacementModel
-    ) {
+    ) async {
         guard
             let popupPlacementHTMLContent = responseModel.placementContent?
                 .first(where: {
                     $0.id == textPlacementModel.actionContentId
                 }),
             let popupPlacementModel =
-                try? htmlContentParser.extractPopupPlacementModel(
+                try? await htmlContentParser.extractPopupPlacementModel(
                     from: popupPlacementHTMLContent.contentData?.htmlContent
                         ?? "")
         else {
-            return alertHandler.showAlert(
+            return await alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.popupPlacementParsingError,
-                showOkButton: true)
+                showOkButton: true
+            )
         }
 
         logger.logPopupPlacementModelDetails(popupPlacementModel)
@@ -138,38 +131,37 @@ internal class HTMLContentRenderer: HTMLContentRendererProtocol {
             let overlayType = htmlContentParser.handleOverlayType(
                 from: popupPlacementModel.overlayType)
         else {
-            return alertHandler.showAlert(
+            return await alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.missingPopupPlacementError,
-                showOkButton: true)
+                showOkButton: true
+            )
         }
 
-        analyticsManager.sendClickPlacement(placementResponse: responseModel)
-        createPopupOverlay(
+        await analyticsManager.sendClickPlacement(
+            placementResponse: responseModel)
+        await createPopupOverlay(
             popupPlacementModel: popupPlacementModel, overlayType: overlayType)
     }
 
     func createPopupOverlay(
         popupPlacementModel: PopupPlacementModel,
         overlayType: PlacementOverlayType
-    ) {
-        DispatchQueue.main.async {
-            let popupViewController = PopupController(
-                integrationKey: self.integrationKey,
-                setupConfig: self.setupConfig!,
-                sdkConfiguration: self.placementsConfiguration!,
-                popupModel: popupPlacementModel,
-                overlayType: overlayType,
-                apiClient: self.apiClient,
-                alertHandler: self.alertHandler,
-                commonUtils: self.commonUtils,
-                brandConfiguration: self.brandConfiguration,
-                recaptchaManager: self.recaptchaManager,
-                callback: self.callback
-            )
-            self.configurePopupPresentation(popupViewController)
-        }
-
+    ) async {
+        let popupViewController = await PopupController(
+            integrationKey: integrationKey,
+            setupConfig: setupConfig!,
+            sdkConfiguration: placementsConfiguration!,
+            popupModel: popupPlacementModel,
+            overlayType: overlayType,
+            apiClient: apiClient,
+            alertHandler: alertHandler,
+            commonUtils: commonUtils,
+            brandConfiguration: brandConfiguration,
+            recaptchaManager: recaptchaManager,
+            callback: callback
+        )
+        configurePopupPresentation(popupViewController)
     }
 
     private func configurePopupPresentation(

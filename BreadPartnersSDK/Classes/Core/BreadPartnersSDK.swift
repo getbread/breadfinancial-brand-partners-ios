@@ -10,24 +10,17 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     var integrationKey: String = ""
 
-    var logger: LoggerProtocol
-    var alertHandler: AlertHandlerProtocol
-    var commonUtils: CommonUtilsProtocol
-    var apiClient: APIClientProtocol
-    var recaptchaManager: RecaptchaManagerProtocol
-    var analyticsManager: AnalyticsManagerProtocol
-    var swiftSoupParser: HTMLParserProtocol
-    var htmlContentParser: HTMLContentParserProtocol
-    var htmlContentRenderer: HTMLContentRendererProtocol
+    var logger: Logger
+    var alertHandler: AlertHandler
+    var commonUtils: CommonUtils
+    var apiClient: APIClient
+    var recaptchaManager: RecaptchaManager
+    var analyticsManager: AnalyticsManager
+    var swiftSoupParser: SwiftSoupParser
+    var htmlContentParser: HTMLContentParser
+    var htmlContentRenderer: HTMLContentRenderer
     var breadPartnerDefaults: BreadPartnerDefaults
-    var callback:
-    (
-        (
-            BreadPartnerEvents
-        ) -> Void
-    ) = {
-        _ in
-    }
+    var callback: (BreadPartnerEvents) -> Void = { _ in }
     var rtpsFlow: Bool = false
     var prescreenId: String? = nil
     var splitTextAndAction: Bool = false
@@ -36,7 +29,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.logger = Logger()
         self.alertHandler = AlertHandler(
             windowScene: UIApplication.shared.connectedScenes.first
-            as? UIWindowScene
+                as? UIWindowScene
         )
         self.commonUtils = CommonUtils(
             dispatchQueue: .main,
@@ -84,12 +77,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var setupConfig: BreadPartnersSetupConfig?
     var placementsConfiguration: PlacementsConfiguration?
     var brandConfiguration: BrandConfigResponse?
-    var onResult:
-    (
-        (
-            BreadPartnerEvents
-        ) -> Void
-    )?
+    var onResult: ((BreadPartnerEvents) -> Void)?
 
     func setUpInjectables() {
 
@@ -174,9 +162,10 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             self.placementsConfiguration?.popUpStyling = popupStyle
         }
 
-        if self.placementsConfiguration?.popUpStyling?.actionButtonStyle == nil {
+        if self.placementsConfiguration?.popUpStyling?.actionButtonStyle == nil
+        {
             self.placementsConfiguration?.popUpStyling?.actionButtonStyle =
-            actionButtonStyle
+                actionButtonStyle
         }
 
         self.htmlContentRenderer = HTMLContentRenderer(
@@ -205,12 +194,11 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         environment: BreadSDKEnvironment = .prod,
         integrationKey: String,
         enableLog: Bool
-    ) {
+    ) async {
         APIUrl.setEnvironment(environment)
         self.integrationKey = integrationKey
         self.logger.isLoggingEnabled = enableLog
-
-        return fetchBrandConfig()
+        return await fetchBrandConfig()
     }
 
     /// Use this function to display text placements in your app's UI.
@@ -226,7 +214,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
-    ) {
+    ) async {
         self.setupConfig = setupConfig
         self.placementsConfiguration = placementsConfiguration
         self.splitTextAndAction = splitTextAndAction
@@ -244,7 +232,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
-        fetchPlacementData()
+        await fetchPlacementData()
 
     }
 
@@ -259,7 +247,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
-    ) {
+    ) async {
         self.setupConfig = setupConfig
         self.placementsConfiguration = placementsConfiguration
         self.callback = callback
@@ -277,7 +265,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
         //                        executeSecurityCheck()
         //                        preScreenLookupCall(token: "")
-        fetchPlacementData()
+        await fetchPlacementData()
     }
 
 }

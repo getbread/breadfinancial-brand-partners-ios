@@ -1,67 +1,45 @@
 import Foundation
 
-protocol CommonUtilsProtocol {
-    func executeAfterDelay(
-        _ delay: TimeInterval, completion: @escaping () -> Void)
-    func handleSecurityCheckFailure(error: Error?)
-    func handleSecurityCheckPassed()
-    func getCurrentTimestamp() -> String
-    func decodeJSON<T: Decodable>(from response: Any, to type: T.Type) throws
-        -> T
-    func buildRTPSWebURL(
-        integrationKey: String,
-        setupConfig: BreadPartnersSetupConfig,
-        rtpsConfig: BreadPartnersRtpsConfig
-    ) -> URL?
-}
-
 /// `CommonUtils` class provides utility methods for common operations across the BreadPartner SDK.
-internal class CommonUtils: NSObject, CommonUtilsProtocol {
+internal class CommonUtils: NSObject {
 
     private let dispatchQueue: DispatchQueue
-    private let alertHandler: AlertHandlerProtocol
+    private let alertHandler: AlertHandler
 
-    init(dispatchQueue: DispatchQueue, alertHandler: AlertHandlerProtocol) {
+    init(dispatchQueue: DispatchQueue, alertHandler: AlertHandler) {
         self.dispatchQueue = dispatchQueue
         self.alertHandler = alertHandler
         super.init()
     }
 
-    func executeAfterDelay(
-        _ delay: TimeInterval, completion: @escaping () -> Void
-    ) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            completion()
-        }
+    func executeAfterDelay(_ delay: TimeInterval) async {
+        try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
     }
 
-    func handleSecurityCheckFailure(error: Error?) {
-        executeAfterDelay(2) {
-            self.alertHandler.hideAlert()  // Use injected alertHandler
-        }
+    func handleSecurityCheckFailure(error: Error?) async {
+        await executeAfterDelay(2)
+        await alertHandler.hideAlert()
 
-        executeAfterDelay(2.5) {
-            self.alertHandler.showAlert(
-                title: Constants.securityCheckFailureAlertTitle,
-                message: Constants.securityCheckAlertFailedMessage(
-                    error: error?.localizedDescription ?? ""),
-                showOkButton: true
-            )
-        }
+        await executeAfterDelay(0.5)
+        await alertHandler.showAlert(
+            title: Constants.securityCheckFailureAlertTitle,
+            message: Constants.securityCheckAlertFailedMessage(
+                error: error?.localizedDescription ?? ""
+            ),
+            showOkButton: true
+        )
     }
 
-    func handleSecurityCheckPassed() {
-        executeAfterDelay(2) {
-            self.alertHandler.hideAlert()  // Use injected alertHandler
-        }
+    func handleSecurityCheckPassed() async {
+        await executeAfterDelay(2)
+        await alertHandler.hideAlert()
 
-        executeAfterDelay(2.5) {
-            self.alertHandler.showAlert(
-                title: Constants.securityCheckSuccessAlertTitle,
-                message: Constants.securityCheckSuccessAlertSubTitle,
-                showOkButton: true
-            )
-        }
+        await executeAfterDelay(0.5)
+        await alertHandler.showAlert(
+            title: Constants.securityCheckSuccessAlertTitle,
+            message: Constants.securityCheckSuccessAlertSubTitle,
+            showOkButton: true
+        )
     }
 
     func getCurrentTimestamp() -> String {
@@ -73,19 +51,25 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
         return formattedTimestamp
     }
 
-    func decodeJSON<T: Decodable>(from response: Any, to type: T.Type) throws
-        -> T
+    func decodeJSON<T: Decodable>(from response: Any, to type: T.Type)
+        async throws -> T
     {
         guard let responseDictionary = response as? [String: Any] else {
             throw NSError(
-                domain: "JSONDecodingError", code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"])
+                domain: "JSONDecodingError",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"]
+            )
         }
 
         let jsonData = try JSONSerialization.data(
             withJSONObject: responseDictionary, options: [])
         let decoder = JSONDecoder()
-        return try decoder.decode(T.self, from: jsonData)
+
+        // Perform decoding on a background thread for efficiency
+        return try await Task.detached {
+            return try decoder.decode(T.self, from: jsonData)
+        }.value
     }
 
     /// Builds a URL for RTPS Web based on the provided integration and configuration details.
@@ -98,7 +82,8 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
         integrationKey: String,
         setupConfig: BreadPartnersSetupConfig,
         rtpsConfig: BreadPartnersRtpsConfig
-    ) -> URL? {
+    ) async -> URL? {
+
         let queryParams: [String: String?] = [
             "mockMO": rtpsConfig.mockResponse?.rawValue,
             "mockPA": rtpsConfig.mockResponse?.rawValue,
@@ -118,6 +103,7 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
             "location": rtpsConfig.locationType?.rawValue,
             "channel": rtpsConfig.channel,
         ]
+
         guard
             var urlComponents = URLComponents(
                 string: APIUrl(urlType: .rtpsWebUrl(type: "offer")).url)
@@ -125,13 +111,14 @@ internal class CommonUtils: NSObject, CommonUtilsProtocol {
             return nil
         }
 
-        urlComponents.queryItems = queryParams.compactMap { key, value in
-            guard let value = value, !value.isEmpty else { return nil }
-            return URLQueryItem(name: key, value: value)
-        }
+        await Task {
+            urlComponents.queryItems = queryParams.compactMap { key, value in
+                guard let value = value, !value.isEmpty else { return nil }
+                return URLQueryItem(name: key, value: value)
+            }
+        }.value
 
         return urlComponents.url
-
     }
 
 }

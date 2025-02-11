@@ -1,17 +1,7 @@
 import Foundation
 
-protocol LoggerProtocol {
-    var isLoggingEnabled: Bool { get set }
-    func logRequestDetails(url: URL, method: String, headers: [String: String]?, body: Data?)
-    func logResponseDetails(url: URL, statusCode: Int, headers: [AnyHashable: Any], body: Data?)
-    func logTextPlacementModelDetails(_ model: TextPlacementModel)
-    func logPopupPlacementModelDetails(_ model: PopupPlacementModel)
-    func logLoadingURL(url: URL)
-    func logReCaptchaToken(token: String)
-}
-
 /// Class responsible for logging information for debugging and tracking purposes.
-internal class Logger: NSObject, LoggerProtocol {
+internal class Logger: NSObject {
     
     override init() {
           super.init()

@@ -2,7 +2,7 @@ import Foundation
 
 extension PopupController {
 
-    func fetchWebViewPlacement() {
+    func fetchWebViewPlacement() async {
         let builder = PlacementRequestBuilder(
             integrationKey: integrationKey,
             setupConfig: setupConfig,
@@ -20,40 +20,40 @@ extension PopupController {
             brandId: integrationKey
         )
 
-        fetchData(requestBody: request)
+        await fetchData(requestBody: request)
     }
 
-    private func fetchData(requestBody: Any) {
+    private func fetchData(requestBody: Any) async {
         let apiUrl = APIUrl(urlType: .generatePlacements).url
-        apiClient.request(urlString: apiUrl, method: .POST, body: requestBody) {
-            result in
-            switch result {
-            case .success(let response):
-                self.handleResponse(response)
-            case .failure(let error):
-                self.alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.apiError(
-                        message: error.localizedDescription),
-                    showOkButton: true
-                )
-            }
+        do {
+            let response = try await apiClient.request(
+                urlString: apiUrl, method: .POST, body: requestBody)
+            await handleResponse(response)
+        } catch {
+            await alertHandler.showAlert(
+                title: Constants.nativeSDKAlertTitle(),
+                message: Constants.apiError(
+                    message: error.localizedDescription),
+                showOkButton: true
+            )
         }
     }
 
-    private func handleResponse(_ response: Any) {
+    private func handleResponse(_ response: Any) async {
         do {
-            let responseModel: PlacementsResponse = try commonUtils.decodeJSON(
-                from: response, to: PlacementsResponse.self)
+            let responseModel: PlacementsResponse =
+                try await commonUtils.decodeJSON(
+                    from: response, to: PlacementsResponse.self)
             guard
                 let popupPlacementHTMLContent = responseModel.placementContent?
                     .first,
-                let popupPlacementModel = try HTMLContentParser()
+                let popupPlacementModel = try await HTMLContentParser()
                     .extractPopupPlacementModel(
                         from: popupPlacementHTMLContent.contentData?.htmlContent
-                            ?? "")
+                            ?? ""
+                    )
             else {
-                alertHandler.showAlert(
+                await alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),
                     message: Constants.popupPlacementParsingError,
                     showOkButton: true
@@ -62,7 +62,7 @@ extension PopupController {
             }
             self.webViewPlacementModel = popupPlacementModel
         } catch {
-            alertHandler.showAlert(
+            await alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription),

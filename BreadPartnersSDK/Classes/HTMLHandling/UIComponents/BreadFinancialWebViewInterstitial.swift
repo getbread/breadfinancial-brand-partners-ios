@@ -1,37 +1,28 @@
 @preconcurrency import WebKit
 
-internal class BreadFinancialWebViewInterstitial: NSObject, WKNavigationDelegate,
-    WKScriptMessageHandler
+internal class BreadFinancialWebViewInterstitial: NSObject,
+    WKNavigationDelegate, WKScriptMessageHandler
 {
 
     var onPageLoadCompleted: ((Result<URL, Error>) -> Void)?
 
     func createWebView(with url: URL) -> WKWebView {
-
-        // Create a WKUserScript with the JS code
         let userScript = WKUserScript(
             source: jsScript, injectionTime: .atDocumentStart,
-            forMainFrameOnly: false)
+            forMainFrameOnly: false
+        )
 
-        // Add the script to the content controller
         let contentController = WKUserContentController()
         contentController.addUserScript(userScript)
-
-        // Add a message handler to WKWebView
         contentController.add(self, name: "message")
 
-        // Configure WKWebView
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.default()
-        let webpagePreferences = WKWebpagePreferences()
-        config.defaultWebpagePreferences = webpagePreferences
         config.userContentController = contentController
 
-        // Create and configure the WKWebView
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
 
-        // Log and load the requested URL
         Logger().logLoadingURL(url: url)
         let request = URLRequest(url: url)
         webView.load(request)
@@ -39,74 +30,45 @@ internal class BreadFinancialWebViewInterstitial: NSObject, WKNavigationDelegate
         return webView
     }
 
+    func loadPage(for webView: WKWebView) async throws -> URL {
+        try await withCheckedThrowingContinuation { continuation in
+            onPageLoadCompleted = { result in
+                switch result {
+                case .success(let url):
+                    continuation.resume(returning: url)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func webView(
         _ webView: WKWebView, didFail navigation: WKNavigation!,
         withError error: Error
     ) {
         print("Error loading page: \(error.localizedDescription)")
-
         onPageLoadCompleted?(.failure(error))
-    }
-
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        print(
-            "Navigation action detected, URL: \(navigationAction.request.url?.absoluteString ?? "")"
-        )
-        decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print(
             "WebView finished loading, URL: \(webView.url?.absoluteString ?? "")"
         )
-
         if let url = webView.url {
             onPageLoadCompleted?(.success(url))
         }
-
-//        webView.evaluateJavaScript(jsScript) { result, error in
-//            if let error = error {
-//                print("JavaScript evaluation failed: \(error)")
-//            } else {
-//                print("JavaScript successfully injected.")
-//            }
-//        }
     }
-    
-    let jsScript = """
-    setTimeout(function() {
-        try {
-            // Post initial message after 10 seconds
-            window.webkit.messageHandlers.message.postMessage(
-                {
-                    action: {
-                        type: "SAY_HELLO",
-                        payload: {
-                            name: "Sdk",
-                            ack: false
-                        },
-                    },
-                    fmcMessage: true
-                },
-                "*"
-            );
-        } catch (err) {
-            console.error('Error sending initial message:', err);
-        }
 
-        // Add message event listener to post HANDSHAKE message on each message event
-        window.addEventListener('message', (event) => {
+    let jsScript = """
+        setTimeout(function() {
             try {
                 window.webkit.messageHandlers.message.postMessage(
                     {
                         action: {
-                            type: "message",
+                            type: "SAY_HELLO",
                             payload: {
-                                name: event.data,
+                                name: "Sdk",
                                 ack: false
                             },
                         },
@@ -115,13 +77,30 @@ internal class BreadFinancialWebViewInterstitial: NSObject, WKNavigationDelegate
                     "*"
                 );
             } catch (err) {
-                console.error('Error sending HANDSHAKE message:', err);
+                console.error('Error sending initial message:', err);
             }
-        });
-    }, 10000);  // Timeout of 10 seconds
-    """
 
-
+            window.addEventListener('message', (event) => {
+                try {
+                    window.webkit.messageHandlers.message.postMessage(
+                        {
+                            action: {
+                                type: "message",
+                                payload: {
+                                    name: event.data,
+                                    ack: false
+                                },
+                            },
+                            fmcMessage: true
+                        },
+                        "*"
+                    );
+                } catch (err) {
+                    console.error('Error sending HANDSHAKE message:', err);
+                }
+            });
+        }, 10000);
+        """
 
     func userContentController(
         _ userContentController: WKUserContentController,
@@ -129,5 +108,4 @@ internal class BreadFinancialWebViewInterstitial: NSObject, WKNavigationDelegate
     ) {
         print("UserContentController: Message: \(message.body)")
     }
-
 }

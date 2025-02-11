@@ -40,19 +40,6 @@ class ViewController: UIViewController {
             name: fontFamily, size: CGFloat(xlargeTextSize))
         preScreenButton.tintColor = UIColor(hex: primaryColor)
 
-        /// ``setup`` method must be placed at app launch.
-        /// - Parameters:
-        ///     - integrationKey: A unique key specific to the brand.
-        BreadPartnersSDK.shared.setup(
-            environment: .stage,
-            integrationKey: brandId,
-            enableLog: true)
-
-        /// To add a delay before making registering placements.
-        do {
-            sleep(2)
-        }
-
         /// Prepare popup styling configuration object for each style elemnt
         let popUpStyling = PopUpStyling(
             loaderColor: UIColor(hex: primaryColor),
@@ -143,128 +130,149 @@ class ViewController: UIViewController {
             popUpStyling: popUpStyling
         )
 
-        BreadPartnersSDK.shared.registerPlacements(
-            setupConfig: BreadPartnersSetupConfig(
-                buyer: BreadPartnersBuyer(
-                    givenName: "Jack",
-                    familyName: "Seamus",
-                    additionalName: "C.",
-                    birthDate: "1974-08-21",
-                    email: "johncseamus@gmail.com",
-                    phone: "+13235323423",
-                    billingAddress: BreadPartnersAddress(
-                        address1: "323 something lane",
-                        address2: "apt. B",
-                        country: "USA",
-                        locality: "NYC",
-                        region: "NY",
-                        postalCode: "11222"
-                    ),
-                    shippingAddress: nil
-                ), loyaltyID: "xxxxxx",
-                storeNumber: "1234567",
-                env: "STAGE",
-                channel: "P",
-                subchannel: "X"
-            ),
-            placementsConfiguration: placementsConfiguration,
-            splitTextAndAction: true
-        ) {
-            event in
-            switch event {
-            case .renderTextViewWithLink(let textView):
-                print("BreadPartnerSDK::Successfully rendered text with link.")
+        Task {
+            /// ``setup`` method must be placed at app launch.
+            /// - Parameters:
+            ///     - integrationKey: A unique key specific to the brand.
+            await BreadPartnersSDK.shared.setup(
+                environment: .stage,
+                integrationKey: brandId,
+                enableLog: true)
 
-                /// Handles rendering of a text view with a clickable link.
-                /// - Modifies the font, text color, and link color for the text view.
-                /// - Adds the text view to the main view and sets up its layout constraints.
+            await BreadPartnersSDK.shared.registerPlacements(
+                setupConfig: BreadPartnersSetupConfig(
+                    buyer: BreadPartnersBuyer(
+                        givenName: "Jack",
+                        familyName: "Seamus",
+                        additionalName: "C.",
+                        birthDate: "1974-08-21",
+                        email: "johncseamus@gmail.com",
+                        phone: "+13235323423",
+                        billingAddress: BreadPartnersAddress(
+                            address1: "323 something lane",
+                            address2: "apt. B",
+                            country: "USA",
+                            locality: "NYC",
+                            region: "NY",
+                            postalCode: "11222"
+                        ),
+                        shippingAddress: nil
+                    ), loyaltyID: "xxxxxx",
+                    storeNumber: "1234567",
+                    env: "STAGE",
+                    channel: "P",
+                    subchannel: "X"
+                ),
+                placementsConfiguration: placementsConfiguration,
+                splitTextAndAction: true
+            ) {
+                event in
+                switch event {
+                case .renderTextViewWithLink(let textView):
+                    print(
+                        "BreadPartnerSDK::Successfully rendered text with link."
+                    )
 
-                textView.font = UIFont(
-                    name: fontFamily, size: Double(mediumTextSize))
-                textView.textColor = UIColor.black
-                textView.linkTextAttributes = [
-                    .foregroundColor: UIColor(hex: primaryColor)
-                ]
+                    /// Handles rendering of a text view with a clickable link.
+                    /// - Modifies the font, text color, and link color for the text view.
+                    /// - Adds the text view to the main view and sets up its layout constraints.
 
-                self.view.addSubview(textView)
+                    textView.font = UIFont(
+                        name: fontFamily, size: Double(mediumTextSize))
+                    textView.textColor = UIColor.black
+                    textView.linkTextAttributes = [
+                        .foregroundColor: UIColor(hex: primaryColor)
+                    ]
 
-                textView.translatesAutoresizingMaskIntoConstraints = false
+                    self.view.addSubview(textView)
 
-                NSLayoutConstraint.activate([
-                    textView.centerXAnchor.constraint(
-                        equalTo: self.view.centerXAnchor),
-                    textView.topAnchor.constraint(
-                        equalTo: self.view.topAnchor, constant: 100),
-                    textView.leadingAnchor.constraint(
-                        equalTo: self.view.leadingAnchor, constant: 20),
-                    textView.trailingAnchor.constraint(
-                        equalTo: self.view.trailingAnchor, constant: -20),
-                ])
+                    textView.translatesAutoresizingMaskIntoConstraints = false
 
-            case .renderSeparateTextAndButton(let textView, let button):
-                print("BreadPartnerSDK::Successfully rendered text and button.")
+                    NSLayoutConstraint.activate([
+                        textView.centerXAnchor.constraint(
+                            equalTo: self.view.centerXAnchor),
+                        textView.topAnchor.constraint(
+                            equalTo: self.view.topAnchor, constant: 100),
+                        textView.leadingAnchor.constraint(
+                            equalTo: self.view.leadingAnchor, constant: 20),
+                        textView.trailingAnchor.constraint(
+                            equalTo: self.view.trailingAnchor, constant: -20),
+                    ])
 
-                /// Handles rendering of a text view and a button, placed separately.
-                /// - Modifies the font, text color for the text view, and the button's title color, font, and background.
-                /// - Adds the text view and button to the main view and sets up their layout constraints.
-                textView.font = UIFont(
-                    name: fontFamily, size: Double(mediumTextSize))
-                textView.textColor = UIColor(hex: blackColor)
+                case .renderSeparateTextAndButton(let textView, let button):
+                    print(
+                        "BreadPartnerSDK::Successfully rendered text and button."
+                    )
 
-                button.setTitleColor(UIColor.white, for: .normal)
-                button.titleLabel?.font = UIFont(
-                    name: fontFamily, size: Double(mediumTextSize))
-                button.titleEdgeInsets = UIEdgeInsets(
-                    top: 0, left: 0, bottom: 0, right: 0)
-                button.backgroundColor =
-                    UIColor(hex: primaryColor)
-                button.layer.cornerRadius = 25.0
+                    /// Handles rendering of a text view and a button, placed separately.
+                    /// - Modifies the font, text color for the text view, and the button's title color, font, and background.
+                    /// - Adds the text view and button to the main view and sets up their layout constraints.
+                    textView.font = UIFont(
+                        name: fontFamily, size: Double(mediumTextSize))
+                    textView.textColor = UIColor(hex: blackColor)
 
-                self.view.addSubview(textView)
-                self.view.addSubview(button)
+                    button.setTitleColor(UIColor.white, for: .normal)
+                    button.titleLabel?.font = UIFont(
+                        name: fontFamily, size: Double(mediumTextSize))
+                    button.titleEdgeInsets = UIEdgeInsets(
+                        top: 0, left: 0, bottom: 0, right: 0)
+                    button.backgroundColor =
+                        UIColor(hex: primaryColor)
+                    button.layer.cornerRadius = 25.0
 
-                textView.translatesAutoresizingMaskIntoConstraints = false
-                button.translatesAutoresizingMaskIntoConstraints = false
+                    DispatchQueue.main.async {
 
-                NSLayoutConstraint.activate([
+                        self.view.addSubview(textView)
+                        self.view.addSubview(button)
+                        textView.translatesAutoresizingMaskIntoConstraints =
+                            false
+                        button.translatesAutoresizingMaskIntoConstraints = false
 
-                    textView.centerXAnchor.constraint(
-                        equalTo: self.view.centerXAnchor),
-                    textView.topAnchor.constraint(
-                        equalTo: self.view.topAnchor, constant: 100),
-                    textView.leadingAnchor.constraint(
-                        equalTo: self.view.leadingAnchor, constant: 20),
-                    textView.trailingAnchor.constraint(
-                        equalTo: self.view.trailingAnchor, constant: -20),
+                        NSLayoutConstraint.activate([
+                            textView.centerXAnchor.constraint(
+                                equalTo: self.view.centerXAnchor),
+                            textView.topAnchor.constraint(
+                                equalTo: self.view.topAnchor, constant: 100),
+                            textView.leadingAnchor.constraint(
+                                equalTo: self.view.leadingAnchor, constant: 20),
+                            textView.trailingAnchor.constraint(
+                                equalTo: self.view.trailingAnchor, constant: -20
+                            ),
 
-                    button.widthAnchor.constraint(equalToConstant: 150),
-                    button.trailingAnchor.constraint(
-                        equalTo: self.view.trailingAnchor, constant: -20),
-                    button.heightAnchor.constraint(equalToConstant: 50),
-                    button.topAnchor.constraint(
-                        equalTo: textView.bottomAnchor, constant: 20),
-
-                ])
-
-            case .renderPopupView(let view):
-                print("BreadPartnerSDK::Successfully rendered PopupView.")
-
-                /// Handles rendering of a popup view.
-                ///
-                /// Example:
-                /// Implement some process prior to loading the Web View popup
-                /// (e.g checking if the customer is authenticated).
-
-                self.showYesNoAlert(from: self) { userTappedYes in
-                    if userTappedYes {
-                        self.present(view, animated: true)
-                    } else {
-                        print("User canceled")
+                            button.widthAnchor.constraint(equalToConstant: 150),
+                            button.trailingAnchor.constraint(
+                                equalTo: self.view.trailingAnchor, constant: -20
+                            ),
+                            button.heightAnchor.constraint(equalToConstant: 50),
+                            button.topAnchor.constraint(
+                                equalTo: textView.bottomAnchor, constant: 20),
+                        ])
                     }
+
+                case .renderPopupView(let view):
+                    DispatchQueue.main.async {
+                        print(
+                            "BreadPartnerSDK::Successfully rendered PopupView.")
+
+                        /// Handles rendering of a popup view.
+                        ///
+                        /// Example:
+                        /// Implement some process prior to loading the Web View popup
+                        /// (e.g checking if the customer is authenticated).
+
+                        self.showYesNoAlert(from: self) { userTappedYes in
+                            if userTappedYes {
+                                self.present(view, animated: true)
+                            } else {
+                                print("User canceled")
+                            }
+                        }
+                    }
+                default:
+                    // MARK: Other events.
+                    print("BreadPartnerSDK::Event: \(event)")
                 }
-            default:
-                // MARK: Other events.
-                print("BreadPartnerSDK::Event: \(event)")
+
             }
         }
     }
@@ -279,31 +287,32 @@ class ViewController: UIViewController {
         let placementsConfiguration = PlacementsConfiguration(
             rtpsConfig: rtpsConfig
         )
-
-        BreadPartnersSDK.shared.submitRTPS(
-            setupConfig: BreadPartnersSetupConfig(
-                buyer: BreadPartnersBuyer(
-                    givenName: "Carol",
-                    familyName: "Jones",
-                    additionalName: "C.",
-                    birthDate: "1974-08-21",
-                    billingAddress: BreadPartnersAddress(
-                        address1: "3075 Loyalty Cir",
-                        locality: "Columbus",
-                        region: "OH",
-                        postalCode: "43219")
+        Task {
+            await BreadPartnersSDK.shared.submitRTPS(
+                setupConfig: BreadPartnersSetupConfig(
+                    buyer: BreadPartnersBuyer(
+                        givenName: "Carol",
+                        familyName: "Jones",
+                        additionalName: "C.",
+                        birthDate: "1974-08-21",
+                        billingAddress: BreadPartnersAddress(
+                            address1: "3075 Loyalty Cir",
+                            locality: "Columbus",
+                            region: "OH",
+                            postalCode: "43219")
+                    ),
+                    storeNumber: "2009"
                 ),
-                storeNumber: "2009"
-            ),
-            placementsConfiguration: placementsConfiguration
-        ) {
-            event in
-            switch event {
-            case .renderPopupView(let view):
-                self.present(view, animated: true)
-                print("BreadPartnerSDK::Successfully rendered PopupView.")
-            default:
-                print("BreadPartnerSDK::Event: \(event)")
+                placementsConfiguration: placementsConfiguration
+            ) {
+                event in
+                switch event {
+                case .renderPopupView(let view):
+                    self.present(view, animated: true)
+                    print("BreadPartnerSDK::Successfully rendered PopupView.")
+                default:
+                    print("BreadPartnerSDK::Event: \(event)")
+                }
             }
         }
     }
