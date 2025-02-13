@@ -24,6 +24,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var rtpsFlow: Bool = false
     var prescreenId: String? = nil
     var splitTextAndAction: Bool = false
+    var forSwiftUI: Bool = false
 
     private override init() {
         self.logger = Logger()
@@ -182,6 +183,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             brandConfiguration: self.brandConfiguration,
             recaptchaManager: self.recaptchaManager,
             splitTextAndAction: self.splitTextAndAction,
+            forSwiftUI: self.forSwiftUI,
             callback: self.callback
         )
     }
@@ -206,11 +208,13 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ///   - setupConfig: Provide user account details in this configuration.
     ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
     ///   - splitTextAndAction: Set this to `true` if you want the placement to return either text with a link or a combination of text and button.
+    ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
     ///   - callback: A function that handles user interactions and ongoing events related to the placements.
     public func registerPlacements(
         setupConfig: BreadPartnersSetupConfig,
         placementsConfiguration: PlacementsConfiguration,
         splitTextAndAction: Bool = false,
+        forSwiftUI: Bool = false,
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -218,6 +222,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.setupConfig = setupConfig
         self.placementsConfiguration = placementsConfiguration
         self.splitTextAndAction = splitTextAndAction
+        self.forSwiftUI = forSwiftUI
         self.callback = callback
         self.rtpsFlow = false
 
@@ -240,16 +245,22 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     /// - Parameters:
     ///   - setupConfig: Provide user account details in this configuration.
     ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
+    ///   - splitTextAndAction: Set this to `true` if you want the placement to return either text with a link or a combination of text and button.
+    ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
     ///   - callback: A function that handles user interactions and ongoing events related to the placements.
     public func submitRTPS(
         setupConfig: BreadPartnersSetupConfig,
         placementsConfiguration: PlacementsConfiguration,
+        splitTextAndAction: Bool = false,
+        forSwiftUI: Bool = false,
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
     ) async {
         self.setupConfig = setupConfig
         self.placementsConfiguration = placementsConfiguration
+        self.splitTextAndAction = splitTextAndAction
+        self.forSwiftUI = forSwiftUI
         self.callback = callback
         self.rtpsFlow = true
 

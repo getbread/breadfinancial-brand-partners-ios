@@ -1,17 +1,29 @@
+import SwiftUI
 import UIKit
 
 /// Enum representing different events supported by BreadPartnerSDK.
 public enum BreadPartnerEvents {
-    
+
     /// Renders a text view containing a clickable hyperlink.
-    /// - Parameter view: UIView to display the linked text.
-    case renderTextViewWithLink(textView: UITextView)
+    /// - Parameter textView: BreadPartnerLinkTextSwitUI to display the linked text.
+    case renderSwiftUITextViewWithLink(textView: BreadPartnerLinkTextSwitUI)
+
+    /// Renders a text view containing a clickable hyperlink.
+    /// - Parameter textView: BreadPartnerLinkText to display the linked text.
+    case renderTextViewWithLink(textView: BreadPartnerLinkText)
 
     /// Renders text and a button separately on the screen.
     /// - Parameters:
     ///   - textView: UITextView for displaying text.
     ///   - button: UIButton for user interactions.
     case renderSeparateTextAndButton(textView: UITextView, button: UIButton)
+
+    /// Renders text and a button separately on the screen.
+    /// - Parameters:
+    ///   - textView: BreadPartnerTextView for displaying text.
+    ///   - button: BreadPartnerButtonView for user interactions.
+    case renderSwiftUISeparateTextAndButton(
+        textView: BreadPartnerTextView, button: BreadPartnerButtonView)
 
     /// Displays a popup interface on the screen.
     /// - Parameter view: UIViewController that presents the popup.

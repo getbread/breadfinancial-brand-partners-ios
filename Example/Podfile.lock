@@ -27,7 +27,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BreadPartnersSDK: e82609f2105d008707fe9fe5fa5a85c4e5faeebe
+  BreadPartnersSDK: 529e494638cf8cd60da130c79b3110a58ca33515
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   Quick: f5754d69b7013f5864c29aab9ae6f0c79c5bc200
   RecaptchaEnterprise: 336a5178eb484cd049b2b04bbe1ca1d60fff1227

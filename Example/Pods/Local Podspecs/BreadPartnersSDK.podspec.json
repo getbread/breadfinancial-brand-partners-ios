@@ -16,7 +16,7 @@
     "tag": "0.0.1"
   },
   "platforms": {
-    "ios": "13.0"
+    "ios": "15.0"
   },
   "source_files": "BreadPartnersSDK/Classes/**/*",
   "resource_bundles": {

@@ -1,6 +1,6 @@
 import UIKit
 
-internal class InteractiveText: UITextView {
+public class BreadPartnerLinkText: UITextView {
     private var tapHandler: ((String) -> Void)?
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {

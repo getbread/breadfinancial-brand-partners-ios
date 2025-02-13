@@ -18,10 +18,10 @@ internal class CommonUtils: NSObject {
 
     func handleSecurityCheckFailure(error: Error?) async {
         await executeAfterDelay(2)
-        await alertHandler.hideAlert()
+        alertHandler.hideAlert()
 
         await executeAfterDelay(0.5)
-        await alertHandler.showAlert(
+        alertHandler.showAlert(
             title: Constants.securityCheckFailureAlertTitle,
             message: Constants.securityCheckAlertFailedMessage(
                 error: error?.localizedDescription ?? ""
@@ -32,10 +32,10 @@ internal class CommonUtils: NSObject {
 
     func handleSecurityCheckPassed() async {
         await executeAfterDelay(2)
-        await alertHandler.hideAlert()
+        alertHandler.hideAlert()
 
         await executeAfterDelay(0.5)
-        await alertHandler.showAlert(
+        alertHandler.showAlert(
             title: Constants.securityCheckSuccessAlertTitle,
             message: Constants.securityCheckSuccessAlertSubTitle,
             showOkButton: true

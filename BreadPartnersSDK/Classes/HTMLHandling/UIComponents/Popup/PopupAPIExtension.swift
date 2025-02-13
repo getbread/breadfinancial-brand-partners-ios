@@ -30,7 +30,7 @@ extension PopupController {
                 urlString: apiUrl, method: .POST, body: requestBody)
             await handleResponse(response)
         } catch {
-            await alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.apiError(
                     message: error.localizedDescription),
@@ -53,7 +53,7 @@ extension PopupController {
                             ?? ""
                     )
             else {
-                await alertHandler.showAlert(
+                alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),
                     message: Constants.popupPlacementParsingError,
                     showOkButton: true
@@ -62,7 +62,7 @@ extension PopupController {
             }
             self.webViewPlacementModel = popupPlacementModel
         } catch {
-            await alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription),

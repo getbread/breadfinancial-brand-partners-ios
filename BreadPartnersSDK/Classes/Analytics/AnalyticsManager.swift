@@ -25,7 +25,7 @@ internal class AnalyticsManager {
         apiUrl: String, payload: Analytics.Payload
     ) async {
         do {
-            let result = try await apiClient.request(
+            _ = try await apiClient.request(
                 urlString: apiUrl, method: .POST, body: payload)
         } catch {
         }

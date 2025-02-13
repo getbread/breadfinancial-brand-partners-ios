@@ -1,7 +1,7 @@
 extension BreadPartnersSDK {
 
     /// Retrieve brand-specific configurations, such as the Recaptcha key.
-    func fetchBrandConfig() async -> Void {
+    func fetchBrandConfig() async {
         let apiUrl = APIUrl(urlType: .brandConfig(brandId: integrationKey)).url
 
         do {
@@ -11,7 +11,7 @@ extension BreadPartnersSDK {
                 from: response, to: BrandConfigResponse.self)
             return
         } catch {
-            await alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.apiError(
                     message: error.localizedDescription),
@@ -69,7 +69,7 @@ extension BreadPartnersSDK {
             print("PreScreenID: \(preScreenLookupResponse.prescreenId)")
             await fetchPlacementData()
         } catch {
-            await alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription
@@ -123,7 +123,7 @@ extension BreadPartnersSDK {
             )
             await handlePlacementResponse(response)
         } catch {
-            await alertHandler.showAlert(
+             alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.apiError(
                     message: error.localizedDescription),
@@ -171,7 +171,7 @@ extension BreadPartnersSDK {
                 )
             }
         } catch {
-            await alertHandler.showAlert(
+             alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription),

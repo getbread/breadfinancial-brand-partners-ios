@@ -137,7 +137,7 @@ class ViewController: UIViewController {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
                 integrationKey: brandId,
-                enableLog: true)
+                enableLog: false)
 
             await BreadPartnersSDK.shared.registerPlacements(
                 setupConfig: BreadPartnersSetupConfig(
@@ -214,8 +214,6 @@ class ViewController: UIViewController {
                     button.setTitleColor(UIColor.white, for: .normal)
                     button.titleLabel?.font = UIFont(
                         name: fontFamily, size: Double(mediumTextSize))
-                    button.titleEdgeInsets = UIEdgeInsets(
-                        top: 0, left: 0, bottom: 0, right: 0)
                     button.backgroundColor =
                         UIColor(hex: primaryColor)
                     button.layer.cornerRadius = 25.0
