@@ -122,7 +122,7 @@ extension PopupController {
                     y: self.popupView.bounds.maxY * 0.45,
                     width: 50,
                     height: 50),
-                sdkConfiguration: self.placementsConfiguration!
+                placementsConfiguration: self.placementsConfiguration!
             )
             self.popupView.addSubview(self.loader)
         }

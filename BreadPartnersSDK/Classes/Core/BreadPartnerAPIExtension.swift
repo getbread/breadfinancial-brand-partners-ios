@@ -21,7 +21,7 @@ extension BreadPartnersSDK {
     }
     /// This method does bot behavior check using the Recaptcha v3 SDK,
     /// to protect against malicious attacks.
-    private func executeSecurityCheck() async {
+    func executeSecurityCheck() async {
         let siteKey = "6Ld1Aa0qAAAAALp2csZ6qg83ImmBTwqNaNxaHx1Z"
 
         do {
@@ -31,7 +31,8 @@ extension BreadPartnersSDK {
                 timeout: 10000,
                 debug: logger.isLoggingEnabled
             )
-            await preScreenLookupCall(token: token)
+            //            await preScreenLookupCall(token: token)
+            await fetchPlacementData()
         } catch {
             await commonUtils.handleSecurityCheckFailure(error: error)
         }
@@ -48,8 +49,8 @@ extension BreadPartnersSDK {
         ).url
 
         let requestBuilder = RTPSRequestBuilder(
-            setupConfig: setupConfig!,
-            rtpsConfig: placementsConfiguration!.rtpsConfig!
+            merchantConfiguration: merchantConfiguration!,
+            rtpsData: placementsConfiguration!.rtpsData!
         )
 
         var rtpsRequestBuilt = requestBuilder.build()
@@ -85,22 +86,22 @@ extension BreadPartnersSDK {
         let apiUrl = APIUrl(urlType: .generatePlacements).url
         var request: Any? = nil
 
-        if let placementConfig = placementsConfiguration?.placementConfig {
+        if let placementConfig = placementsConfiguration?.placementData {
             let builder = PlacementRequestBuilder(
                 integrationKey: integrationKey,
-                setupConfig: setupConfig,
+                merchantConfiguration: merchantConfiguration,
                 placementConfig: placementConfig
             )
             request = builder.build()
         } else {
             let rtpsWebURL = await commonUtils.buildRTPSWebURL(
                 integrationKey: integrationKey,
-                setupConfig: setupConfig!,
-                rtpsConfig: placementsConfiguration!.rtpsConfig!
+                merchantConfiguration: merchantConfiguration!,
+                rtpsData: placementsConfiguration!.rtpsData!
             )?.absoluteString
 
             let location =
-                placementsConfiguration?.rtpsConfig?.locationType == .checkout
+                placementsConfiguration?.rtpsData?.locationType == .checkout
                 ? "RTPS-Approval"
                 : ""
 
@@ -123,7 +124,7 @@ extension BreadPartnersSDK {
             )
             await handlePlacementResponse(response)
         } catch {
-             alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.apiError(
                     message: error.localizedDescription),
@@ -171,7 +172,7 @@ extension BreadPartnersSDK {
                 )
             }
         } catch {
-             alertHandler.showAlert(
+            alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
                 message: Constants.catchError(
                     message: error.localizedDescription),

@@ -5,8 +5,8 @@ import UIKit
 internal class HTMLContentRenderer {
 
     var integrationKey: String = ""
-    var setupConfig: BreadPartnersSetupConfig?
-    var placementsConfiguration: PlacementsConfiguration?
+    var merchantConfiguration: MerchantConfiguration?
+    var placementsConfiguration: PlacementConfiguration?
     let apiClient: APIClient
     let alertHandler: AlertHandler
     let commonUtils: CommonUtils
@@ -30,8 +30,8 @@ internal class HTMLContentRenderer {
         logger: Logger,
         htmlContentParser: HTMLContentParser,
         dispatchQueue: DispatchQueue,
-        setupConfig: BreadPartnersSetupConfig?,
-        placementsConfiguration: PlacementsConfiguration?,
+        merchantConfiguration: MerchantConfiguration?,
+        placementsConfiguration: PlacementConfiguration?,
         brandConfiguration: BrandConfigResponse?,
         recaptchaManager: RecaptchaManager,
         splitTextAndAction: Bool = false,
@@ -46,7 +46,7 @@ internal class HTMLContentRenderer {
         self.logger = logger
         self.htmlContentParser = htmlContentParser
         self.dispatchQueue = dispatchQueue
-        self.setupConfig = setupConfig
+        self.merchantConfiguration = merchantConfiguration
         self.placementsConfiguration = placementsConfiguration
         self.brandConfiguration = brandConfiguration
         self.recaptchaManager = recaptchaManager
@@ -153,8 +153,8 @@ internal class HTMLContentRenderer {
     ) async {
         let popupViewController = PopupController(
             integrationKey: integrationKey,
-            setupConfig: setupConfig!,
-            sdkConfiguration: placementsConfiguration!,
+            merchantConfiguration: merchantConfiguration!,
+            placementConfiguration: placementsConfiguration!,
             popupModel: popupPlacementModel,
             overlayType: overlayType,
             apiClient: apiClient,

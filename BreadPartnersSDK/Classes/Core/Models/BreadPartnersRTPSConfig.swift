@@ -1,6 +1,6 @@
 import Foundation
 
-public class BreadPartnersRtpsConfig {
+public class RTPSData {
     public var financingType: FinancingType?
     public var order: Order?
     public var locationType: LocationType?

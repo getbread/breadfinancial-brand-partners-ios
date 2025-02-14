@@ -75,33 +75,33 @@ internal class CommonUtils: NSObject {
     /// Builds a URL for RTPS Web based on the provided integration and configuration details.
     /// - Parameters:
     ///   - integrationKey: The unique integration key for the request.
-    ///   - setupConfig: Configuration details for the buyer and store.
-    ///   - rtpsConfig: Configuration for RTPS settings, including mock responses and prescreen data.
+    ///   - merchantConfiguration: Configuration details for the buyer and store.
+    ///   - rtpsData: Configuration for RTPS settings, including mock responses and prescreen data.
     /// - Returns: A URL constructed with the given parameters, or nil if the URL could not be built.
     func buildRTPSWebURL(
         integrationKey: String,
-        setupConfig: BreadPartnersSetupConfig,
-        rtpsConfig: BreadPartnersRtpsConfig
+        merchantConfiguration: MerchantConfiguration,
+        rtpsData: RTPSData
     ) async -> URL? {
 
         let queryParams: [String: String?] = [
-            "mockMO": rtpsConfig.mockResponse?.rawValue,
-            "mockPA": rtpsConfig.mockResponse?.rawValue,
-            "mockVL": rtpsConfig.mockResponse?.rawValue,
+            "mockMO": rtpsData.mockResponse?.rawValue,
+            "mockPA": rtpsData.mockResponse?.rawValue,
+            "mockVL": rtpsData.mockResponse?.rawValue,
             "embedded": "true",
             "clientKey": integrationKey,
-            "prescreenId": rtpsConfig.prescreenId,
-            "cardType": rtpsConfig.cardType,
+            "prescreenId": rtpsData.prescreenId,
+            "cardType": rtpsData.cardType,
             "urlPath": "screen name",
-            "firstName": setupConfig.buyer?.givenName,
-            "lastName": setupConfig.buyer?.familyName,
-            "address1": setupConfig.buyer?.billingAddress?.address1,
-            "city": setupConfig.buyer?.billingAddress?.locality,
-            "state": setupConfig.buyer?.billingAddress?.region,
-            "zip": setupConfig.buyer?.billingAddress?.postalCode,
-            "storeNumber": setupConfig.storeNumber,
-            "location": rtpsConfig.locationType?.rawValue,
-            "channel": rtpsConfig.channel,
+            "firstName": merchantConfiguration.buyer?.givenName,
+            "lastName": merchantConfiguration.buyer?.familyName,
+            "address1": merchantConfiguration.buyer?.billingAddress?.address1,
+            "city": merchantConfiguration.buyer?.billingAddress?.locality,
+            "state": merchantConfiguration.buyer?.billingAddress?.region,
+            "zip": merchantConfiguration.buyer?.billingAddress?.postalCode,
+            "storeNumber": merchantConfiguration.storeNumber,
+            "location": rtpsData.locationType?.rawValue,
+            "channel": rtpsData.channel,
         ]
 
         guard

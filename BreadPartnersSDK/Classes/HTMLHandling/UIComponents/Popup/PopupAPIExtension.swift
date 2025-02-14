@@ -5,8 +5,8 @@ extension PopupController {
     func fetchWebViewPlacement() async {
         let builder = PlacementRequestBuilder(
             integrationKey: integrationKey,
-            setupConfig: setupConfig,
-            placementConfig: placementsConfiguration?.placementConfig)
+            merchantConfiguration: merchantConfiguration,
+            placementConfig: placementsConfiguration?.placementData)
         let placementRequest = builder.build()
 
         let request = PlacementRequest(

@@ -5,25 +5,25 @@ import UIKit
 public enum BreadPartnerEvents {
 
     /// Renders a text view containing a clickable hyperlink.
-    /// - Parameter textView: BreadPartnerLinkTextSwitUI to display the linked text.
+    /// - Parameter textView: BreadPartnerLinkTextSwitUI to display the linked text for SwiftUI based UI.
     case renderSwiftUITextViewWithLink(textView: BreadPartnerLinkTextSwitUI)
 
-    /// Renders a text view containing a clickable hyperlink.
-    /// - Parameter textView: BreadPartnerLinkText to display the linked text.
-    case renderTextViewWithLink(textView: BreadPartnerLinkText)
-
-    /// Renders text and a button separately on the screen.
-    /// - Parameters:
-    ///   - textView: UITextView for displaying text.
-    ///   - button: UIButton for user interactions.
-    case renderSeparateTextAndButton(textView: UITextView, button: UIButton)
-
-    /// Renders text and a button separately on the screen.
+    /// Renders text and a button separately on the screen for SwiftUI based UI.
     /// - Parameters:
     ///   - textView: BreadPartnerTextView for displaying text.
     ///   - button: BreadPartnerButtonView for user interactions.
     case renderSwiftUISeparateTextAndButton(
         textView: BreadPartnerTextView, button: BreadPartnerButtonView)
+
+    /// Renders a text view containing a clickable hyperlink.
+    /// - Parameter textView: BreadPartnerLinkText to display the linked text for UIKit based UI.
+    case renderTextViewWithLink(textView: BreadPartnerLinkText)
+
+    /// Renders text and a button separately on the screen for UIKit based UI.
+    /// - Parameters:
+    ///   - textView: UITextView for displaying text.
+    ///   - button: UIButton for user interactions.
+    case renderSeparateTextAndButton(textView: UITextView, button: UIButton)
 
     /// Displays a popup interface on the screen.
     /// - Parameter view: UIViewController that presents the popup.
@@ -55,4 +55,8 @@ public enum BreadPartnerEvents {
     /// Provides information about any SDK-related errors.
     /// - Parameter error: error object detailing the issue.
     case sdkError(error: Error)
+
+    /// Provides information about any Card-related status.
+    /// - Parameter status: object detailing the status.
+    case cardApplicationStatus(status: Any)
 }

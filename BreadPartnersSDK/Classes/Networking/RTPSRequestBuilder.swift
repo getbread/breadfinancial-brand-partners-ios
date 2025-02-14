@@ -1,15 +1,15 @@
 class RTPSRequestBuilder {
 
-    private var setupConfig: BreadPartnersSetupConfig
-    private var rtpsConfig: BreadPartnersRtpsConfig
+    private var merchantConfiguration: MerchantConfiguration
+    private var rtpsData: RTPSData
 
-    init(setupConfig: BreadPartnersSetupConfig, rtpsConfig: BreadPartnersRtpsConfig) {
-        self.setupConfig = setupConfig
-        self.rtpsConfig = rtpsConfig
+    init(merchantConfiguration: MerchantConfiguration, rtpsData: RTPSData) {
+        self.merchantConfiguration = merchantConfiguration
+        self.rtpsData = rtpsData
     }
 
     func build() -> RTPSRequest {
-        let buyer = setupConfig.buyer
+        let buyer = merchantConfiguration.buyer
 
         return RTPSRequest(
             urlPath: "screenname",
@@ -19,12 +19,12 @@ class RTPSRequestBuilder {
             city: buyer?.billingAddress?.region,
             state: buyer?.billingAddress?.locality,
             zip: buyer?.billingAddress?.postalCode,
-            storeNumber: setupConfig.storeNumber,
-            location: rtpsConfig.locationType?.rawValue,
-            channel: setupConfig.channel,
-            subchannel: setupConfig.subchannel,
+            storeNumber: merchantConfiguration.storeNumber,
+            location: rtpsData.locationType?.rawValue,
+            channel: merchantConfiguration.channel,
+            subchannel: merchantConfiguration.subchannel,
             reCaptchaToken: nil,
-            mockResponse: rtpsConfig.mockResponse?.rawValue,
+            mockResponse: rtpsData.mockResponse?.rawValue,
             overrideConfig: RTPSRequest.OverrideConfig(enhancedPresentment: true)
         )
     }

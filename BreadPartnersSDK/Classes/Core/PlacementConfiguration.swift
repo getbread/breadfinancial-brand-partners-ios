@@ -2,21 +2,21 @@ import UIKit
 
 /// Structure that used to provide configurations for  `registerPlacement` or `submitRTPS` methods.
 /// - Parameters:
-///   - placementConfig: Defines text placements on the brand partner screen for the `registerPlacementFlow`.
-///   - rtpsConfig: Specifies the real-time pre-screen configuration for the prescreen flow.
+///   - placementData: Defines text placements on the brand partner screen for the `registerPlacementFlow`.
+///   - rtpsData: Specifies the real-time pre-screen configuration for the prescreen flow.
 ///   - popUpStyling: Configures the popup styling for each element rendered within the popup.
-public struct PlacementsConfiguration {
-    public let placementConfig: BreadPartnersPlacementConfig?
-    public let rtpsConfig: BreadPartnersRtpsConfig?
+public struct PlacementConfiguration {
+    public let placementData: PlacementData?
+    public let rtpsData: RTPSData?
     public var popUpStyling: PopUpStyling?
 
     public init(
-        placementConfig: BreadPartnersPlacementConfig? = nil,
-        rtpsConfig: BreadPartnersRtpsConfig? = nil,
+        placementData: PlacementData? = nil,
+        rtpsData: RTPSData? = nil,
         popUpStyling: PopUpStyling? = nil
     ) {
-        self.placementConfig = placementConfig
-        self.rtpsConfig = rtpsConfig
+        self.placementData = placementData
+        self.rtpsData = rtpsData
         self.popUpStyling = popUpStyling
     }
 }

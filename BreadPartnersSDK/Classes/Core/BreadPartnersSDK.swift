@@ -65,7 +65,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            setupConfig: self.setupConfig,
+            merchantConfiguration: self.merchantConfiguration,
             placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: brandConfiguration,
             recaptchaManager: recaptchaManager,
@@ -75,8 +75,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         super.init()
     }
 
-    var setupConfig: BreadPartnersSetupConfig?
-    var placementsConfiguration: PlacementsConfiguration?
+    var merchantConfiguration: MerchantConfiguration?
+    var placementsConfiguration: PlacementConfiguration?
     var brandConfiguration: BrandConfigResponse?
     var onResult: ((BreadPartnerEvents) -> Void)?
 
@@ -178,7 +178,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: self.logger,
             htmlContentParser: self.htmlContentParser,
             dispatchQueue: DispatchQueue.main,
-            setupConfig: self.setupConfig,
+            merchantConfiguration: self.merchantConfiguration,
             placementsConfiguration: self.placementsConfiguration,
             brandConfiguration: self.brandConfiguration,
             recaptchaManager: self.recaptchaManager,
@@ -192,6 +192,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     /// - Parameters:
     ///   - integrationKey: A unique key specific to the brand.
     ///   - enableLog: Set this to `true` if you want to see debug logs.
+    ///   - environment: Specifies the SDK environment, such as production (.prod) or development (stage).
     public func setup(
         environment: BreadSDKEnvironment = .prod,
         integrationKey: String,
@@ -205,21 +206,21 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     /// Use this function to display text placements in your app's UI.
     /// - Parameters:
-    ///   - setupConfig: Provide user account details in this configuration.
+    ///   - merchantConfiguration: Provide user account details in this configuration.
     ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
     ///   - splitTextAndAction: Set this to `true` if you want the placement to return either text with a link or a combination of text and button.
     ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
     ///   - callback: A function that handles user interactions and ongoing events related to the placements.
     public func registerPlacements(
-        setupConfig: BreadPartnersSetupConfig,
-        placementsConfiguration: PlacementsConfiguration,
+        merchantConfiguration: MerchantConfiguration,
+        placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
         forSwiftUI: Bool = false,
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
     ) async {
-        self.setupConfig = setupConfig
+        self.merchantConfiguration = merchantConfiguration
         self.placementsConfiguration = placementsConfiguration
         self.splitTextAndAction = splitTextAndAction
         self.forSwiftUI = forSwiftUI
@@ -243,21 +244,21 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     /// Call this function to check if the user qualifies for a pre-screen card application.
     /// - Parameters:
-    ///   - setupConfig: Provide user account details in this configuration.
+    ///   - merchantConfiguration: Provide user account details in this configuration.
     ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
     ///   - splitTextAndAction: Set this to `true` if you want the placement to return either text with a link or a combination of text and button.
     ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
     ///   - callback: A function that handles user interactions and ongoing events related to the placements.
     public func submitRTPS(
-        setupConfig: BreadPartnersSetupConfig,
-        placementsConfiguration: PlacementsConfiguration,
+        merchantConfiguration: MerchantConfiguration,
+        placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
         forSwiftUI: Bool = false,
         callback: @escaping (
             BreadPartnerEvents
         ) -> Void
     ) async {
-        self.setupConfig = setupConfig
+        self.merchantConfiguration = merchantConfiguration
         self.placementsConfiguration = placementsConfiguration
         self.splitTextAndAction = splitTextAndAction
         self.forSwiftUI = forSwiftUI
@@ -274,9 +275,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
-        //                        executeSecurityCheck()
-        //                        preScreenLookupCall(token: "")
-        await fetchPlacementData()
+        await executeSecurityCheck()
     }
 
 }

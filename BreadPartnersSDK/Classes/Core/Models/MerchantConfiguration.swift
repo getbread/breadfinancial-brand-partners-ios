@@ -1,6 +1,6 @@
 import Foundation
 
-public struct BreadPartnersSetupConfig {
+public struct MerchantConfiguration {
     public var buyer: BreadPartnersBuyer?
     public var loyaltyID: String?
     public var storeNumber: String?

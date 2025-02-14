@@ -10,7 +10,7 @@ import Foundation
 /// - `order`: Represents the order configuration associated with the placement.
 /// - `defaultSelectedCardKey`: Key for the default selected card, if any.
 /// - `selectedCardKey`: Key for the currently selected card, if any.
-public class BreadPartnersPlacementConfig {
+public class PlacementData {
     public var financingType: FinancingType?
     public var locationType: LocationType?
     public var placementId: String?

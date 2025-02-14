@@ -93,10 +93,7 @@ class ViewController: UIViewController {
             )
         )
 
-        /// Configuration for defining placement options in BreadPartners.
-        /// - Parameters:
-        ///     - Modify the Placement ID and total price to test different placements.
-        let placement = BreadPartnersPlacementConfig(
+        let placementData = PlacementData(
             financingType: .installments,
             locationType: .category,
             placementId: placementID,
@@ -124,54 +121,51 @@ class ViewController: UIViewController {
                 fulfillmentType: "type",
                 items: []))
 
-        /// Provide configurations for  `registerPlacement` and `submitRTPS` methods.
-        let placementsConfiguration = PlacementsConfiguration(
-            placementConfig: placement,
+        let placementsConfiguration = PlacementConfiguration(
+            placementData: placementData,
             popUpStyling: popUpStyling
         )
 
+        let merchantConfiguration = MerchantConfiguration(
+            buyer: BreadPartnersBuyer(
+                givenName: "Jack",
+                familyName: "Seamus",
+                additionalName: "C.",
+                birthDate: "1974-08-21",
+                email: "johncseamus@gmail.com",
+                phone: "+13235323423",
+                billingAddress: BreadPartnersAddress(
+                    address1: "323 something lane",
+                    address2: "apt. B",
+                    country: "USA",
+                    locality: "NYC",
+                    region: "NY",
+                    postalCode: "11222"
+                ),
+                shippingAddress: nil
+            ), loyaltyID: "xxxxxx",
+            storeNumber: "1234567",
+            env: "STAGE",
+            channel: "P",
+            subchannel: "X"
+        )
+
         Task {
-            /// ``setup`` method must be placed at app launch.
-            /// - Parameters:
-            ///     - integrationKey: A unique key specific to the brand.
+
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
                 integrationKey: brandId,
                 enableLog: false)
 
             await BreadPartnersSDK.shared.registerPlacements(
-                setupConfig: BreadPartnersSetupConfig(
-                    buyer: BreadPartnersBuyer(
-                        givenName: "Jack",
-                        familyName: "Seamus",
-                        additionalName: "C.",
-                        birthDate: "1974-08-21",
-                        email: "johncseamus@gmail.com",
-                        phone: "+13235323423",
-                        billingAddress: BreadPartnersAddress(
-                            address1: "323 something lane",
-                            address2: "apt. B",
-                            country: "USA",
-                            locality: "NYC",
-                            region: "NY",
-                            postalCode: "11222"
-                        ),
-                        shippingAddress: nil
-                    ), loyaltyID: "xxxxxx",
-                    storeNumber: "1234567",
-                    env: "STAGE",
-                    channel: "P",
-                    subchannel: "X"
-                ),
+                merchantConfiguration: merchantConfiguration,
                 placementsConfiguration: placementsConfiguration,
-                splitTextAndAction: true
+                splitTextAndAction: true,
+                forSwiftUI: false
             ) {
                 event in
                 switch event {
                 case .renderTextViewWithLink(let textView):
-                    print(
-                        "BreadPartnerSDK::Successfully rendered text with link."
-                    )
 
                     /// Handles rendering of a text view with a clickable link.
                     /// - Modifies the font, text color, and link color for the text view.
@@ -200,9 +194,6 @@ class ViewController: UIViewController {
                     ])
 
                 case .renderSeparateTextAndButton(let textView, let button):
-                    print(
-                        "BreadPartnerSDK::Successfully rendered text and button."
-                    )
 
                     /// Handles rendering of a text view and a button, placed separately.
                     /// - Modifies the font, text color for the text view, and the button's title color, font, and background.
@@ -249,12 +240,6 @@ class ViewController: UIViewController {
 
                 case .renderPopupView(let view):
                     DispatchQueue.main.async {
-                        print(
-                            "BreadPartnerSDK::Successfully rendered PopupView.")
-
-                        /// Handles rendering of a popup view.
-                        ///
-                        /// Example:
                         /// Implement some process prior to loading the Web View popup
                         /// (e.g checking if the customer is authenticated).
 
@@ -277,30 +262,33 @@ class ViewController: UIViewController {
 
     @IBAction func preScreenButton(_ sender: Any) {
 
-        let rtpsConfig = BreadPartnersRtpsConfig(
+        let rtpsData = RTPSData(
             locationType: .checkout,
             mockResponse: .success
         )
 
-        let placementsConfiguration = PlacementsConfiguration(
-            rtpsConfig: rtpsConfig
+        let placementsConfiguration = PlacementConfiguration(
+            rtpsData: rtpsData
         )
+
+        let merchantConfiguration = MerchantConfiguration(
+            buyer: BreadPartnersBuyer(
+                givenName: "Carol",
+                familyName: "Jones",
+                additionalName: "C.",
+                birthDate: "1974-08-21",
+                billingAddress: BreadPartnersAddress(
+                    address1: "3075 Loyalty Cir",
+                    locality: "Columbus",
+                    region: "OH",
+                    postalCode: "43219")
+            ),
+            storeNumber: "2009"
+        )
+
         Task {
             await BreadPartnersSDK.shared.submitRTPS(
-                setupConfig: BreadPartnersSetupConfig(
-                    buyer: BreadPartnersBuyer(
-                        givenName: "Carol",
-                        familyName: "Jones",
-                        additionalName: "C.",
-                        birthDate: "1974-08-21",
-                        billingAddress: BreadPartnersAddress(
-                            address1: "3075 Loyalty Cir",
-                            locality: "Columbus",
-                            region: "OH",
-                            postalCode: "43219")
-                    ),
-                    storeNumber: "2009"
-                ),
+                merchantConfiguration: merchantConfiguration,
                 placementsConfiguration: placementsConfiguration
             ) {
                 event in

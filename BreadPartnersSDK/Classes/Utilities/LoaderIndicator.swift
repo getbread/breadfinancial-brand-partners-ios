@@ -5,14 +5,14 @@ import UIKit
 /// Handles the animation or behavior for a ball spin fade loader, typically used for showing loading states.
 internal class LoaderIndicator: UIView {
     
-    private let sdkConfiguration: PlacementsConfiguration
+    private let placementsConfiguration: PlacementConfiguration
     private var ballLayers: [CALayer] = []
     private let ballCount = 8  // Number of balls
     private let radius: CGFloat = 30.0  // Radius of the circular path for balls
     private let ballSize: CGFloat = 20.0  // Size of each ball
     
-    init(frame: CGRect, sdkConfiguration:PlacementsConfiguration) {
-        self.sdkConfiguration = sdkConfiguration
+    init(frame: CGRect, placementsConfiguration:PlacementConfiguration) {
+        self.placementsConfiguration = placementsConfiguration
         super.init(frame: frame)
         setupLoader()
     }
@@ -39,7 +39,7 @@ internal class LoaderIndicator: UIView {
         let ballLayer = CALayer()
         ballLayer.bounds = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballLayer.cornerRadius = ballSize / 2
-        ballLayer.backgroundColor = sdkConfiguration.popUpStyling?.loaderColor.cgColor
+        ballLayer.backgroundColor = placementsConfiguration.popUpStyling?.loaderColor.cgColor
         ballLayer.opacity = 0.0
         
         // Calculate ball position

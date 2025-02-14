@@ -10,23 +10,23 @@ class PlacementRequestBuilder {
     
     init(
         integrationKey: String,
-        setupConfig: BreadPartnersSetupConfig?,
-        placementConfig: BreadPartnersPlacementConfig?
+        merchantConfiguration: MerchantConfiguration?,
+        placementConfig: PlacementData?
     ) {
         self.brandId = integrationKey
         self.createPlacementRequestBody(
-            setupConfig: setupConfig, placementConfig: placementConfig)
+            merchantConfiguration: merchantConfiguration, placementConfig: placementConfig)
     }
 
     private func createPlacementRequestBody(
-        setupConfig: BreadPartnersSetupConfig?,
-        placementConfig: BreadPartnersPlacementConfig?
+        merchantConfiguration: MerchantConfiguration?,
+        placementConfig: PlacementData?
     ) {
         let context = ContextRequestBody(
-            ENV: setupConfig?.env,
+            ENV: merchantConfiguration?.env,
             PRICE: placementConfig?.order?.totalPrice?.value,
-            channel: setupConfig?.channel,
-            subchannel: setupConfig?.subchannel,
+            channel: merchantConfiguration?.channel,
+            subchannel: merchantConfiguration?.subchannel,
             ALLOW_CHECKOUT: placementConfig?.allowCheckout ?? false
         )
 
