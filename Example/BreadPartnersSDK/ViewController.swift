@@ -263,7 +263,11 @@ class ViewController: UIViewController {
     @IBAction func preScreenButton(_ sender: Any) {
 
         let rtpsData = RTPSData(
-            locationType: .checkout,
+            order: Order(
+                totalPrice: CurrencyValue(
+                    currency: "USD",
+                    value: 50000)
+            ), locationType: .checkout,
             mockResponse: .success
         )
 
@@ -287,7 +291,7 @@ class ViewController: UIViewController {
         )
 
         Task {
-            await BreadPartnersSDK.shared.submitRTPS(
+            await BreadPartnersSDK.shared.silentRTPSRequest(
                 merchantConfiguration: merchantConfiguration,
                 placementsConfiguration: placementsConfiguration
             ) {

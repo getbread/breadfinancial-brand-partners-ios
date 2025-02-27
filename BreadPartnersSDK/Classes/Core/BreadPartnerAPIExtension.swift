@@ -31,8 +31,7 @@ extension BreadPartnersSDK {
                 timeout: 10000,
                 debug: logger.isLoggingEnabled
             )
-            //            await preScreenLookupCall(token: token)
-            await fetchPlacementData()
+            await preScreenLookupCall(token: token)            
         } catch {
             await commonUtils.handleSecurityCheckFailure(error: error)
         }

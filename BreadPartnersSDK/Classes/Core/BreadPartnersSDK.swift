@@ -242,14 +242,19 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     }
 
-    /// Call this function to check if the user qualifies for a pre-screen card application.
+    /// Calls this function to check if the user qualifies for a pre-screen card application.
+    /// This call will be completely silent with no impact on user behavior.
+    /// Everything will be managed within the SDK, and the brand partner's application only needs to send metadata.
+    /// If any step fails within the RTPS flow, the user will not experience any UI behavior changes.
+    /// If RTPS succeeds, a popup should be displayed via the callback to show the "Approved" flow.
+    ///
     /// - Parameters:
     ///   - merchantConfiguration: Provide user account details in this configuration.
     ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
     ///   - splitTextAndAction: Set this to `true` if you want the placement to return either text with a link or a combination of text and button.
     ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
     ///   - callback: A function that handles user interactions and ongoing events related to the placements.
-    public func submitRTPS(
+    public func silentRTPSRequest(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
@@ -275,7 +280,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
-        await executeSecurityCheck()
+        //await executeSecurityCheck()
+        await fetchPlacementData()
     }
 
 }
