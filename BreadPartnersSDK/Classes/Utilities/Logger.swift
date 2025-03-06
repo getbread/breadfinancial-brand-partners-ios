@@ -13,6 +13,11 @@ internal class Logger: NSObject {
     let dashLineFifteen = String(repeating: "-", count: 15)
     let dashLineTen = String(repeating: "-", count: 10)
     
+    func printLog(_ items: Any..., separator: String = " ", terminator: String = "\n"){
+        guard isLoggingEnabled else { return }
+        print(items)
+    }
+    
     func logRequestDetails(url: URL, method: String, headers: [String: String]?, body: Data?) {
         guard isLoggingEnabled else { return }
         print("\n\(dashLineFifteen) Request Details \(dashLineFifteen)")
@@ -120,4 +125,19 @@ internal class Logger: NSObject {
         print(token)
         print("\(dashLineFifty)")
     }
+    
+    func logApplicationResultDetails(_ payload: [String: Any]) {
+        guard isLoggingEnabled else { return }
+        print("\n\(dashLineTen) Application Result Details \(dashLineTen)")
+        print("Application ID     : \(payload["applicationId"] ?? "N/A")")
+        print("Call ID            : \(payload["callId"] ?? "N/A")")
+        print("Card Type          : \(payload["cardType"] ?? "N/A")")
+        print("Email Address      : \(payload["emailAddress"] ?? "N/A")")
+        print("Message            : \(payload["message"] ?? "N/A")")
+        print("Mobile Phone       : \(payload["mobilePhone"] ?? "N/A")")
+        print("Result             : \(payload["result"] ?? "N/A")")
+        print("Status             : \(payload["status"] ?? "N/A")")
+        print("\(dashLineFifty)\n")
+    }
+
 }

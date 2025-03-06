@@ -66,7 +66,7 @@ extension BreadPartnersSDK {
                 try await commonUtils.decodeJSON(
                     from: response, to: RTPSResponse.self
                 )
-            print("PreScreenID: \(preScreenLookupResponse.prescreenId)")
+            logger.printLog("PreScreenID: \(preScreenLookupResponse.prescreenId)")
             await fetchPlacementData()
         } catch {
             alertHandler.showAlert(

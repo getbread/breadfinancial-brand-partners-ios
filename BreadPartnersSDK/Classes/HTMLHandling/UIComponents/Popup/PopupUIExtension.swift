@@ -66,7 +66,11 @@ extension PopupController {
     private func setupEmbeddedOverlay() async {
         await MainActor.run {
             popupView.addSubview(overlayEmbeddedView)
-            webViewManager = BreadFinancialWebViewInterstitial()
+            webViewManager = BreadFinancialWebViewInterstitial(
+                logger: logger,
+                callback: { event in
+                self.handleWebViewEvent(event: event)
+            })
             if let url = URL(string: popupModel.webViewUrl) {
                 webView = webViewManager.createWebView(with: url)
                 webView.translatesAutoresizingMaskIntoConstraints = false
@@ -79,7 +83,7 @@ extension PopupController {
         do {
             await MainActor.run { self.loader?.startAnimating() }
             let loadedURL = try await webViewManager.loadPage(for: webView)
-            print("Loaded URL: \(loadedURL)")
+            logger.printLog("Loaded URL: \(loadedURL)")
         } catch {
             DispatchQueue.main.async {
                 self.alertHandler.showAlert(

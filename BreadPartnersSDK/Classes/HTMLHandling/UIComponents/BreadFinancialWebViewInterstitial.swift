@@ -4,7 +4,18 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
     WKNavigationDelegate, WKScriptMessageHandler
 {
 
+    init(
+        logger:Logger,
+        callback: @escaping (BreadPartnerEvents) -> Void
+    ) {
+        self.logger = logger
+        self.callback = callback
+    }
+
     var onPageLoadCompleted: ((Result<URL, Error>) -> Void)?
+
+    let logger: Logger
+    let callback: ((BreadPartnerEvents) -> Void)
 
     func createWebView(with url: URL) -> WKWebView {
 
@@ -61,6 +72,49 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
         _ userContentController: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        print("BreadPartnersSDK: WebViewMessage: \(message.body)")
+        if let parsedData = message.body as? [String: Any],
+           let action = parsedData["action"] as? [String: Any],
+           let type = action["type"] as? String {
+            
+            switch type {
+                
+            case "HEIGHT_CHANGED":
+                break
+                
+            case "LOAD_ADOBE_TRACKING_ID":
+                if let payload = action["payload"] as? [String: Any] {
+                    if let adobeTrackingId = payload["adobeTrackingId"] {
+                        if(logger.isLoggingEnabled){
+                            logger.printLog("BreadPartnersSDK: AdobeTrackingID: \(adobeTrackingId)")
+                        }
+                    }
+                }
+                
+            case "VIEW_PAGE":
+                if let payload = action["payload"] as? [String: Any],
+                   let pageName = payload["pageName"] as? String {
+                    callback(.screenName(name: pageName))
+                }
+                
+            case "CANCEL_APPLICATION":
+                callback(.popupClosed)
+                
+            case "SUBMIT_APPLICATION":
+                callback(.screenName(name: "submit-application"))
+                
+            case "RECEIVE_APPLICATION_RESULT":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.logApplicationResultDetails(payload)
+                    callback(.webViewSuccess(result: payload))
+                }
+                
+            case "APPLICATION_COMPLETED":
+                callback(.screenName(name: "application-completed"))
+                
+            default:
+                logger.printLog("BreadPartnersSDK: WebViewMessage: \(message.body)")
+            }
+        }
+
     }
 }

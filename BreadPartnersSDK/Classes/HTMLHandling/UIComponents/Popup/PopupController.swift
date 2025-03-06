@@ -45,7 +45,8 @@ internal class PopupController: UIViewController {
     var apiClient: APIClient
     var alertHandler: AlertHandler
     var commonUtils: CommonUtils
-
+    let logger: Logger
+    
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
@@ -59,6 +60,7 @@ internal class PopupController: UIViewController {
         commonUtils: CommonUtils,
         brandConfiguration: BrandConfigResponse?,
         recaptchaManager: RecaptchaManager,
+        logger: Logger,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
         self.integrationKey = integrationKey
@@ -71,6 +73,7 @@ internal class PopupController: UIViewController {
         self.alertHandler = alertHandler
         self.commonUtils = commonUtils
         self.recaptchaManager = recaptchaManager
+        self.logger = logger
         self.callback = callback
         super.init(nibName: nil, bundle: nil)
     }
@@ -108,7 +111,11 @@ internal class PopupController: UIViewController {
         overlayEmbeddedView.isHidden = false
 
         popupView.addSubview(overlayEmbeddedView)
-        webViewManager = BreadFinancialWebViewInterstitial()
+        webViewManager = BreadFinancialWebViewInterstitial(
+            logger: logger,
+            callback: { event in
+            self.handleWebViewEvent(event: event)
+        })
 
         if let url = URL(string: popupModel.webViewUrl) {
             webView = webViewManager.createWebView(with: url)
@@ -127,5 +134,14 @@ internal class PopupController: UIViewController {
         }
 
         overlayEmbeddedConstraints()
+    }
+
+    func handleWebViewEvent(event: BreadPartnerEvents) {
+        switch event {
+        case .popupClosed:
+            closeButtonTapped()
+        default:
+            callback(event)
+        }
     }
 }

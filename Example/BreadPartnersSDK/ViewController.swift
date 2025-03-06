@@ -155,7 +155,7 @@ class ViewController: UIViewController {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
                 integrationKey: brandId,
-                enableLog: false)
+                enableLog: true)
 
             await BreadPartnersSDK.shared.registerPlacements(
                 merchantConfiguration: merchantConfiguration,
@@ -253,7 +253,7 @@ class ViewController: UIViewController {
                     }
                 default:
                     // MARK: Other events.
-                    print("BreadPartnerSDK::Event: \(event)")
+                    print("BreadPartnerSDK: Event: \(event)")
                 }
 
             }

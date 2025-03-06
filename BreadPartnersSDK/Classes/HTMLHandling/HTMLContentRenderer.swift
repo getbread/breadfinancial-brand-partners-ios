@@ -162,6 +162,7 @@ internal class HTMLContentRenderer {
             commonUtils: commonUtils,
             brandConfiguration: brandConfiguration,
             recaptchaManager: recaptchaManager,
+            logger: logger,
             callback: callback
         )
         configurePopupPresentation(popupViewController)
