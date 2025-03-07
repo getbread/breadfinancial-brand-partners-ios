@@ -23,10 +23,11 @@ extension BreadPartnersSDK {
     /// to protect against malicious attacks.
     func executeSecurityCheck() async {
         let siteKey = "6Ld1Aa0qAAAAALp2csZ6qg83ImmBTwqNaNxaHx1Z"
+//        let siteKey = brandConfiguration?.config.recaptchaSiteKeyQA
 
         do {
             let token = try await recaptchaManager.executeReCaptcha(
-                siteKey: siteKey,
+                siteKey: siteKey ?? "",
                 action: .init(customAction: "checkout"),
                 timeout: 10000,
                 debug: logger.isLoggingEnabled
@@ -44,7 +45,7 @@ extension BreadPartnersSDK {
     /// - Both endpoints require user details to build request payload.
     private func preScreenLookupCall(token: String) async {
         let apiUrl = APIUrl(
-            urlType: prescreenId == nil ? .prescreen : .virtualLookup
+            urlType: placementsConfiguration?.rtpsData?.prescreenId == nil ? .prescreen : .virtualLookup
         ).url
 
         let requestBuilder = RTPSRequestBuilder(
@@ -54,7 +55,7 @@ extension BreadPartnersSDK {
 
         let headers: [String: String] = [
             Constants.headerClientKey: integrationKey,
-            Constants.headerRequestedWithKey: Constants.headerRequestedWithValue
+            Constants.headerRequestedWithKey: Constants.headerRequestedWithValue            
         ]
         
         var rtpsRequestBuilt = requestBuilder.build()
@@ -72,8 +73,21 @@ extension BreadPartnersSDK {
                 try await commonUtils.decodeJSON(
                     from: response, to: RTPSResponse.self
                 )
-            logger.printLog("PreScreenID: \(preScreenLookupResponse.prescreenId)")
+            let returnResultType = preScreenLookupResponse.returnCode
+            let prescreenResult = getPrescreenResult(from: returnResultType)
+            logger.printLog("PreScreenID:Result: \(prescreenResult)")
+            
+            /// Since this call runs in the background without user interaction, if the result is not "approved",
+            /// we simply return without taking any further action.
+            if(prescreenResult != .approved){
+                return
+            }
+            
+            prescreenId = preScreenLookupResponse.prescreenId
+            logger.printLog("PreScreenID: \(String(describing: prescreenId))")
+
             await fetchPlacementData()
+            
         } catch {
             alertHandler.showAlert(
                 title: Constants.nativeSDKAlertTitle(),
@@ -102,7 +116,8 @@ extension BreadPartnersSDK {
             let rtpsWebURL = await commonUtils.buildRTPSWebURL(
                 integrationKey: integrationKey,
                 merchantConfiguration: merchantConfiguration!,
-                rtpsData: placementsConfiguration!.rtpsData!
+                rtpsData: placementsConfiguration!.rtpsData!,
+                prescreenId:prescreenId ?? 0
             )?.absoluteString
 
             let location =

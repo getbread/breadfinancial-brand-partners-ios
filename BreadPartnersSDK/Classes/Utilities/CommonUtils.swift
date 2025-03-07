@@ -81,7 +81,8 @@ internal class CommonUtils: NSObject {
     func buildRTPSWebURL(
         integrationKey: String,
         merchantConfiguration: MerchantConfiguration,
-        rtpsData: RTPSData
+        rtpsData: RTPSData,
+        prescreenId:Int
     ) async -> URL? {
 
         let queryParams: [String: String?] = [
@@ -90,7 +91,7 @@ internal class CommonUtils: NSObject {
             "mockVL": rtpsData.mockResponse?.rawValue,
             "embedded": "true",
             "clientKey": integrationKey,
-            "prescreenId": rtpsData.prescreenId,
+            "prescreenId": "\(prescreenId)",
             "cardType": rtpsData.cardType,
             "urlPath": "screen name",
             "firstName": merchantConfiguration.buyer?.givenName,

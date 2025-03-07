@@ -21,16 +21,36 @@ internal class AnalyticsManager {
         self.dispatchQueue = dispatchQueue
     }
 
+    private var apiKey: String = ""
+
+    func setApiKey(_ newApiKey: String) {
+        apiKey = newApiKey
+    }
+
     private func sendAnalyticsPayload(
         apiUrl: String, payload: Analytics.Payload
     ) async {
+        let headers: [String: String] = [
+            Constants.headerAuthorityKey: Constants.headerAuthorityValue,
+            Constants.headerAcceptKey: Constants.headerAcceptValue,
+            Constants.headerAcceptEncodingKey: Constants
+                .headerAcceptEncodingValue,
+            Constants.headerAcceptLanguageKey: Constants
+                .headerAcceptLanguageValue,
+            Constants.headerAccessControlRequestHeadersKey: Constants
+                .headerAccessControlRequestHeadersValue,
+            Constants.headerAccessControlRequestMethodKey: Constants
+                .headerAccessControlRequestMethodValue,
+        ]
+
         do {
             _ = try await apiClient.request(
-                urlString: apiUrl, method: .POST, body: payload)
+                urlString: apiUrl, method: .OPTIONS, headers: headers,
+                body: payload)
         } catch {
         }
     }
-
+    /// TODO: Setup analytics payload
     private func createAnalyticsPlacementPayload(
         name: String, placementResponse: PlacementsResponse
     ) -> Analytics.Payload {
@@ -41,8 +61,11 @@ internal class AnalyticsManager {
             props: Analytics.Props(
                 eventProperties: Analytics.EventProperties(
                     placement: Analytics.Placement(
-                        id: "03d69ff1-f90c-41b2-8a27-836af7f1eb98",
-                        placementContentId: "0", overlayContentId: "0"),
+                        id: placementResponse.placements?.first?.id,
+                        placementContentId: placementResponse.placementContent?
+                            .first?.id,
+                        overlayContentId: placementResponse.placementContent?
+                            .first?.id),
                     placementContent: Analytics.PlacementContent(
                         id: placementResponse.placementContent?.first?.id,
                         contentType: placementResponse.placementContent?.first?
@@ -50,26 +73,30 @@ internal class AnalyticsManager {
                         metadata: placementResponse.placementContent?.first?
                             .metadata
                     ),
-                    metadata: ["location": "Product"],
+                    metadata: [
+                        "location": placementResponse.placements?.first?
+                            .renderContext?.LOCATION
+                    ],
                     actionTarget: nil
                 ),
                 userProperties: [:]
             ),
             context: Analytics.Context(
                 timestamp: timestamp,
-                apiKey: "config api key",
+                apiKey: apiKey,
                 browserCtx: Analytics.BrowserCtx(
                     library: Analytics.Library(
                         name: "bread-partners-sdk-ios", version: "0.0.1"),
                     userAgent: commonUtils.getUserAgent(),
                     page: Analytics.Page(
-                        path: "ScreenName",
+                        path: "ToDo",
                         url: nil
                     )
                 ),
                 trackingInfo: Analytics.TrackingInfo(
-                    userTrackingId: "6f42d67e-cff4-4575-802a-e90a838981bb",
-                    sessionTrackingId: "d5cfaf50-f05f-42a8-adea-22d70da25b73")
+                    userTrackingId: placementResponse.placements?.first?
+                        .renderContext?.SDK_TID,
+                    sessionTrackingId: "ToDO")
             )
         )
     }

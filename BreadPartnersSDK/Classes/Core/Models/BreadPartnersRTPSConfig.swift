@@ -6,7 +6,7 @@ public class RTPSData {
     public var locationType: LocationType?
     public var cardType: String?
     public var country: String?
-    public var prescreenId: String?
+    public var prescreenId: Int?
     public var correlationData: String?
     public var customerAcceptedOffer: Bool?
     public var channel: String?
@@ -16,7 +16,7 @@ public class RTPSData {
     public init(
         financingType: FinancingType? = nil, order: Order? = nil,
         locationType: LocationType? = nil, cardType: String? = nil,
-        country: String? = nil, prescreenId: String? = nil,
+        country: String? = nil, prescreenId: Int? = nil,
         correlationData: String? = nil,
         customerAcceptedOffer: Bool? = nil, channel: String? = nil,
         subChannel: String? = nil,

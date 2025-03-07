@@ -17,7 +17,7 @@ internal enum Analytics {
     struct EventProperties: Codable {
         let placement: Placement?
         let placementContent: PlacementContent?
-        let metadata: [String: String]?
+        let metadata: [String: String?]?
         let actionTarget: String?
     }
 

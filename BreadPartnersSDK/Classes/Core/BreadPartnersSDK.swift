@@ -22,7 +22,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var breadPartnerDefaults: BreadPartnerDefaults
     var callback: (BreadPartnerEvents) -> Void = { _ in }
     var rtpsFlow: Bool = false
-    var prescreenId: String? = nil
+    var prescreenId: Int? = nil
     var splitTextAndAction: Bool = false
     var forSwiftUI: Bool = false
 
@@ -170,6 +170,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                 actionButtonStyle
         }
 
+        analyticsManager.setApiKey(integrationKey)
+        
         self.htmlContentRenderer = HTMLContentRenderer(
             integrationKey: integrationKey,
             apiClient: self.apiClient,
@@ -281,8 +283,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
-//        await executeSecurityCheck()
-        await fetchPlacementData()
+        await executeSecurityCheck()
     }
 
 }

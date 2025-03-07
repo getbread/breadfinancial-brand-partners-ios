@@ -2,7 +2,7 @@ import Foundation
 
 /// Enum for HTTP Method Types.
 internal enum HTTPMethod: String {
-    case GET, POST, PUT, DELETE
+    case GET, POST, PUT, DELETE, OPTIONS
 }
 
 /// A utility class for making HTTP API requests.
@@ -50,6 +50,7 @@ internal class APIClient {
         let genericHeader: [String: String] = [
             Constants.headerContentType: Constants.headerContentTypeValue,
             Constants.headerUserAgentKey: commonUtils.getUserAgent(),
+            Constants.headerOriginKey: Constants.headerOriginValue
         ]
 
         let updatedHeaders = (headers ?? [:]).merging(
