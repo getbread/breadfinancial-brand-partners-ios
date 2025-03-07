@@ -120,5 +120,13 @@ internal class CommonUtils: NSObject {
 
         return urlComponents.url
     }
+    
+    func getUserAgent() -> String{
+        let systemName = UIDevice.current.systemName  // e.g., "iOS"
+        let systemVersion = UIDevice.current.systemVersion  // e.g., "17.2"
+        let deviceModel = UIDevice.current.model  // e.g., "iPhone"
+
+        return "\(deviceModel): \(systemName) \(systemVersion)"  // iPhone; iOS 18.2
+    }
 
 }

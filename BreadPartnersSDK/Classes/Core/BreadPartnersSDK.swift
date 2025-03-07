@@ -38,7 +38,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         )
         self.apiClient = APIClient(
             urlSession: URLSession.shared,
-            logger: self.logger
+            logger: self.logger,
+            commonUtils: self.commonUtils
         )
         self.recaptchaManager = RecaptchaManager(
             logger: self.logger
@@ -280,7 +281,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
-        //await executeSecurityCheck()
+//        await executeSecurityCheck()
         await fetchPlacementData()
     }
 

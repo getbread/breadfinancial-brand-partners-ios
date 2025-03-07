@@ -1,4 +1,13 @@
 internal class Constants{
+    
+    // API constants
+    static let headerClientKey = "X-Client-Key"
+    static let headerRequestedWithKey = "X-Requested-With"
+    static let headerRequestedWithValue = "XMLHttpRequest"
+    static let headerUserAgentKey = "User-Agent"
+    static let headerContentType = "Content-Type"
+    static let headerContentTypeValue = "application/json"
+    
     static func nativeSDKAlertTitle() -> String{
         return "Bread Partner"
     }

@@ -52,6 +52,11 @@ extension BreadPartnersSDK {
             rtpsData: placementsConfiguration!.rtpsData!
         )
 
+        let headers: [String: String] = [
+            Constants.headerClientKey: integrationKey,
+            Constants.headerRequestedWithKey: Constants.headerRequestedWithValue
+        ]
+        
         var rtpsRequestBuilt = requestBuilder.build()
         rtpsRequestBuilt.reCaptchaToken = token
 
@@ -59,6 +64,7 @@ extension BreadPartnersSDK {
             let response = try await apiClient.request(
                 urlString: apiUrl,
                 method: .POST,
+                headers: headers,
                 body: rtpsRequestBuilt
             )
 

@@ -35,9 +35,6 @@ internal class AnalyticsManager {
         name: String, placementResponse: PlacementsResponse
     ) -> Analytics.Payload {
         let timestamp = commonUtils.getCurrentTimestamp()
-        let systemName = UIDevice.current.systemName  // e.g., "iOS"
-        let systemVersion = UIDevice.current.systemVersion  // e.g., "17.2"
-        let deviceModel = UIDevice.current.model  // e.g., "iPhone"
 
         return Analytics.Payload(
             name: name,
@@ -64,7 +61,7 @@ internal class AnalyticsManager {
                 browserCtx: Analytics.BrowserCtx(
                     library: Analytics.Library(
                         name: "bread-partners-sdk-ios", version: "0.0.1"),
-                    userAgent: "\(deviceModel): \(systemName) \(systemVersion)",  // iPhone; iOS 18.2
+                    userAgent: commonUtils.getUserAgent(),
                     page: Analytics.Page(
                         path: "ScreenName",
                         url: nil

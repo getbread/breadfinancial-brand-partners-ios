@@ -10,11 +10,13 @@ internal class APIClient {
 
     private let urlSession: URLSession
     private let logger: Logger
+    private let commonUtils: CommonUtils
 
     // Dependency Injection through the initializer
-    init(urlSession: URLSession, logger: Logger) {
+    init(urlSession: URLSession, logger: Logger, commonUtils: CommonUtils) {
         self.urlSession = urlSession
         self.logger = logger
+        self.commonUtils = commonUtils
     }
 
     /// Generic API call function
@@ -23,10 +25,12 @@ internal class APIClient {
     ///   - urlString: The URL endpoint as a string.
     ///   - method: HTTP method (e.g., "GET", "POST").
     ///   - body: Optional request body, can be a dictionary (`[String: Any]`) or a Codable model.
+    ///   - headers: Optional headers body, can be a dictionary (`[String: Any]`) or nil.
     ///   - completion: Closure to handle the result, returning a success with response or failure with error.
     func request(
         urlString: String,
         method: HTTPMethod = .POST,
+        headers: [String: String]? = nil,
         body: Any? = nil
     ) async throws -> Any {
         // Validate the URL
@@ -43,9 +47,15 @@ internal class APIClient {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let headers = ["content-type": "application/json"]
+        let genericHeader: [String: String] = [
+            Constants.headerContentType: Constants.headerContentTypeValue,
+            Constants.headerUserAgentKey: commonUtils.getUserAgent(),
+        ]
 
-        for (key, value) in headers {
+        let updatedHeaders = (headers ?? [:]).merging(
+            genericHeader, uniquingKeysWith: { first, _ in first })
+
+        for (key, value) in updatedHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
 
@@ -79,7 +89,9 @@ internal class APIClient {
 
         // Log the request details
         logger.logRequestDetails(
-            url: url, method: method.rawValue, headers: headers,
+            url: url,
+            method: method.rawValue,
+            headers: updatedHeaders,
             body: request.httpBody)
 
         let (data, response) = try await urlSession.data(for: request)
