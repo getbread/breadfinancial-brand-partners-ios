@@ -30,7 +30,7 @@ internal class APIUrl {
             self.rtpsBaseURL = "https://acquire1sit.comenity.net"
         case .prod:
             self.baseURL = "https://brands.kmsmep.com"
-            self.rtpsBaseURL = "https://acquire1uat.comenity.net"
+            self.rtpsBaseURL = "https://acquire1.comenity.net"
         }
     }
 
