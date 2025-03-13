@@ -121,7 +121,7 @@ extension BreadPartnersSDK {
             )?.absoluteString
 
             let location =
-                placementsConfiguration?.rtpsData?.locationType == .checkout
+            placementsConfiguration?.rtpsData?.locationType == LocationType.checkout.rawValue
                 ? "RTPS-Approval"
                 : ""
 

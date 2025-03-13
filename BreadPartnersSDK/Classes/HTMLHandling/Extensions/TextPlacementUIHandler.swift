@@ -9,7 +9,7 @@ extension HTMLContentRenderer {
                 .renderSwiftUISeparateTextAndButton(
                     textView: plainTextView, button: actionButton)
             )
-            
+
         } else {
             let plainTextView = createPlainTextView()
 
@@ -23,17 +23,25 @@ extension HTMLContentRenderer {
 
     func renderTextViewWithLink() {
 
+        var contentText = textPlacementModel?.contentText ?? ""
+        var actionLink = textPlacementModel?.actionLink ?? ""
+        let actionType = textPlacementModel?.actionType
+
+        if actionType == PlacementActionType.noAction.rawValue {
+            if actionLink.isEmpty {
+                actionLink = contentText
+                contentText = ""
+            }
+        }
         if forSwiftUI {
-            let combinedText =
-                (textPlacementModel?.contentText ?? "N/A")
-                + (textPlacementModel?.actionLink ?? "N/A")
+            let combinedText = contentText + actionLink
             let swiftUIView = BreadPartnerLinkTextSwitUI(
                 combinedText,
-                links: [textPlacementModel?.actionLink ?? "N/A"],
+                links: [actionLink],
                 onTap: {
                     Task {
                         await self.handleLinkInteraction(
-                            link: (self.textPlacementModel?.actionLink ?? "N/A")
+                            link: (actionLink)
                         )
                     }
                 }
@@ -42,8 +50,8 @@ extension HTMLContentRenderer {
         } else {
             let textView = BreadPartnerLinkText()
             let combinedText = createSpannableText(
-                text: textPlacementModel?.contentText ?? "N/A",
-                linkText: textPlacementModel?.actionLink ?? "N/A"
+                text: contentText,
+                linkText: actionLink
             )
 
             textView.linkTextAttributes = [
@@ -84,6 +92,8 @@ extension HTMLContentRenderer {
                 await handlePopupPlacement(
                     responseModel: responseModel,
                     textPlacementModel: placementModel)
+            case .noAction:
+                callback(.textClicked)
             default:
                 return alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),

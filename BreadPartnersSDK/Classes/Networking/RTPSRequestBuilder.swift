@@ -20,7 +20,7 @@ class RTPSRequestBuilder {
             state: buyer?.billingAddress?.locality,
             zip: buyer?.billingAddress?.postalCode,
             storeNumber: merchantConfiguration.storeNumber,
-            location: rtpsData.locationType?.rawValue,
+            location: rtpsData.locationType,
             channel: merchantConfiguration.channel,
             subchannel: merchantConfiguration.subchannel,
             reCaptchaToken: nil,

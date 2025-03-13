@@ -11,8 +11,8 @@ import Foundation
 /// - `defaultSelectedCardKey`: Key for the default selected card, if any.
 /// - `selectedCardKey`: Key for the currently selected card, if any.
 public class PlacementData {
-    public var financingType: FinancingType?
-    public var locationType: LocationType?
+    public var financingType: String?
+    public var locationType: String?
     public var placementId: String?
     public var domID: String
     public var allowCheckout: Bool?
@@ -21,7 +21,7 @@ public class PlacementData {
     public var selectedCardKey: String?
 
     public init(
-        financingType: FinancingType? = nil, locationType: LocationType? = nil,
+        financingType: String? = nil, locationType: String? = nil,
         placementId: String? = nil,
         domID: String, allowCheckout: Bool? = nil, order: Order? = nil,
         defaultSelectedCardKey: String? = nil, selectedCardKey: String? = nil

@@ -12,6 +12,7 @@ public class BreadPartnerDefaults: NSObject {
         "textPlacementRequestType1": [
             "placementID": "03d69ff1-f90c-41b2-8a27-836af7f1eb98",
             "sdkTid": "69d7bfdd-a06c-4e16-adfb-58e03a3c7dbe",
+            "financingType": "installments",
             "env": "STAGE",
             "price": 73900,
             "channel": "P",
@@ -23,8 +24,9 @@ public class BreadPartnerDefaults: NSObject {
         "textPlacementRequestType2": [
             "placementID": "8828d6d9-e993-41cc-8744-fa3857c12c4a",
             "sdkTid": "6f42d67e-cff4-4575-802a-e90a838981bb",
+            "financingType": "installments",
             "env": "STAGE",
-            "location": "Category",
+            "location": "category",
             "price": 119900,
             "channel": "A",
             "subchannel": "X",
@@ -35,8 +37,9 @@ public class BreadPartnerDefaults: NSObject {
         "textPlacementRequestType3": [
             "placementID": "03d69ff1-f90c-41b2-8a27-836af7f1eb98",
             "sdkTid": "6f42d67e-cff4-4575-802a-e90a838981ss",
+            "financingType": "installments",
             "env": "STAGE",
-            "location": "Product",
+            "location": "product",
             "price": 119900,
             "channel": "A",
             "subchannel": "X",
@@ -49,6 +52,18 @@ public class BreadPartnerDefaults: NSObject {
             "location": "RTPS-Approval",
             "embeddedUrl":
                 "https://acquire1uat.comenity.net/prescreen/offer?mockMO=success&mockPA=success&mockVL=success&embedded=true&clientKey=8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7&prescreenId=79233069&cardType=&urlPath=%2F&firstName=Carol&lastName=Jones&address1=3075%20Loyalty%20Cir&city=Columbus&state=OH&zip=43219&storeNumber=2009&location=checkout&channel=O",
+        ],
+        /// Placement type for SingInButton with No_Action
+        "textPlacementRequestType5": [
+            "placementID": "dadc4588-d67f-45f9-8096-81c1264fc2f3",
+            "sdkTid": "6f42d67e-cff4-4575-802a-e90a838981ss",
+            "env": "STAGE",
+            "location": "footer",
+            "price": 11000,
+            "channel": "F",
+            "subchannel": "X",
+            "allowCheckout": false,
+            "brandId": "b9464be2-3ea3-4018-80ed-e903f75acb18",
         ],
     ]
 

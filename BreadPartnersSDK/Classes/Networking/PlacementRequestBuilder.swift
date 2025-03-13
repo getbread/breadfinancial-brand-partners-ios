@@ -24,6 +24,7 @@ class PlacementRequestBuilder {
     ) {
         let context = ContextRequestBody(
             ENV: merchantConfiguration?.env,
+            LOCATION: placementConfig?.locationType ?? "",
             PRICE: placementConfig?.order?.totalPrice?.value,
             channel: merchantConfiguration?.channel,
             subchannel: merchantConfiguration?.subchannel,

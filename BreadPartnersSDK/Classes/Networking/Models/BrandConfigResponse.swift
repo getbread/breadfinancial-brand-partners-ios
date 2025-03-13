@@ -13,24 +13,42 @@ internal struct Config: Codable {
     let recaptchaEnabledQA: String
     let recaptchaSiteKeyQA: String
     let test: String
-    
-    init(
-        AEMContent: String = "",
-        OVERRIDE_KEY: String = "",
-        clientName: String = "",
-        prodAdServerUrl: String = "",
-        qaAdServerUrl: String = "",
-        recaptchaEnabledQA: String = "",
-        recaptchaSiteKeyQA: String = "",
-        test: String = ""
-    ) {
-        self.AEMContent = AEMContent
-        self.OVERRIDE_KEY = OVERRIDE_KEY
-        self.clientName = clientName
-        self.prodAdServerUrl = prodAdServerUrl
-        self.qaAdServerUrl = qaAdServerUrl
-        self.recaptchaEnabledQA = recaptchaEnabledQA
-        self.recaptchaSiteKeyQA = recaptchaSiteKeyQA
-        self.test = test
+
+    enum CodingKeys: String, CodingKey {
+        case AEMContent
+        case OVERRIDE_KEY
+        case clientName
+        case prodAdServerUrl
+        case qaAdServerUrl
+        case recaptchaEnabledQA
+        case recaptchaSiteKeyQA
+        case test
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.AEMContent =
+            try container.decodeIfPresent(String.self, forKey: .AEMContent)
+            ?? ""
+        self.OVERRIDE_KEY =
+            try container.decodeIfPresent(String.self, forKey: .OVERRIDE_KEY)
+            ?? ""
+        self.clientName =
+            try container.decodeIfPresent(String.self, forKey: .clientName)
+            ?? ""
+        self.prodAdServerUrl =
+            try container.decodeIfPresent(String.self, forKey: .prodAdServerUrl)
+            ?? ""
+        self.qaAdServerUrl =
+            try container.decodeIfPresent(String.self, forKey: .qaAdServerUrl)
+            ?? ""
+        self.recaptchaEnabledQA =
+            try container.decodeIfPresent(
+                String.self, forKey: .recaptchaEnabledQA) ?? ""
+        self.recaptchaSiteKeyQA =
+            try container.decodeIfPresent(
+                String.self, forKey: .recaptchaSiteKeyQA) ?? ""
+        self.test =
+            try container.decodeIfPresent(String.self, forKey: .test) ?? ""
     }
 }

@@ -34,12 +34,21 @@ extension HTMLContentRenderer {
     }
 
     func createActionButton() -> UIButton {
+        var contentText = textPlacementModel?.contentText ?? ""
+        var actionLink = textPlacementModel?.actionLink ?? ""
+        let actionType = textPlacementModel?.actionType
+        if actionType == PlacementActionType.noAction.rawValue {
+            if actionLink.isEmpty {
+                actionLink = contentText
+                contentText = ""
+            }
+        }
 
         let button = UIButton(type: .system)
-        button.setTitle(textPlacementModel?.actionLink ?? "N/A", for: .normal)
+        button.setTitle(actionLink, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.setTitleColor(UIColor.white, for: .normal)
-        button.accessibilityIdentifier = textPlacementModel?.actionLink ?? "N/A"
+        button.accessibilityIdentifier = actionLink
         button.backgroundColor = UIColor.blue
 
         button.layer.masksToBounds = true
@@ -57,8 +66,19 @@ extension HTMLContentRenderer {
     }
 
     func createSwiftUIActionButton() -> BreadPartnerButtonView {
+        var contentText = textPlacementModel?.contentText ?? ""
+        var actionLink = textPlacementModel?.actionLink ?? ""
+        let actionType = textPlacementModel?.actionType
+
+        if actionType == PlacementActionType.noAction.rawValue {
+            if actionLink.isEmpty {
+                actionLink = contentText
+                contentText = ""
+            }
+        }
+
         return BreadPartnerButtonView(
-            textPlacementModel?.actionLink ?? "N/A",
+            actionLink,
             action: {
                 Task {
                     await self.handleLinkInteraction(link: "")

@@ -1,9 +1,9 @@
 import Foundation
 
 public class RTPSData {
-    public var financingType: FinancingType?
+    public var financingType: String?
     public var order: Order?
-    public var locationType: LocationType?
+    public var locationType: String?
     public var cardType: String?
     public var country: String?
     public var prescreenId: Int?
@@ -14,8 +14,8 @@ public class RTPSData {
     public var mockResponse: BreadPartnersMockOptions?
 
     public init(
-        financingType: FinancingType? = nil, order: Order? = nil,
-        locationType: LocationType? = nil, cardType: String? = nil,
+        financingType: String? = nil, order: Order? = nil,
+        locationType: String? = nil, cardType: String? = nil,
         country: String? = nil, prescreenId: Int? = nil,
         correlationData: String? = nil,
         customerAcceptedOffer: Bool? = nil, channel: String? = nil,

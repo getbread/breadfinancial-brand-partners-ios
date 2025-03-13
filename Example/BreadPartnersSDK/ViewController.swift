@@ -16,10 +16,15 @@ class ViewController: UIViewController {
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
         let placementRequestType = BreadPartnerDefaults.shared
-            .placementConfigurations["textPlacementRequestType1"]
-        let placementID = placementRequestType!["placementID"] as! String
-        let price = (placementRequestType!["price"] as! Int)
-        let brandId = placementRequestType!["brandId"] as! String
+            .placementConfigurations["textPlacementRequestType5"]
+        let placementID = placementRequestType!["placementID"] as? String
+        let price = (placementRequestType!["price"] as? Int)
+        let brandId = placementRequestType!["brandId"] as? String
+        let channel = placementRequestType!["channel"] as? String
+        let subChannel = placementRequestType!["subchannel"] as? String
+        let env = placementRequestType!["env"] as? String
+        let location = placementRequestType!["location"] as? String
+        let financingType = placementRequestType!["financingType"] as? String
 
         // MARK: For development purposes
         style = BreadPartnerDefaults.shared.styleStruct["cadet"]!
@@ -94,15 +99,15 @@ class ViewController: UIViewController {
         )
 
         let placementData = PlacementData(
-            financingType: .installments,
-            locationType: .category,
+            financingType: financingType,
+            locationType: location,
             placementId: placementID,
             domID: "123",
             order: Order(
                 subTotal: CurrencyValue(currency: "USD", value: 0),
                 totalDiscounts: CurrencyValue(currency: "USD", value: 0),
                 totalPrice: CurrencyValue(
-                    currency: "USD", value: Double(price)),
+                    currency: "USD", value: Double(price ?? 0)),
                 totalShipping: CurrencyValue(currency: "USD", value: 0),
                 totalTax: CurrencyValue(currency: "USD", value: 0),
                 discountCode: "string",
@@ -145,22 +150,22 @@ class ViewController: UIViewController {
                 shippingAddress: nil
             ), loyaltyID: "xxxxxx",
             storeNumber: "1234567",
-            env: "STAGE",
-            channel: "P",
-            subchannel: "X"
+            env: env,
+            channel: channel,
+            subchannel: subChannel
         )
 
         Task {
 
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
-                integrationKey: brandId,
+                integrationKey: brandId ?? "",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.registerPlacements(
                 merchantConfiguration: merchantConfiguration,
                 placementsConfiguration: placementsConfiguration,
-                splitTextAndAction: true,
+                splitTextAndAction: false,
                 forSwiftUI: false
             ) {
                 event in
@@ -267,7 +272,7 @@ class ViewController: UIViewController {
                 totalPrice: CurrencyValue(
                     currency: "USD",
                     value: 50000)
-            ), locationType: .checkout,
+            ), locationType: "checkout",
             mockResponse: .success
         )
 
@@ -291,6 +296,11 @@ class ViewController: UIViewController {
         )
 
         Task {
+            await BreadPartnersSDK.shared.setup(
+                environment: .stage,
+                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                enableLog: true)
+
             await BreadPartnersSDK.shared.silentRTPSRequest(
                 merchantConfiguration: merchantConfiguration,
                 placementsConfiguration: placementsConfiguration
