@@ -3,7 +3,6 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    @IBOutlet weak var preScreenButton: UIButton!
     var style: [String: Any] = ["": ""]
 
     override func viewDidLoad() {
@@ -16,7 +15,7 @@ class ViewController: UIViewController {
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
         let placementRequestType = BreadPartnerDefaults.shared
-            .placementConfigurations["textPlacementRequestType5"]
+            .placementConfigurations["textPlacementRequestType2"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
         let brandId = placementRequestType!["brandId"] as? String
@@ -40,10 +39,6 @@ class ViewController: UIViewController {
         let largeTextSize = style["large"] as! Int
         let xlargeTextSize = style["xlarge"] as! Int
 
-        // MARK: For development purposes to showcase pre-screen flow.
-        preScreenButton.titleLabel?.font = UIFont(
-            name: fontFamily, size: CGFloat(xlargeTextSize))
-        preScreenButton.tintColor = UIColor(hex: primaryColor)
 
         /// Prepare popup styling configuration object for each style elemnt
         let popUpStyling = PopUpStyling(
@@ -265,57 +260,6 @@ class ViewController: UIViewController {
         }
     }
 
-    @IBAction func preScreenButton(_ sender: Any) {
-
-        let rtpsData = RTPSData(
-            order: Order(
-                totalPrice: CurrencyValue(
-                    currency: "USD",
-                    value: 50000)
-            ), locationType: "checkout",
-            mockResponse: .success
-        )
-
-        let placementsConfiguration = PlacementConfiguration(
-            rtpsData: rtpsData
-        )
-
-        let merchantConfiguration = MerchantConfiguration(
-            buyer: BreadPartnersBuyer(
-                givenName: "Carol",
-                familyName: "Jones",
-                additionalName: "C.",
-                birthDate: "1974-08-21",
-                billingAddress: BreadPartnersAddress(
-                    address1: "3075 Loyalty Cir",
-                    locality: "Columbus",
-                    region: "OH",
-                    postalCode: "43219")
-            ),
-            storeNumber: "2009"
-        )
-
-        Task {
-            await BreadPartnersSDK.shared.setup(
-                environment: .stage,
-                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
-                enableLog: true)
-
-            await BreadPartnersSDK.shared.silentRTPSRequest(
-                merchantConfiguration: merchantConfiguration,
-                placementsConfiguration: placementsConfiguration
-            ) {
-                event in
-                switch event {
-                case .renderPopupView(let view):
-                    self.present(view, animated: true)
-                    print("BreadPartnerSDK::Successfully rendered PopupView.")
-                default:
-                    print("BreadPartnerSDK::Event: \(event)")
-                }
-            }
-        }
-    }
 
     func showYesNoAlert(
         from viewController: UIViewController,
@@ -343,4 +287,6 @@ class ViewController: UIViewController {
         alertController.addAction(noAction)
         viewController.present(alertController, animated: true, completion: nil)
     }
+
+
 }

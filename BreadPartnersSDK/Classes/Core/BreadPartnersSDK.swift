@@ -22,6 +22,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var breadPartnerDefaults: BreadPartnerDefaults
     var callback: (BreadPartnerEvents) -> Void = { _ in }
     var rtpsFlow: Bool = false
+    var openPlacementExperience: Bool = false
     var prescreenId: Int? = nil
     var splitTextAndAction: Bool = false
     var forSwiftUI: Bool = false
@@ -82,6 +83,15 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var onResult: ((BreadPartnerEvents) -> Void)?
 
     func setUpInjectables() {
+
+        if brandConfiguration == nil {
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain:
+                            "Brand configurations are missing or unavailable.",
+                        code: 404)))
+        }
 
         /// Default Popup action button style
         let actionButtonStyle = PopupActionButtonStyle(
@@ -170,8 +180,10 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                 actionButtonStyle
         }
 
+        alertHandler.setUpAlerts(rtpsFlow, logger, callback)
+
         analyticsManager.setApiKey(integrationKey)
-        
+
         self.htmlContentRenderer = HTMLContentRenderer(
             integrationKey: integrationKey,
             apiClient: self.apiClient,
@@ -229,17 +241,9 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.forSwiftUI = forSwiftUI
         self.callback = callback
         self.rtpsFlow = false
+        self.openPlacementExperience = false
 
         setUpInjectables()
-
-        if brandConfiguration == nil {
-            return callback(
-                .sdkError(
-                    error: NSError(
-                        domain:
-                            "Brand configurations are missing or unavailable.",
-                        code: 404)))
-        }
 
         await fetchPlacementData()
 
@@ -272,18 +276,38 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         self.forSwiftUI = forSwiftUI
         self.callback = callback
         self.rtpsFlow = true
+        self.openPlacementExperience = false
 
         setUpInjectables()
-        if brandConfiguration == nil {
-            return callback(
-                .sdkError(
-                    error: NSError(
-                        domain:
-                            "Brand configurations are missing or unavailable.",
-                        code: 404)))
-        }
 
         await executeSecurityCheck()
+    }
+
+    /// Display an overlay to the customer without requiring them to click on a placement to trigger it.
+    /// - Parameters:
+    ///   - merchantConfiguration: Provide user account details in this configuration.
+    ///   - placementsConfiguration: Specify the pre-defined placement details required for building the UI.
+    ///   - forSwiftUI: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
+    ///   - callback: A function that handles user interactions and ongoing events related to the placements.
+    public func openExperienceForPlacement(
+        merchantConfiguration: MerchantConfiguration,
+        placementsConfiguration: PlacementConfiguration,
+        forSwiftUI: Bool = false,
+        callback: @escaping (
+            BreadPartnerEvents
+        ) -> Void
+    ) async {
+        self.merchantConfiguration = merchantConfiguration
+        self.placementsConfiguration = placementsConfiguration
+        self.forSwiftUI = forSwiftUI
+        self.callback = callback
+        self.rtpsFlow = false
+        self.openPlacementExperience = true
+
+        setUpInjectables()
+
+        await fetchPlacementData()
+
     }
 
 }

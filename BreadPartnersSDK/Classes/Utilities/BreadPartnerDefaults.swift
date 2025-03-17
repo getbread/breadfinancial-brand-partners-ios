@@ -65,6 +65,16 @@ public class BreadPartnerDefaults: NSObject {
             "allowCheckout": false,
             "brandId": "b9464be2-3ea3-4018-80ed-e903f75acb18",
         ],
+        /// Placement type for openExperienceForPlacement
+        "textPlacementRequestType6": [
+            "placementID": "a0348301-dc9a-4c34-b68d-dacb40fe3696",
+            "sdkTid": "6f42d67e-cff4-4575-802a-e90a838981ss",
+            "env": "STAGE",
+            "price": 0,
+            "channel": "X",
+            "subchannel": "X",
+            "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
+        ],
     ]
 
     public let styleStruct: [String: [String: Any]] = [

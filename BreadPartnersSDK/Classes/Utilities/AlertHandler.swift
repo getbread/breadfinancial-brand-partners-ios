@@ -9,8 +9,32 @@ internal class AlertHandler {
         self.windowScene = windowScene
     }
 
+    private var rtpsFlow: Bool = false
+    private var logger: Logger?
+    var callback: (BreadPartnerEvents) -> Void = { _ in }
+
+    func setUpAlerts(
+        _ rtpsFlow: Bool = false, _ logger: Logger?,
+        _ callback: @escaping (
+            BreadPartnerEvents
+        ) -> Void
+    ) {
+        self.rtpsFlow = rtpsFlow
+        self.logger = logger
+        self.callback = callback
+    }
+
     /// Displays or updates a custom alert dialog with a title and message.
     func showAlert(title: String, message: String, showOkButton: Bool) {
+        callback(
+            .sdkError(
+                error: NSError(
+                    domain: "", code: 500,
+                    userInfo: [NSLocalizedDescriptionKey: message])))
+        if rtpsFlow {
+            logger?.printLog("Error: \(message)")
+            return
+        }
         Task { @MainActor in
             // If an alert is already being presented, dismiss it before showing a new one
             if let existingAlert = alertController {

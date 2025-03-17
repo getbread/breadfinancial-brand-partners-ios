@@ -17,24 +17,45 @@ extension PopupController {
         }
     }
 
-     func setupPopupView() async {
+    func setupPopupView() async {
         await MainActor.run {
             view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
             let popupStyle = placementsConfiguration?.popUpStyling
 
-            popupView = PopupElements.shared.createContainerView(backgroundColor: .white)
-            closeButton = PopupElements.shared.addCloseButton(target: self, color: popupStyle!.crossColor, action: #selector(closeButtonTapped))
-            dividerTop = PopupElements.shared.createHorizontalDivider(color: popupStyle!.dividerColor)
-            dividerBottom = PopupElements.shared.createHorizontalDivider(color: popupStyle!.dividerColor)
-            titleLabel = PopupElements.shared.createLabel(withText: popupModel.overlayTitle, style: popupStyle!.titlePopupTextStyle)
-            subtitleLabel = PopupElements.shared.createLabel(withText: popupModel.overlaySubtitle, style: popupStyle!.subTitlePopupTextStyle)
-            disclosureLabel = PopupElements.shared.createLabel(withText: popupModel.disclosure, style: popupStyle!.disclosurePopupTextStyle, align: .left)
-            contentContainerView = PopupElements.shared.createContainerView(backgroundColor: .white, borderColor: popupStyle!.borderColor, borderWidth: 1.0, cornerRadius: 8.0)
-            headerView = PopupElements.shared.createHeaderView(label: popupModel.overlayContainerBarHeading, bgColor: popupStyle!.headerBgColor, headerTextStyle: popupStyle!.headerPopupTextStyle)
-            contentStackView = PopupElements.shared.createStackView(axis: .vertical, spacing: 10)
+            popupView = PopupElements.shared.createContainerView(
+                backgroundColor: .white)
+            closeButton = PopupElements.shared.addCloseButton(
+                target: self, color: popupStyle!.crossColor,
+                action: #selector(closeButtonTapped))
+            dividerTop = PopupElements.shared.createHorizontalDivider(
+                color: popupStyle!.dividerColor)
+            dividerBottom = PopupElements.shared.createHorizontalDivider(
+                color: popupStyle!.dividerColor)
+            titleLabel = PopupElements.shared.createLabel(
+                withText: popupModel.overlayTitle,
+                style: popupStyle!.titlePopupTextStyle)
+            subtitleLabel = PopupElements.shared.createLabel(
+                withText: popupModel.overlaySubtitle,
+                style: popupStyle!.subTitlePopupTextStyle)
+            disclosureLabel = PopupElements.shared.createLabel(
+                withText: popupModel.disclosure,
+                style: popupStyle!.disclosurePopupTextStyle, align: .left)
+            contentContainerView = PopupElements.shared.createContainerView(
+                backgroundColor: .white, borderColor: popupStyle!.borderColor,
+                borderWidth: 1.0, cornerRadius: 8.0)
+            headerView = PopupElements.shared.createHeaderView(
+                label: popupModel.overlayContainerBarHeading,
+                bgColor: popupStyle!.headerBgColor,
+                headerTextStyle: popupStyle!.headerPopupTextStyle)
+            contentStackView = PopupElements.shared.createStackView(
+                axis: .vertical, spacing: 10)
 
             if let actionButtonStyle = popupStyle?.actionButtonStyle {
-                actionButton = PopupElements.shared.createButton(target: self, title: popupModel.primaryActionButtonAttributes?.buttonText ?? "Action", buttonStyle: actionButtonStyle, action: #selector(actionButtonTapped))
+                actionButton = PopupElements.shared.createButton(
+                    target: self,
+                    title: popupModel.primaryActionButtonAttributes?.buttonText
+                        ?? "Action", buttonStyle: actionButtonStyle,
+                    action: #selector(actionButtonTapped))
             }
 
             view.addSubview(popupView)
@@ -46,7 +67,8 @@ extension PopupController {
             overlayProductView.translatesAutoresizingMaskIntoConstraints = false
 
             overlayEmbeddedView = UIView()
-            overlayEmbeddedView.translatesAutoresizingMaskIntoConstraints = false
+            overlayEmbeddedView.translatesAutoresizingMaskIntoConstraints =
+                false
 
             popupView.addSubview(closeButton)
             popupView.addSubview(brandLogo)
@@ -64,36 +86,48 @@ extension PopupController {
     }
 
     private func setupEmbeddedOverlay() async {
+        guard let webViewURL = URL(string: popupModel.webViewUrl) else {
+            await MainActor.run {
+                alertHandler.showAlert(
+                    title: Constants.nativeSDKAlertTitle(),
+                    message: Constants.unableToLoadWebURL(
+                        message: popupModel.webViewUrl),
+                    showOkButton: true
+                )
+            }
+            return
+        }
+
         await MainActor.run {
             popupView.addSubview(overlayEmbeddedView)
-            webViewManager = BreadFinancialWebViewInterstitial(
-                logger: logger,
-                callback: { event in
-                self.handleWebViewEvent(event: event)
-            })
-            if let url = URL(string: popupModel.webViewUrl) {
-                webView = webViewManager.createWebView(with: url)
-                webView.translatesAutoresizingMaskIntoConstraints = false
-                overlayEmbeddedView.addSubview(webView)
+            webViewManager = BreadFinancialWebViewInterstitial(logger: logger) {
+                [weak self] event in
+                self?.handleWebViewEvent(event: event)
             }
+
+            webView = webViewManager.createWebView(with: webViewURL)
+            webView.translatesAutoresizingMaskIntoConstraints = false
+            overlayEmbeddedView.addSubview(webView)
+
             overlayEmbeddedConstraints()
         }
 
-        // Load the web content asynchronously
         do {
-            await MainActor.run { self.loader?.startAnimating() }
+            await MainActor.run { loader?.startAnimating() }
             let loadedURL = try await webViewManager.loadPage(for: webView)
             logger.printLog("Loaded URL: \(loadedURL)")
         } catch {
-            DispatchQueue.main.async {
-                self.alertHandler.showAlert(
+            await MainActor.run {
+                alertHandler.showAlert(
                     title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.unableToLoadWebURL(message: error.localizedDescription),
+                    message: Constants.unableToLoadWebURL(
+                        message: error.localizedDescription),
                     showOkButton: true
                 )
             }
         }
-        await MainActor.run { self.loader?.stopAnimating() }
+
+        await MainActor.run { loader?.stopAnimating() }
     }
 
     private func setupSingleProductOverlay() async {
@@ -116,7 +150,6 @@ extension PopupController {
             }
         }
     }
-
 
     func setupLoader() {
         DispatchQueue.main.async {
