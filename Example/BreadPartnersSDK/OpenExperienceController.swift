@@ -38,9 +38,9 @@ class OpenExperienceController: UIViewController {
         let brandId = placementRequestType!["brandId"] as? String
         let channel = placementRequestType!["channel"] as? String
         let subChannel = placementRequestType!["subchannel"] as? String
-        let env = placementRequestType!["env"] as? String
-        let location = placementRequestType!["location"] as? String
-        let financingType = placementRequestType!["financingType"] as? String
+        let env = placementRequestType!["env"] as? BreadPartnersEnvironment
+        let location = placementRequestType!["location"] as? BreadPartnersLocationType
+        let financingType = placementRequestType!["financingType"] as? BreadPartnersFinancingType
 
         let placementData = PlacementData(
             financingType: financingType,
@@ -101,7 +101,7 @@ class OpenExperienceController: UIViewController {
         Task {
 
             await BreadPartnersSDK.shared.setup(
-                environment: .stage,
+                environment: env ?? BreadPartnersEnvironment.stage,
                 integrationKey: brandId ?? "",
                 enableLog: true)
 

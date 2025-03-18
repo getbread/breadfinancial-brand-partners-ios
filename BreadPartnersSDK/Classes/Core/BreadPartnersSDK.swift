@@ -209,7 +209,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ///   - enableLog: Set this to `true` if you want to see debug logs.
     ///   - environment: Specifies the SDK environment, such as production (.prod) or development (stage).
     public func setup(
-        environment: BreadSDKEnvironment = .prod,
+        environment: BreadPartnersEnvironment = .prod,
         integrationKey: String,
         enableLog: Bool
     ) async {

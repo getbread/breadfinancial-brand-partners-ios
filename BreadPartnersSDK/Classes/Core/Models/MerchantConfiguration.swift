@@ -7,7 +7,7 @@ public struct MerchantConfiguration {
     public var departmentId: String?
     public var existingCardHolder: Bool?
     public var cardholderTier: String?
-    public var env: String?
+    public var env: BreadPartnersEnvironment?
     public var cardEnv: String?
 
     public var channel: String?
@@ -39,7 +39,7 @@ public struct MerchantConfiguration {
         departmentId: String? = nil,
         existingCardHolder: Bool? = nil,
         cardholderTier: String? = nil,
-        env: String? = nil,
+        env: BreadPartnersEnvironment? = nil,
         cardEnv: String? = nil,
         channel: String? = nil,
         subchannel: String? = nil,

@@ -6,7 +6,8 @@ extension PopupController {
         let builder = PlacementRequestBuilder(
             integrationKey: integrationKey,
             merchantConfiguration: merchantConfiguration,
-            placementConfig: placementsConfiguration?.placementData)
+            placementConfig: placementsConfiguration?.placementData,
+            environment: APIUrl.currentEnvironment)
         let placementRequest = builder.build()
 
         let request = PlacementRequest(

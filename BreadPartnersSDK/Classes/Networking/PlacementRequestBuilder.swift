@@ -7,15 +7,17 @@ class PlacementRequestBuilder {
     private var integrationKey: String = ""
     private var placements: [PlacementRequestBody] = []
     private var brandId: String = ""
-    
+
     init(
         integrationKey: String,
         merchantConfiguration: MerchantConfiguration?,
-        placementConfig: PlacementData?
+        placementConfig: PlacementData?,
+        environment: BreadPartnersEnvironment?
     ) {
         self.brandId = integrationKey
         self.createPlacementRequestBody(
-            merchantConfiguration: merchantConfiguration, placementConfig: placementConfig)
+            merchantConfiguration: merchantConfiguration,
+            placementConfig: placementConfig)
     }
 
     private func createPlacementRequestBody(
@@ -23,8 +25,8 @@ class PlacementRequestBuilder {
         placementConfig: PlacementData?
     ) {
         let context = ContextRequestBody(
-            ENV: merchantConfiguration?.env,
-            LOCATION: placementConfig?.locationType ?? "",
+            ENV: APIUrl.currentEnvironment.rawValue,
+            LOCATION: placementConfig?.locationType?.rawValue,
             PRICE: placementConfig?.order?.totalPrice?.value,
             channel: merchantConfiguration?.channel,
             subchannel: merchantConfiguration?.subchannel,

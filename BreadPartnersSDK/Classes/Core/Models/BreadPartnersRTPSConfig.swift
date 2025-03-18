@@ -1,9 +1,9 @@
 import Foundation
 
 public class RTPSData {
-    public var financingType: String?
+    public var financingType: BreadPartnersFinancingType?
     public var order: Order?
-    public var locationType: String?
+    public var locationType: BreadPartnersLocationType?
     public var cardType: String?
     public var country: String?
     public var prescreenId: Int?
@@ -14,8 +14,8 @@ public class RTPSData {
     public var mockResponse: BreadPartnersMockOptions?
 
     public init(
-        financingType: String? = nil, order: Order? = nil,
-        locationType: String? = nil, cardType: String? = nil,
+        financingType: BreadPartnersFinancingType? = nil, order: Order? = nil,
+        locationType: BreadPartnersLocationType? = nil, cardType: String? = nil,
         country: String? = nil, prescreenId: Int? = nil,
         correlationData: String? = nil,
         customerAcceptedOffer: Bool? = nil, channel: String? = nil,
@@ -36,7 +36,7 @@ public class RTPSData {
     }
 }
 
-public enum BreadPartnersMockOptions: String {
+public enum BreadPartnersMockOptions: String, CaseIterable {
     case success = "success"
     case noHit = "noHit"
     case makeOffer = "makeOffer"

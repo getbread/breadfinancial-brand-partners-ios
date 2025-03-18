@@ -207,7 +207,7 @@
 		C62381566D2F4656285FA3647A6B4530 /* Contain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAC7C083CF9F4D9772EADA4F40B0425 /* Contain.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		C6598EAA0A996FBB03D8CA0DD43D7171 /* NMBExpectation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E41A976976915397B9CDBF73B0DB44 /* NMBExpectation.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		C91418B320DF793E5017CAC46D7AB32D /* RecaptchaInterop-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A76662C77DD02C699D748533D0B0955 /* RecaptchaInterop-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C9331D111AAF316D7ED7EE8B8F7DEEF4 /* BreadSDKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADC5308F1E55AC460C6353C9691AD52D /* BreadSDKEnvironment.swift */; };
+		C9331D111AAF316D7ED7EE8B8F7DEEF4 /* BreadPartnersEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADC5308F1E55AC460C6353C9691AD52D /* BreadPartnersEnvironment.swift */; };
 		CA468722C93EBF8F99586FF45D522A7F /* BreadFinancialWebViewInterstitial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E354EB08BDA1F2D949A8DA4A97C666 /* BreadFinancialWebViewInterstitial.swift */; };
 		CA872B29B7D86D061671AB650CAED98A /* ElementsEqual.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E59C75B0B5A1FA22BBFE0E425E1E279 /* ElementsEqual.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		CBE65109F6C278D11AE4DB4EB915782F /* AssertionRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB97253F32E1D58C76403AF9F5FCD3B /* AssertionRecorder.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -548,7 +548,7 @@
 		ABD82B7E5E1119C132479C4374F2F398 /* CharacterExt.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterExt.swift; path = Sources/CharacterExt.swift; sourceTree = "<group>"; };
 		AC8D0B9A22A16FAF315EBA8C9E4EE952 /* CwlCatchException.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CwlCatchException.m; path = Carthage/Checkouts/CwlCatchException/Sources/CwlCatchExceptionSupport/CwlCatchException.m; sourceTree = "<group>"; };
 		ADB4565838FCFA62527B4B8A94040189 /* Behavior.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Behavior.swift; path = Sources/Quick/Behavior.swift; sourceTree = "<group>"; };
-		ADC5308F1E55AC460C6353C9691AD52D /* BreadSDKEnvironment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BreadSDKEnvironment.swift; sourceTree = "<group>"; };
+		ADC5308F1E55AC460C6353C9691AD52D /* BreadPartnersEnvironment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BreadPartnersEnvironment.swift; sourceTree = "<group>"; };
 		AE841E182445948E097F69BD5943FA2B /* ParseErrorList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ParseErrorList.swift; path = Sources/ParseErrorList.swift; sourceTree = "<group>"; };
 		AEC92D40D64DDBCE682E9B7DCF544605 /* Pods_BreadPartnersSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BreadPartnersSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEEC53CFE12A591C646DBFB0058D8627 /* Quick.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Quick.h; path = Sources/QuickObjectiveC/Quick.h; sourceTree = "<group>"; };
@@ -1269,7 +1269,7 @@
 				B46512F79FE2228F2100406B63870058 /* PlacementData.swift */,
 				4BA169C483C5EC473C80182798EFAB78 /* BreadPartnersRTPSConfig.swift */,
 				A9D4CF35CB505D4B34BE0EE032F7B352 /* MerchantConfiguration.swift */,
-				ADC5308F1E55AC460C6353C9691AD52D /* BreadSDKEnvironment.swift */,
+				ADC5308F1E55AC460C6353C9691AD52D /* BreadPartnersEnvironment.swift */,
 				5EE0044D85E0A0F70E97E5A10F498231 /* RTPSRequest.swift */,
 				6A7A8D7DB03003F39A3B636FCC895AED /* RTPSResponse.swift */,
 				A332F3113D77859BCFDF029FBE17C097 /* PlacementConfiguration.swift */,
@@ -1909,7 +1909,7 @@
 				85C7593F526030A80654E2CEAA5FB690 /* BreadPartnersSDK.swift in Sources */,
 				EC61305E1EBA2716E677C401FBC9D28F /* BreadPartnersSDK-dummy.m in Sources */,
 				F1C93C5CA70B88B932E815E9ED815FEF /* MerchantConfiguration.swift in Sources */,
-				C9331D111AAF316D7ED7EE8B8F7DEEF4 /* BreadSDKEnvironment.swift in Sources */,
+				C9331D111AAF316D7ED7EE8B8F7DEEF4 /* BreadPartnersEnvironment.swift in Sources */,
 				0B5777D0DBFD6F44F93385A2FF484DDA /* CommonUtils.swift in Sources */,
 				0FEDCEE620B14EF24D6038F67006F2F7 /* Constants.swift in Sources */,
 				129A15112D5E2D440081A3A6 /* TextPlacementUICreator.swift in Sources */,

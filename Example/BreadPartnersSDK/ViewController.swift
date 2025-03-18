@@ -15,15 +15,15 @@ class ViewController: UIViewController {
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
         let placementRequestType = BreadPartnerDefaults.shared
-            .placementConfigurations["textPlacementRequestType2"]
+            .placementConfigurations["textPlacementRequestType1"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
         let brandId = placementRequestType!["brandId"] as? String
         let channel = placementRequestType!["channel"] as? String
         let subChannel = placementRequestType!["subchannel"] as? String
-        let env = placementRequestType!["env"] as? String
-        let location = placementRequestType!["location"] as? String
-        let financingType = placementRequestType!["financingType"] as? String
+        let env = placementRequestType!["env"] as? BreadPartnersEnvironment
+        let location = placementRequestType!["location"] as? BreadPartnersLocationType
+        let financingType = placementRequestType!["financingType"] as? BreadPartnersFinancingType
 
         // MARK: For development purposes
         style = BreadPartnerDefaults.shared.styleStruct["cadet"]!
@@ -145,7 +145,6 @@ class ViewController: UIViewController {
                 shippingAddress: nil
             ), loyaltyID: "xxxxxx",
             storeNumber: "1234567",
-            env: env,
             channel: channel,
             subchannel: subChannel
         )
@@ -153,7 +152,7 @@ class ViewController: UIViewController {
         Task {
 
             await BreadPartnersSDK.shared.setup(
-                environment: .stage,
+                environment: env ?? BreadPartnersEnvironment.stage,
                 integrationKey: brandId ?? "",
                 enableLog: true)
 

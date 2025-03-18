@@ -52,7 +52,8 @@ class RTPSController: UIViewController {
 
         NSLayoutConstraint.activate([
             mainStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mainStack.topAnchor.constraint(equalTo: view.topAnchor,constant: 20),
+            mainStack.topAnchor.constraint(
+                equalTo: view.topAnchor, constant: 20),
             mainStack.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor, constant: 20),
             mainStack.trailingAnchor.constraint(
@@ -84,7 +85,7 @@ class RTPSController: UIViewController {
                 totalPrice: CurrencyValue(
                     currency: "USD",
                     value: 50000)
-            ), locationType: "checkout",
+            ), locationType: BreadPartnersLocationType.checkout,
             mockResponse: .success
         )
 

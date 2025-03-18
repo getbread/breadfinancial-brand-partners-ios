@@ -30,7 +30,8 @@ extension BreadPartnersSDK {
             let builder = PlacementRequestBuilder(
                 integrationKey: integrationKey,
                 merchantConfiguration: merchantConfiguration,
-                placementConfig: placementsConfiguration?.placementData
+                placementConfig: placementsConfiguration?.placementData,
+                environment: APIUrl.currentEnvironment
             )
             request = builder.build()
 

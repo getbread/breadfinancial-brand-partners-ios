@@ -101,7 +101,7 @@ internal class CommonUtils: NSObject {
             "state": merchantConfiguration.buyer?.billingAddress?.region,
             "zip": merchantConfiguration.buyer?.billingAddress?.postalCode,
             "storeNumber": merchantConfiguration.storeNumber,
-            "location": rtpsData.locationType,
+            "location": rtpsData.locationType?.rawValue,
             "channel": rtpsData.channel,
         ]
 

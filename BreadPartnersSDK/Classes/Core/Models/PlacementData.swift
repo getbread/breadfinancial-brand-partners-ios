@@ -11,8 +11,8 @@ import Foundation
 /// - `defaultSelectedCardKey`: Key for the default selected card, if any.
 /// - `selectedCardKey`: Key for the currently selected card, if any.
 public class PlacementData {
-    public var financingType: String?
-    public var locationType: String?
+    public var financingType: BreadPartnersFinancingType?
+    public var locationType: BreadPartnersLocationType?
     public var placementId: String?
     public var domID: String
     public var allowCheckout: Bool?
@@ -21,7 +21,8 @@ public class PlacementData {
     public var selectedCardKey: String?
 
     public init(
-        financingType: String? = nil, locationType: String? = nil,
+        financingType: BreadPartnersFinancingType? = nil,
+        locationType: BreadPartnersLocationType? = nil,
         placementId: String? = nil,
         domID: String, allowCheckout: Bool? = nil, order: Order? = nil,
         defaultSelectedCardKey: String? = nil, selectedCardKey: String? = nil
@@ -38,7 +39,7 @@ public class PlacementData {
 }
 
 /// Specifies the location type where the placement is rendered.
-public enum LocationType: String {
+public enum BreadPartnersLocationType: String, CaseIterable {
     case bag
     case banner
     case cart
@@ -56,7 +57,7 @@ public enum LocationType: String {
 }
 
 /// Specifies the type of financing for the placement.
-public enum FinancingType: String {
+public enum BreadPartnersFinancingType: String, CaseIterable {
     case card, installments, versatile
 }
 

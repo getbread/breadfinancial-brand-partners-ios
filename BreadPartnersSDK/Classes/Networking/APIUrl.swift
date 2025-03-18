@@ -14,7 +14,7 @@ internal enum APIUrlType {
 
 internal class APIUrl {
 
-    private static var currentEnvironment: BreadSDKEnvironment = .prod
+    static var currentEnvironment: BreadPartnersEnvironment = .prod
 
     private let baseURL: String
     private let rtpsBaseURL: String
@@ -35,7 +35,7 @@ internal class APIUrl {
     }
 
     /// Set the environment
-    static func setEnvironment(_ environment: BreadSDKEnvironment) {
+    static func setEnvironment(_ environment: BreadPartnersEnvironment) {
         currentEnvironment = environment
     }
 
