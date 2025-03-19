@@ -75,8 +75,7 @@ internal class HTMLContentParser {
                 "data-overlay-type") ?? ""
         let brandLogoUrl =
             try document.select(".brand.logo img").first()?.attr("src") ?? ""        
-        let tmpWebViewUrl = try document.select("iframe").first()?.attr("src") ?? ""
-        let webViewUrl = tmpWebViewUrl.replacingOccurrences(of: "uat", with: "sit")
+        let webViewUrl = try document.select("iframe").first()?.attr("src") ?? ""
         let overlayTitle =
             try document.select(".epjs-css-overlay-title").first()?.text() ?? ""
         let overlaySubtitle =

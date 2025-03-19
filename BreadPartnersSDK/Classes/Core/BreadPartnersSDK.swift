@@ -280,7 +280,8 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
         setUpInjectables()
 
-        await executeSecurityCheck()
+//        await executeSecurityCheck()
+        await preScreenLookupCall(token: "\(UUID().uuidString)")
     }
 
     /// Display an overlay to the customer without requiring them to click on a placement to trigger it.

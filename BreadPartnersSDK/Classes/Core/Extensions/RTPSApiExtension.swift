@@ -2,8 +2,7 @@ extension BreadPartnersSDK {
     /// This method does bot behavior check using the Recaptcha v3 SDK,
     /// to protect against malicious attacks.
     func executeSecurityCheck() async {
-        let siteKey = "6Ld1Aa0qAAAAALp2csZ6qg83ImmBTwqNaNxaHx1Z"
-        //        let siteKey = brandConfiguration?.config.recaptchaSiteKeyQA
+        let siteKey = brandConfiguration?.config.recaptchaSiteKeyQA
 
         do {
             let token = try await recaptchaManager.executeReCaptcha(
@@ -23,7 +22,7 @@ extension BreadPartnersSDK {
     ///      then trigger `virtualLookup`.
     /// - Else call pre-screen endpoint to fetch `prescreenId`.
     /// - Both endpoints require user details to build request payload.
-    private func preScreenLookupCall(token: String) async {
+    func preScreenLookupCall(token: String) async {
         do {
 
             let apiUrl = APIUrl(
