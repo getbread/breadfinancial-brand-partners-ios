@@ -24,6 +24,13 @@ extension PopupController {
 
             popupView = PopupElements.shared.createContainerView(
                 backgroundColor: .white)
+
+            topRowView = UIView()
+            topRowView.translatesAutoresizingMaskIntoConstraints = false
+
+            bottomRowView = UIView()
+            bottomRowView.translatesAutoresizingMaskIntoConstraints = false
+
             closeButton = PopupElements.shared.addCloseButton(
                 target: self, color: popupStyle!.crossColor,
                 action: #selector(closeButtonTapped))
@@ -40,23 +47,25 @@ extension PopupController {
             disclosureLabel = PopupElements.shared.createLabel(
                 withText: popupModel.disclosure,
                 style: popupStyle!.disclosurePopupTextStyle, align: .left)
-            contentContainerView = PopupElements.shared.createContainerView(
+            dynamicParentProductView = PopupElements.shared.createContainerView(
                 backgroundColor: .white, borderColor: popupStyle!.borderColor,
                 borderWidth: 1.0, cornerRadius: 8.0)
-            headerView = PopupElements.shared.createHeaderView(
-                label: popupModel.overlayContainerBarHeading,
-                bgColor: popupStyle!.headerBgColor,
-                headerTextStyle: popupStyle!.headerPopupTextStyle)
-            contentStackView = PopupElements.shared.createStackView(
+
+            headerLabel = PopupElements.shared.createLabel(
+                withText: popupModel.overlayContainerBarHeading,
+                style: popupStyle!.headerPopupTextStyle)
+            headerView = UIView()
+            headerView.translatesAutoresizingMaskIntoConstraints = false
+            headerView.backgroundColor = popupStyle!.headerBgColor
+
+            dynamicChildProductView = PopupElements.shared.createStackView(
                 axis: .vertical, spacing: 10)
 
-            if let actionButtonStyle = popupStyle?.actionButtonStyle {
-                actionButton = PopupElements.shared.createButton(
-                    target: self,
-                    title: popupModel.primaryActionButtonAttributes?.buttonText
-                        ?? "Action", buttonStyle: actionButtonStyle,
-                    action: #selector(actionButtonTapped))
-            }
+            actionButton = PopupElements.shared.createButton(
+                target: self,
+                title: popupModel.primaryActionButtonAttributes?.buttonText
+                ?? "Action", buttonStyle: nil,
+                action: #selector(actionButtonTapped))
 
             view.addSubview(popupView)
 
@@ -70,18 +79,21 @@ extension PopupController {
             overlayEmbeddedView.translatesAutoresizingMaskIntoConstraints =
                 false
 
-            popupView.addSubview(closeButton)
-            popupView.addSubview(brandLogo)
-            popupView.addSubview(dividerTop)
-
             if let imageURL = URL(string: popupModel.brandLogoUrl) {
                 brandLogo.loadImage(from: imageURL) { success in
                     if success {} else {}
                 }
             }
+            scrollView = UIScrollView()
+            scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+            topRowView.addSubview(closeButton)
+            topRowView.addSubview(brandLogo)
+            topRowView.addSubview(dividerTop)
+
+            popupView.addSubview(topRowView)
 
             addSectionsToStackView(popupStyle: popupStyle!)
-            applyConstraints()
         }
     }
 
@@ -109,6 +121,7 @@ extension PopupController {
             webView.translatesAutoresizingMaskIntoConstraints = false
             overlayEmbeddedView.addSubview(webView)
 
+            applyConstraints()
             overlayEmbeddedConstraints()
         }
 
@@ -132,17 +145,28 @@ extension PopupController {
 
     private func setupSingleProductOverlay() async {
         await MainActor.run {
-            popupView.addSubview(overlayProductView)
-            popupView.addSubview(dividerBottom)
-            popupView.addSubview(actionButton)
+
+            popupView.addSubview(scrollView)
+            popupView.addSubview(bottomRowView)
+
+            scrollView.addSubview(overlayProductView)
+
             overlayProductView.addSubview(titleLabel)
             overlayProductView.addSubview(subtitleLabel)
-            overlayProductView.addSubview(contentContainerView)
-            contentContainerView.addSubview(headerView)
-            contentContainerView.addSubview(contentStackView)
+            overlayProductView.addSubview(dynamicParentProductView)
             overlayProductView.addSubview(disclosureLabel)
 
+            dynamicParentProductView.addSubview(headerView)
+            dynamicParentProductView.addSubview(dynamicChildProductView)
+
+            headerView.addSubview(headerLabel)
+
+            bottomRowView.addSubview(dividerBottom)
+            bottomRowView.addSubview(actionButton)
+
+            applyConstraints()
             overlayProductConstraints()
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 if let loader = self.loader {
                     loader.stopAnimating()
@@ -177,29 +201,35 @@ extension PopupController {
                 equalTo: view.heightAnchor,
                 constant: -UIScreen.main.bounds.size.height * popupHeight),
 
-            closeButton.topAnchor.constraint(
-                equalTo: popupView.topAnchor, constant: 25),
-            closeButton.trailingAnchor.constraint(
-                equalTo: popupView.trailingAnchor,
-                constant: -paddingHorizontalTen),
-            closeButton.widthAnchor.constraint(equalToConstant: 25),
-            closeButton.heightAnchor.constraint(equalToConstant: 25),
+            topRowView.topAnchor.constraint(equalTo: popupView.topAnchor),
+            topRowView.leadingAnchor.constraint(
+                equalTo: popupView.leadingAnchor),
+            topRowView.trailingAnchor.constraint(
+                equalTo: popupView.trailingAnchor),
 
-            brandLogo.topAnchor.constraint(
-                equalTo: popupView.topAnchor, constant: paddingVerticalTen),
+            closeButton.trailingAnchor.constraint(
+                equalTo: topRowView.trailingAnchor,
+                constant: -paddingHorizontalTen),
+            closeButton.topAnchor.constraint(
+                equalTo: topRowView.topAnchor, constant: 25),
+
             brandLogo.leadingAnchor.constraint(
-                equalTo: popupView.leadingAnchor, constant: paddingHorizontalTen
-            ),
+                equalTo: topRowView.leadingAnchor,
+                constant: paddingHorizontalTen),
+            brandLogo.topAnchor.constraint(
+                equalTo: topRowView.topAnchor, constant: paddingVerticalTen),
             brandLogo.heightAnchor.constraint(equalToConstant: brandLogoHeight),
             brandLogo.widthAnchor.constraint(equalToConstant: brandLogoHWidth),
 
             dividerTop.topAnchor.constraint(
                 equalTo: brandLogo.bottomAnchor, constant: paddingVerticalTen),
             dividerTop.leadingAnchor.constraint(
-                equalTo: popupView.leadingAnchor),
+                equalTo: topRowView.leadingAnchor),
             dividerTop.trailingAnchor.constraint(
-                equalTo: popupView.trailingAnchor),
+                equalTo: topRowView.trailingAnchor),
             dividerTop.heightAnchor.constraint(equalToConstant: 1),
+            dividerTop.bottomAnchor.constraint(
+                equalTo: topRowView.bottomAnchor),
 
         ])
     }
@@ -207,14 +237,24 @@ extension PopupController {
     func overlayProductConstraints() {
         NSLayoutConstraint.activate([
 
-            overlayProductView.topAnchor.constraint(
-                equalTo: dividerTop.bottomAnchor),
-            overlayProductView.leadingAnchor.constraint(
+            scrollView.topAnchor.constraint(equalTo: topRowView.bottomAnchor),
+            scrollView.leadingAnchor.constraint(
                 equalTo: popupView.leadingAnchor),
-            overlayProductView.trailingAnchor.constraint(
+            scrollView.trailingAnchor.constraint(
                 equalTo: popupView.trailingAnchor),
-            overlayProductView.bottomAnchor.constraint(
+            scrollView.bottomAnchor.constraint(
                 equalTo: dividerBottom.topAnchor),
+
+            overlayProductView.topAnchor.constraint(
+                equalTo: scrollView.topAnchor),
+            overlayProductView.leadingAnchor.constraint(
+                equalTo: scrollView.leadingAnchor),
+            overlayProductView.trailingAnchor.constraint(
+                equalTo: scrollView.trailingAnchor),
+            overlayProductView.bottomAnchor.constraint(
+                equalTo: scrollView.bottomAnchor),
+            overlayProductView.widthAnchor.constraint(
+                equalTo: scrollView.widthAnchor),
 
             titleLabel.topAnchor.constraint(
                 equalTo: overlayProductView.topAnchor,
@@ -235,39 +275,49 @@ extension PopupController {
                 equalTo: overlayProductView.trailingAnchor,
                 constant: -paddingHorizontalTwenty),
 
-            contentContainerView.topAnchor.constraint(
+            dynamicParentProductView.topAnchor.constraint(
                 equalTo: subtitleLabel.bottomAnchor,
                 constant: paddingHorizontalTwenty),
-            contentContainerView.leadingAnchor.constraint(
+            dynamicParentProductView.leadingAnchor.constraint(
                 equalTo: overlayProductView.leadingAnchor,
                 constant: paddingHorizontalTwenty),
-            contentContainerView.trailingAnchor.constraint(
+            dynamicParentProductView.trailingAnchor.constraint(
                 equalTo: overlayProductView.trailingAnchor,
                 constant: -paddingHorizontalTwenty),
-            contentContainerView.bottomAnchor.constraint(
-                equalTo: contentStackView.bottomAnchor,
+            dynamicParentProductView.bottomAnchor.constraint(
+                equalTo: dynamicChildProductView.bottomAnchor,
                 constant: paddingHorizontalTwenty),
 
-            headerView.topAnchor.constraint(
-                equalTo: contentContainerView.topAnchor),
-            headerView.leadingAnchor.constraint(
-                equalTo: contentContainerView.leadingAnchor),
-            headerView.trailingAnchor.constraint(
-                equalTo: contentContainerView.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 50),
+            headerLabel.centerXAnchor.constraint(
+                equalTo: headerView.centerXAnchor),
+            headerLabel.centerYAnchor.constraint(
+                equalTo: headerView.centerYAnchor),
+            headerLabel.leadingAnchor.constraint(
+                equalTo: headerView.leadingAnchor, constant: 10),
+            headerLabel.trailingAnchor.constraint(
+                equalTo: headerView.trailingAnchor, constant: -10),
 
-            contentStackView.topAnchor.constraint(
+            headerView.topAnchor.constraint(
+                equalTo: dynamicParentProductView.topAnchor),
+            headerView.leadingAnchor.constraint(
+                equalTo: dynamicParentProductView.leadingAnchor),
+            headerView.trailingAnchor.constraint(
+                equalTo: dynamicParentProductView.trailingAnchor),
+            headerView.heightAnchor.constraint(
+                greaterThanOrEqualTo: headerLabel.heightAnchor, constant: 30),
+
+            dynamicChildProductView.topAnchor.constraint(
                 equalTo: headerView.bottomAnchor, constant: paddingHorizontalTen
             ),
-            contentStackView.leadingAnchor.constraint(
-                equalTo: contentContainerView.leadingAnchor,
+            dynamicChildProductView.leadingAnchor.constraint(
+                equalTo: dynamicParentProductView.leadingAnchor,
                 constant: paddingHorizontalTen),
-            contentStackView.trailingAnchor.constraint(
-                equalTo: contentContainerView.trailingAnchor,
+            dynamicChildProductView.trailingAnchor.constraint(
+                equalTo: dynamicParentProductView.trailingAnchor,
                 constant: -paddingHorizontalTen),
 
             disclosureLabel.topAnchor.constraint(
-                equalTo: contentContainerView.bottomAnchor,
+                equalTo: dynamicParentProductView.bottomAnchor,
                 constant: paddingVerticalFive),
             disclosureLabel.trailingAnchor.constraint(
                 equalTo: popupView.trailingAnchor,
@@ -275,36 +325,52 @@ extension PopupController {
             disclosureLabel.leadingAnchor.constraint(
                 equalTo: overlayProductView.leadingAnchor,
                 constant: paddingHorizontalTwenty),
+            disclosureLabel.bottomAnchor.constraint(
+                equalTo: overlayProductView.bottomAnchor,
+                constant: -paddingVerticalTen),
 
-            dividerBottom.bottomAnchor.constraint(
-                equalTo: actionButton.topAnchor, constant: -paddingVerticalTen),
-            dividerBottom.leadingAnchor.constraint(
+            bottomRowView.topAnchor.constraint(
+                equalTo: scrollView.bottomAnchor),
+            bottomRowView.leadingAnchor.constraint(
                 equalTo: popupView.leadingAnchor),
-            dividerBottom.trailingAnchor.constraint(
+            bottomRowView.trailingAnchor.constraint(
                 equalTo: popupView.trailingAnchor),
+            bottomRowView.bottomAnchor.constraint(
+                equalTo: popupView.bottomAnchor),
+
+            dividerBottom.topAnchor.constraint(
+                equalTo: bottomRowView.topAnchor),
+            dividerBottom.leadingAnchor.constraint(
+                equalTo: bottomRowView.leadingAnchor),
+            dividerBottom.trailingAnchor.constraint(
+                equalTo: bottomRowView.trailingAnchor),
             dividerBottom.heightAnchor.constraint(equalToConstant: 1),
 
+            actionButton.topAnchor.constraint(
+                equalTo: dividerBottom.bottomAnchor,
+                constant: paddingVerticalTen),
             actionButton.bottomAnchor.constraint(
-                equalTo: popupView.bottomAnchor,
+                equalTo: bottomRowView.bottomAnchor,
                 constant: -paddingVerticalTwenty),
             actionButton.widthAnchor.constraint(
-                equalToConstant: placementsConfiguration?.popUpStyling?
-                    .actionButtonStyle?.frame?.width ?? 120),
+                greaterThanOrEqualTo: actionButton.titleLabel!.widthAnchor,
+                constant: 50),
             actionButton.heightAnchor.constraint(
-                equalToConstant: placementsConfiguration?.popUpStyling?
-                    .actionButtonStyle?.frame?.height ?? 55),
+                greaterThanOrEqualTo: actionButton.titleLabel!.heightAnchor,
+                constant: 30),
             actionButton.trailingAnchor.constraint(
-                equalTo: popupView.trailingAnchor,
+                equalTo: bottomRowView.trailingAnchor,
                 constant: -paddingHorizontalTen),
 
         ])
+
     }
 
     func overlayEmbeddedConstraints() {
         NSLayoutConstraint.activate([
 
             overlayEmbeddedView.topAnchor.constraint(
-                equalTo: dividerTop.bottomAnchor),
+                equalTo: topRowView.bottomAnchor),
             overlayEmbeddedView.leadingAnchor.constraint(
                 equalTo: popupView.leadingAnchor),
             overlayEmbeddedView.trailingAnchor.constraint(
@@ -338,7 +404,7 @@ extension PopupController {
                         let label = PopupElements.shared.createLabelForTag(
                             tag: tag, value: content, popupStyle: popupStyle)
                     {
-                        contentStackView.addArrangedSubview(label)
+                        dynamicChildProductView.addArrangedSubview(label)
                     }
                 }
             }
@@ -352,7 +418,7 @@ extension PopupController {
                     tag: "connector", value: connectorValue,
                     popupStyle: popupStyle)
             {
-                contentStackView.addArrangedSubview(label)
+                dynamicChildProductView.addArrangedSubview(label)
             }
         }
     }

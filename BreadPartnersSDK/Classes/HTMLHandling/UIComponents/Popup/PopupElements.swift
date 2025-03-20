@@ -62,21 +62,20 @@ internal class PopupElements: NSObject{
     
     func createButton(target:Any,
                               title: String,
-                              buttonStyle:PopupActionButtonStyle,
+                              buttonStyle:PopupActionButtonStyle?,
                               action: Selector
                               ) -> UIButton {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(title, for: .normal)
-        button.titleLabel?.font = buttonStyle.font
-        button.setTitleColor(buttonStyle.textColor, for: .normal)
-        button.frame = buttonStyle.frame ?? .zero
-        button.backgroundColor = buttonStyle.backgroundColor
-        button.layer.cornerRadius = buttonStyle.cornerRadius ?? 0.0
+        button.titleLabel?.font = buttonStyle?.font
+        button.setTitleColor(buttonStyle?.textColor ?? .white, for: .normal)
+        button.backgroundColor = buttonStyle?.backgroundColor ?? UIColor(hex: "d50132")
+        button.layer.cornerRadius = buttonStyle?.cornerRadius ?? 8.0
         button.layer.masksToBounds = true
         
         var config = UIButton.Configuration.plain()
-        config.titlePadding = buttonStyle.padding?.top ?? 0
+        config.titlePadding = buttonStyle?.padding?.top ?? 0
         
         config.baseForegroundColor = .white
         config.baseForegroundColor = .gray.withAlphaComponent(0.9)
@@ -85,25 +84,6 @@ internal class PopupElements: NSObject{
         button.addTarget(target, action: action, for: .touchUpInside)
         return button
     }
-    
-    func createHeaderView(label:String, bgColor:UIColor, headerTextStyle:PopupTextStyle) -> UIView {
-        let headerView = UIView()
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.backgroundColor = bgColor
-        
-        let headerLabel = createLabel(withText: label,style: headerTextStyle)
-        headerView.addSubview(headerLabel)
-        
-        NSLayoutConstraint.activate([
-            headerLabel.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
-            headerLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
-            headerLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10),
-            headerLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -10)
-        ])
-        
-        return headerView
-    }
-    
     
     func createLabelForTag(tag: String, value: String,popupStyle:PopUpStyling) -> UILabel? {
         switch tag.lowercased() {

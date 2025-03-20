@@ -95,14 +95,12 @@ public struct PopupTextStyle {
 ///
 /// - `font`: Specifies the font for the button title.
 /// - `textColor`: Specifies the color of the button title text.
-/// - `frame`: Specifies the frame dimensions for the button.
 /// - `backgroundColor`: Specifies the background color of the button.
 /// - `cornerRadius`: Specifies the corner radius for rounded button edges.
 /// - `padding`: Specifies the padding within the button and title.
 public struct PopupActionButtonStyle {
     public var font: UIFont?
     public var textColor: UIColor?
-    public var frame: CGRect?
     public var backgroundColor: UIColor?
     public var cornerRadius: CGFloat?
     public var padding: UIEdgeInsets?
@@ -110,14 +108,12 @@ public struct PopupActionButtonStyle {
     public init(
         font: UIFont? = nil,
         textColor: UIColor? = nil,
-        frame: CGRect? = nil,
         backgroundColor: UIColor? = nil,
         cornerRadius: CGFloat? = nil,
         padding: UIEdgeInsets? = nil
     ) {
         self.font = font
         self.textColor = textColor
-        self.frame = frame
         self.backgroundColor = backgroundColor
         self.cornerRadius = cornerRadius
         self.padding = padding

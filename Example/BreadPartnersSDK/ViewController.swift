@@ -15,15 +15,18 @@ class ViewController: UIViewController {
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
         let placementRequestType = BreadPartnerDefaults.shared
-            .placementConfigurations["textPlacementRequestType1"]
+            .placementConfigurations["textPlacementRequestType7"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
         let brandId = placementRequestType!["brandId"] as? String
         let channel = placementRequestType!["channel"] as? String
         let subChannel = placementRequestType!["subchannel"] as? String
         let env = placementRequestType!["env"] as? BreadPartnersEnvironment
-        let location = placementRequestType!["location"] as? BreadPartnersLocationType
-        let financingType = placementRequestType!["financingType"] as? BreadPartnersFinancingType
+        let location =
+            placementRequestType!["location"] as? BreadPartnersLocationType
+        let financingType =
+            placementRequestType!["financingType"]
+            as? BreadPartnersFinancingType
 
         // MARK: For development purposes
         style = BreadPartnerDefaults.shared.styleStruct["cadet"]!
@@ -38,7 +41,6 @@ class ViewController: UIViewController {
         let mediumTextSize = style["medium"] as! Int
         let largeTextSize = style["large"] as! Int
         let xlargeTextSize = style["xlarge"] as! Int
-
 
         /// Prepare popup styling configuration object for each style elemnt
         let popUpStyling = PopUpStyling(
@@ -86,7 +88,6 @@ class ViewController: UIViewController {
                 font: UIFont(
                     name: fontFamily, size: Double(mediumTextSize)),
                 textColor: .white,
-                frame: CGRect(x: 20, y: 100, width: 100, height: 50),
                 backgroundColor: UIColor(hex: primaryColor),
                 cornerRadius: 25.0,
                 padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
@@ -241,14 +242,7 @@ class ViewController: UIViewController {
                     DispatchQueue.main.async {
                         /// Implement some process prior to loading the Web View popup
                         /// (e.g checking if the customer is authenticated).
-
-                        self.showYesNoAlert(from: self) { userTappedYes in
-                            if userTappedYes {
-                                self.present(view, animated: true)
-                            } else {
-                                print("User canceled")
-                            }
-                        }
+                        self.present(view, animated: true)
                     }
                 default:
                     // MARK: Other events.
@@ -258,7 +252,6 @@ class ViewController: UIViewController {
             }
         }
     }
-
 
     func showYesNoAlert(
         from viewController: UIViewController,
@@ -286,6 +279,5 @@ class ViewController: UIViewController {
         alertController.addAction(noAction)
         viewController.present(alertController, animated: true, completion: nil)
     }
-
 
 }

@@ -76,6 +76,16 @@ public class BreadPartnerDefaults: NSObject {
             "subchannel": "X",
             "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
         ],
+        /// Tina provided data
+        "textPlacementRequestType7": [
+            "placementID": "25a8a961-d226-4ee7-b80e-8f41b2d8ee94",
+            "sdkTid": "",
+            "env": BreadPartnersEnvironment.stage,
+            "price": 150000,
+            "channel": "X",
+            "subchannel": "X",
+            "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
+        ],
     ]
 
     public let styleStruct: [String: [String: Any]] = [

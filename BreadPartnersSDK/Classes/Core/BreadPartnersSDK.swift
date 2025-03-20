@@ -97,7 +97,6 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         let actionButtonStyle = PopupActionButtonStyle(
             font: UIFont.boldSystemFont(ofSize: 18),
             textColor: .white,
-            frame: CGRect(x: 20, y: 100, width: 200, height: 50),
             backgroundColor: UIColor(hex: "#d50132"),
             cornerRadius: 8.0,
             padding: UIEdgeInsets(

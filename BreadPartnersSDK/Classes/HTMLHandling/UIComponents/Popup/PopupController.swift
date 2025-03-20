@@ -12,15 +12,19 @@ internal class PopupController: UIViewController {
     var closeButton: UIButton!
     var dividerTop: UIView!
     var brandLogo: UIImageView!
+    var topRowView: UIView!
+    var bottomRowView: UIView!
     var dividerBottom: UIView!
+    var scrollView: UIScrollView!
     var overlayProductView: UIView!
     var overlayEmbeddedView: UIView!
     var titleLabel: UILabel!
     var subtitleLabel: UILabel!
     var disclosureLabel: UILabel!
-    var contentContainerView: UIView!
+    var dynamicParentProductView: UIView!
+    var headerLabel: UILabel!
     var headerView: UIView!
-    var contentStackView: UIStackView!
+    var dynamicChildProductView: UIStackView!
     var actionButton: UIButton!
     var popupHeight: Double = 0.1
     var popupWidth: Double = 0.9
@@ -46,7 +50,7 @@ internal class PopupController: UIViewController {
     var alertHandler: AlertHandler
     var commonUtils: CommonUtils
     let logger: Logger
-    
+
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
@@ -114,8 +118,8 @@ internal class PopupController: UIViewController {
         webViewManager = BreadFinancialWebViewInterstitial(
             logger: logger,
             callback: { event in
-            self.handleWebViewEvent(event: event)
-        })
+                self.handleWebViewEvent(event: event)
+            })
 
         if let url = URL(string: popupModel.webViewUrl) {
             webView = webViewManager.createWebView(with: url)
