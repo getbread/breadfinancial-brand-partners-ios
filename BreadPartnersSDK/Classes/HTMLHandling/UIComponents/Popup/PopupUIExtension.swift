@@ -20,7 +20,7 @@ extension PopupController {
     func setupPopupView() async {
         await MainActor.run {
             view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-            let popupStyle = placementsConfiguration?.popUpStyling
+            let popupStyle = BreadPartnerDefaults.shared.popupStyle
 
             popupView = PopupElements.shared.createContainerView(
                 backgroundColor: .white)
@@ -32,31 +32,31 @@ extension PopupController {
             bottomRowView.translatesAutoresizingMaskIntoConstraints = false
 
             closeButton = PopupElements.shared.addCloseButton(
-                target: self, color: popupStyle!.crossColor,
+                target: self, color: popupStyle.crossColor,
                 action: #selector(closeButtonTapped))
             dividerTop = PopupElements.shared.createHorizontalDivider(
-                color: popupStyle!.dividerColor)
+                color: popupStyle.dividerColor)
             dividerBottom = PopupElements.shared.createHorizontalDivider(
-                color: popupStyle!.dividerColor)
+                color: popupStyle.dividerColor)
             titleLabel = PopupElements.shared.createLabel(
                 withText: popupModel.overlayTitle,
-                style: popupStyle!.titlePopupTextStyle)
+                style: popupStyle.titlePopupTextStyle)
             subtitleLabel = PopupElements.shared.createLabel(
                 withText: popupModel.overlaySubtitle,
-                style: popupStyle!.subTitlePopupTextStyle)
+                style: popupStyle.subTitlePopupTextStyle)
             disclosureLabel = PopupElements.shared.createLabel(
                 withText: popupModel.disclosure,
-                style: popupStyle!.disclosurePopupTextStyle, align: .left)
+                style: popupStyle.disclosurePopupTextStyle, align: .left)
             dynamicParentProductView = PopupElements.shared.createContainerView(
-                backgroundColor: .white, borderColor: popupStyle!.borderColor,
+                backgroundColor: .white, borderColor: popupStyle.borderColor,
                 borderWidth: 1.0, cornerRadius: 8.0)
 
             headerLabel = PopupElements.shared.createLabel(
                 withText: popupModel.overlayContainerBarHeading,
-                style: popupStyle!.headerPopupTextStyle)
+                style: popupStyle.headerPopupTextStyle)
             headerView = UIView()
             headerView.translatesAutoresizingMaskIntoConstraints = false
-            headerView.backgroundColor = popupStyle!.headerBgColor
+            headerView.backgroundColor = popupStyle.headerBgColor
 
             dynamicChildProductView = PopupElements.shared.createStackView(
                 axis: .vertical, spacing: 10)
@@ -64,14 +64,18 @@ extension PopupController {
             actionButton = PopupElements.shared.createButton(
                 target: self,
                 title: popupModel.primaryActionButtonAttributes?.buttonText
-                ?? "Action", buttonStyle: nil,
+                    ?? "Action", buttonStyle: nil,
                 action: #selector(actionButtonTapped))
 
             view.addSubview(popupView)
 
             brandLogo = UIImageView()
             brandLogo.translatesAutoresizingMaskIntoConstraints = false
-
+            brandLogo.contentMode = .scaleAspectFit
+            brandLogo.clipsToBounds = true
+            brandLogo.setContentHuggingPriority(.defaultHigh, for: .vertical)
+            brandLogo.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            
             overlayProductView = UIView()
             overlayProductView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -93,7 +97,7 @@ extension PopupController {
 
             popupView.addSubview(topRowView)
 
-            addSectionsToStackView(popupStyle: popupStyle!)
+            addSectionsToStackView(popupStyle: popupStyle)
         }
     }
 
@@ -219,7 +223,7 @@ extension PopupController {
             brandLogo.topAnchor.constraint(
                 equalTo: topRowView.topAnchor, constant: paddingVerticalTen),
             brandLogo.heightAnchor.constraint(equalToConstant: brandLogoHeight),
-            brandLogo.widthAnchor.constraint(equalToConstant: brandLogoHWidth),
+            brandLogo.widthAnchor.constraint(lessThanOrEqualToConstant: 150),
 
             dividerTop.topAnchor.constraint(
                 equalTo: brandLogo.bottomAnchor, constant: paddingVerticalTen),

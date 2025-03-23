@@ -37,11 +37,9 @@ extension HTMLContentRenderer {
         var contentText = textPlacementModel?.contentText ?? ""
         var actionLink = textPlacementModel?.actionLink ?? ""
         let actionType = textPlacementModel?.actionType
-        if actionType == PlacementActionType.noAction.rawValue {
-            if actionLink.isEmpty {
-                actionLink = contentText
-                contentText = ""
-            }
+        if actionLink.isEmpty {
+            actionLink = contentText
+            contentText = ""
         }
 
         let button = UIButton(type: .system)
@@ -70,11 +68,9 @@ extension HTMLContentRenderer {
         var actionLink = textPlacementModel?.actionLink ?? ""
         let actionType = textPlacementModel?.actionType
 
-        if actionType == PlacementActionType.noAction.rawValue {
-            if actionLink.isEmpty {
-                actionLink = contentText
-                contentText = ""
-            }
+        if actionLink.isEmpty {
+            actionLink = contentText
+            contentText = ""
         }
 
         return BreadPartnerButtonView(

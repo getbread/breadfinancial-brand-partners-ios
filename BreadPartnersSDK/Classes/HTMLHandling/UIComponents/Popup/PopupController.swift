@@ -34,8 +34,6 @@ internal class PopupController: UIViewController {
     var paddingVerticalTen: Double = 10
     var paddingVerticalTwenty: Double = 20
     var brandLogoHeight: Double = 50
-    var brandLogoHWidth: Double = 150
-
     var webView: WKWebView!
     var webViewManager: BreadFinancialWebViewInterstitial!
     var webViewPlacementModel: PopupPlacementModel!

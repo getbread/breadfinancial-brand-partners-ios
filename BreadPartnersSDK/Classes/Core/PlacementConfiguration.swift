@@ -4,20 +4,16 @@ import UIKit
 /// - Parameters:
 ///   - placementData: Defines text placements on the brand partner screen for the `registerPlacementFlow`.
 ///   - rtpsData: Specifies the real-time pre-screen configuration for the prescreen flow.
-///   - popUpStyling: Configures the popup styling for each element rendered within the popup.
 public struct PlacementConfiguration {
     public let placementData: PlacementData?
     public let rtpsData: RTPSData?
-    public var popUpStyling: PopUpStyling?
 
     public init(
         placementData: PlacementData? = nil,
-        rtpsData: RTPSData? = nil,
-        popUpStyling: PopUpStyling? = nil
+        rtpsData: RTPSData? = nil
     ) {
         self.placementData = placementData
         self.rtpsData = rtpsData
-        self.popUpStyling = popUpStyling
     }
 }
 

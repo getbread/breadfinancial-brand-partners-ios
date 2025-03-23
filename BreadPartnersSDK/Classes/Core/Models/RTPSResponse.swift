@@ -1,6 +1,7 @@
 import Foundation
 
 enum PrescreenResult {
+    case accountFound
     // Has been pre-approved
     case approved
     case noHit
@@ -10,6 +11,7 @@ enum PrescreenResult {
 }
 
 let prescreenResultMap: [String: PrescreenResult] = [
+    "0": .accountFound,
     "01": .approved,
     "10": .noHit,
     "11": .makeOffer,

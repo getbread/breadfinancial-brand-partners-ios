@@ -10,6 +10,15 @@ extension PopupController {
         callback(.actionButtonTapped)
         if let placementModel = webViewPlacementModel {
             displayEmbeddedOverlay(popupModel: placementModel)
+        } else {
+            callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey:
+                                Constants.somethingWentWrong
+                        ])))
         }
     }
 }

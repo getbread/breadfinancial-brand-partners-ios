@@ -59,6 +59,7 @@ internal class Constants{
     
     static let popupPlacementParsingError = "\(error) Unable to parse popup placement."
     static let missingPopupPlacementError = "Unhandled popup placement type."
+    static let somethingWentWrong = "Something went wrong. Please try again later."
 
     static func unableToLoadWebURL(message:String)->String{
         return  "\(error) Web Url Loading Issue: \(message)"

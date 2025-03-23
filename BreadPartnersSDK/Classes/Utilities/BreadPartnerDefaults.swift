@@ -86,6 +86,16 @@ public class BreadPartnerDefaults: NSObject {
             "subchannel": "X",
             "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
         ],
+        /// Tina provided data
+        "textPlacementRequestType8": [
+            "placementID": "d5da0e8b-b119-46dd-9040-5bc63a516cda",
+            "sdkTid": "",
+            "env": BreadPartnersEnvironment.stage,
+            "price": 0,
+            "channel": "X",
+            "subchannel": "X",
+            "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
+        ],
     ]
 
     public let styleStruct: [String: [String: Any]] = [
@@ -93,7 +103,7 @@ public class BreadPartnerDefaults: NSObject {
             "primaryColor": "#d50132",
             "secondaryColor": "#69727b",
             "tertiaryColor": "#ececec",
-            
+
             "fontFamily": "JosefinSans-Bold",
 
             "small": 12,
@@ -119,7 +129,7 @@ public class BreadPartnerDefaults: NSObject {
             "tertiaryColor": "#ececec",
 
             "fontFamily": "Poppins-Bold",
-            
+
             "small": 12,
             "medium": 15,
             "large": 18,
@@ -127,4 +137,76 @@ public class BreadPartnerDefaults: NSObject {
         ],
     ]
 
+    /// Default Popup Style
+    let popupStyle = PopUpStyling(
+        loaderColor: UIColor(hex: "#0f2233"),
+        crossColor: .black,
+        dividerColor: UIColor(hex: "#ececec"),
+        borderColor: UIColor(hex: "#ececec").cgColor,
+        titlePopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 16.0
+            ),
+            textColor: .black,
+            textSize: 16.0
+        ),
+        subTitlePopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 12.0
+            ),
+            textColor: .gray,
+            textSize: 12.0
+        ),
+        headerPopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 14.0
+            ),
+            textColor: .gray,
+            textSize: 14.0
+        ),
+        headerBgColor: UIColor(hex: "#ececec"),
+        headingThreePopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 14.0
+            ),
+            textColor: UIColor(hex: "#d50132"),
+            textSize: 14.0
+        ),
+        paragraphPopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 10.0
+            ),
+            textColor: .gray,
+            textSize: 10.0
+        ),
+        connectorPopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 14.0
+            ),
+            textColor: .black,
+            textSize: 14.0
+        ),
+        disclosurePopupTextStyle: PopupTextStyle(
+            font: UIFont(
+                name: "Arial-BoldMT",
+                size: 10.0
+            ),
+            textColor: .gray,
+            textSize: 10.0
+        ),
+        actionButtonStyle: PopupActionButtonStyle(
+            font: UIFont.boldSystemFont(ofSize: 18),
+            textColor: .white,
+            backgroundColor: UIColor(hex: "#d50132"),
+            cornerRadius: 8.0,
+            padding: UIEdgeInsets(
+                top: 8, left: 16, bottom: 8, right: 16)
+        )
+    )
 }

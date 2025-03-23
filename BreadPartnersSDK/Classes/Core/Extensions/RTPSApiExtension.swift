@@ -32,7 +32,8 @@ extension BreadPartnersSDK {
 
             let requestBuilder = RTPSRequestBuilder(
                 merchantConfiguration: merchantConfiguration!,
-                rtpsData: placementsConfiguration!.rtpsData!
+                rtpsData: placementsConfiguration!.rtpsData!,
+                reCaptchaToken: token
             )
 
             let headers: [String: String] = [
@@ -42,7 +43,6 @@ extension BreadPartnersSDK {
             ]
 
             var rtpsRequestBuilt = requestBuilder.build()
-            rtpsRequestBuilt.reCaptchaToken = token
 
             let response = try await apiClient.request(
                 urlString: apiUrl,

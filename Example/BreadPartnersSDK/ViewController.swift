@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
         let placementRequestType = BreadPartnerDefaults.shared
-            .placementConfigurations["textPlacementRequestType7"]
+            .placementConfigurations["textPlacementRequestType1"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
         let brandId = placementRequestType!["brandId"] as? String
@@ -41,58 +41,6 @@ class ViewController: UIViewController {
         let mediumTextSize = style["medium"] as! Int
         let largeTextSize = style["large"] as! Int
         let xlargeTextSize = style["xlarge"] as! Int
-
-        /// Prepare popup styling configuration object for each style elemnt
-        let popUpStyling = PopUpStyling(
-            loaderColor: UIColor(hex: primaryColor),
-            crossColor: UIColor(hex: primaryColor),
-            dividerColor: UIColor(hex: tertiaryColor),
-            borderColor: UIColor(hex: tertiaryColor).cgColor,
-            titlePopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(xlargeTextSize)),
-                textColor: UIColor(hex: blackColor)
-            ),
-            subTitlePopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(mediumTextSize)),
-                textColor: UIColor(hex: secondaryColor)
-            ),
-            headerPopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(mediumTextSize)),
-                textColor: UIColor(hex: blackColor)
-            ),
-            headerBgColor: UIColor(hex: tertiaryColor),
-            headingThreePopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(largeTextSize)),
-                textColor: UIColor(hex: primaryColor)
-            ),
-            paragraphPopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(smallTextSize)),
-                textColor: UIColor(hex: secondaryColor)
-            ),
-            connectorPopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(smallTextSize)),
-                textColor: UIColor(hex: primaryColor)
-            ),
-            disclosurePopupTextStyle: PopupTextStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(smallTextSize)),
-                textColor: UIColor(hex: secondaryColor)
-            ),
-            actionButtonStyle: PopupActionButtonStyle(
-                font: UIFont(
-                    name: fontFamily, size: Double(mediumTextSize)),
-                textColor: .white,
-                backgroundColor: UIColor(hex: primaryColor),
-                cornerRadius: 25.0,
-                padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-            )
-        )
 
         let placementData = PlacementData(
             financingType: financingType,
@@ -123,8 +71,7 @@ class ViewController: UIViewController {
                 items: []))
 
         let placementsConfiguration = PlacementConfiguration(
-            placementData: placementData,
-            popUpStyling: popUpStyling
+            placementData: placementData
         )
 
         let merchantConfiguration = MerchantConfiguration(

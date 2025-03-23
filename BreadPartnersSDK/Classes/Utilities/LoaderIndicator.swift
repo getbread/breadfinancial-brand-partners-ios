@@ -39,7 +39,7 @@ internal class LoaderIndicator: UIView {
         let ballLayer = CALayer()
         ballLayer.bounds = CGRect(x: 0, y: 0, width: ballSize, height: ballSize)
         ballLayer.cornerRadius = ballSize / 2
-        ballLayer.backgroundColor = placementsConfiguration.popUpStyling?.loaderColor.cgColor
+        ballLayer.backgroundColor = BreadPartnerDefaults.shared.popupStyle.loaderColor.cgColor
         ballLayer.opacity = 0.0
         
         // Calculate ball position

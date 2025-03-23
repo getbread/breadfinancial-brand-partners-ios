@@ -4,6 +4,7 @@ internal class AlertHandler {
 
     private var alertController: UIAlertController?
     private var windowScene: UIWindowScene?
+    private var shouldShowAlert: Bool = false
 
     init(windowScene: UIWindowScene?) {
         self.windowScene = windowScene
@@ -31,10 +32,10 @@ internal class AlertHandler {
                 error: NSError(
                     domain: "", code: 500,
                     userInfo: [NSLocalizedDescriptionKey: message])))
-        if rtpsFlow {
-            logger?.printLog("Error: \(message)")
+        if !shouldShowAlert {
             return
         }
+
         Task { @MainActor in
             // If an alert is already being presented, dismiss it before showing a new one
             if let existingAlert = alertController {

@@ -27,12 +27,11 @@ extension HTMLContentRenderer {
         var actionLink = textPlacementModel?.actionLink ?? ""
         let actionType = textPlacementModel?.actionType
 
-        if actionType == PlacementActionType.noAction.rawValue {
-            if actionLink.isEmpty {
-                actionLink = contentText
-                contentText = ""
-            }
+        if actionLink.isEmpty {
+            actionLink = contentText
+            contentText = ""
         }
+        
         if forSwiftUI {
             let combinedText = contentText + actionLink
             let swiftUIView = BreadPartnerLinkTextSwitUI(

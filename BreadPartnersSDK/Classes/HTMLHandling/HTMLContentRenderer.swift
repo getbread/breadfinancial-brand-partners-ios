@@ -89,8 +89,10 @@ internal class HTMLContentRenderer {
             guard let textPlacementModel = textPlacementModel else { return }
 
             logger.logTextPlacementModelDetails(textPlacementModel)
-            await analyticsManager.sendViewPlacement(
-                placementResponse: responseModel)
+            Task {
+                await analyticsManager.sendViewPlacement(
+                    placementResponse: responseModel)
+            }
 
             if self.splitTextAndAction {
                 renderTextAndButton()
@@ -141,8 +143,10 @@ internal class HTMLContentRenderer {
             )
         }
 
-        await analyticsManager.sendClickPlacement(
-            placementResponse: responseModel)
+        Task {
+            await analyticsManager.sendClickPlacement(
+                placementResponse: responseModel)
+        }
         await createPopupOverlay(
             popupPlacementModel: popupPlacementModel, overlayType: overlayType)
     }
