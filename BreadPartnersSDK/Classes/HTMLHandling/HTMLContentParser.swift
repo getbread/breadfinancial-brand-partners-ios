@@ -74,22 +74,19 @@ internal class HTMLContentParser {
             try document.select("[data-overlay-metadata]").first()?.attr(
                 "data-overlay-type") ?? ""
         let brandLogoUrl =
-            try document.select(".brand.logo img").first()?.attr("src") ?? ""        
-        let webViewUrl = try document.select("iframe").first()?.attr("src") ?? ""
+            try document.select(".brand.logo img").first()?.attr("src") ?? ""
+        let webViewUrl =
+            try document.select("iframe").first()?.attr("src") ?? ""
         let overlayTitle =
-            try document.select(".epjs-css-overlay-title").first()?.text() ?? ""
+            document.htmlFrom(".epjs-css-overlay-title")
         let overlaySubtitle =
-            try document.select(".epjs-css-overlay-subtitle").first()?.text()
-            ?? ""
+            document.htmlFrom(".epjs-css-overlay-subtitle")
         let overlayContainerBarHeading =
-            try document.select(".epjs-css-overlay-body-title-bar").first()?
-            .ownText() ?? ""
+            document.htmlFrom(".epjs-css-overlay-body-title-bar")
         let bodyHeader =
-            try document.select(".epjs-css-overlay-header").first()?.text()
-            ?? ""
+            document.htmlFrom(".epjs-css-overlay-header")
         let disclosure =
-            try document.select(".epjs-css-overlay-disclosures").first()?.text()
-            ?? ""
+            document.htmlFrom(".epjs-css-overlay-disclosures")
 
         let primaryActionButtonAttributes =
             await extractPrimaryCTAButtonAttributes(
@@ -164,7 +161,7 @@ internal class HTMLContentParser {
             let bodyContent = PopupPlacementModel.DynamicBodyContent(
                 tagValuePairs: try valueProp.children()
                     .reduce(into: [:]) { dict, child in
-                        dict[child.tagName()] = try child.text()
+                        dict[child.tagName()] = try child.html()
                     }
             )
             dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] = bodyContent
@@ -173,7 +170,7 @@ internal class HTMLContentParser {
 
         for connector in connectors.array() {
             let connectorContent = PopupPlacementModel.DynamicBodyContent(
-                tagValuePairs: ["connector": try connector.text()]
+                tagValuePairs: ["connector": try connector.html()]
             )
             dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] = connectorContent
             sequenceCounter += 1

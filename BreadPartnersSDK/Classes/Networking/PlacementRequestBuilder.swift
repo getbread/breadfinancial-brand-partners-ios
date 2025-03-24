@@ -17,24 +17,34 @@ class PlacementRequestBuilder {
         self.brandId = integrationKey
         self.createPlacementRequestBody(
             merchantConfiguration: merchantConfiguration,
-            placementConfig: placementConfig)
+            placementData: placementConfig)
     }
 
     private func createPlacementRequestBody(
         merchantConfiguration: MerchantConfiguration?,
-        placementConfig: PlacementData?
+        placementData: PlacementData?
     ) {
         let context = ContextRequestBody(
             ENV: APIUrl.currentEnvironment.rawValue,
-            LOCATION: placementConfig?.locationType?.rawValue,
-            PRICE: placementConfig?.order?.totalPrice?.value,
+            LOCATION: placementData?.locationType?.rawValue,
+            PRICE: placementData?.order?.totalPrice?.value,
+            CARDHOLDER_TIER: merchantConfiguration?.cardholderTier,
+            STORE_NUMBER: merchantConfiguration?.storeNumber,
+            LOYALTY_ID: merchantConfiguration?.loyaltyID,
+            OVERRIDE_KEY: merchantConfiguration?.overrideKey,
+            CLIENT_VAR_1: merchantConfiguration?.clientVariable1,
+            CLIENT_VAR_2: merchantConfiguration?.clientVariable2,
+            CLIENT_VAR_3: merchantConfiguration?.clientVariable3,
+            CLIENT_VAR_4: merchantConfiguration?.clientVariable4,
+            DEPARTMENT_ID: merchantConfiguration?.departmentId,
             channel: merchantConfiguration?.channel,
             subchannel: merchantConfiguration?.subchannel,
-            ALLOW_CHECKOUT: placementConfig?.allowCheckout ?? false
+            CMP: merchantConfiguration?.campaignID,
+            ALLOW_CHECKOUT: placementData?.allowCheckout ?? false
         )
 
         let placement = PlacementRequestBody(
-            id: placementConfig?.placementId,
+            id: placementData?.placementId,
             context: context
         )
 

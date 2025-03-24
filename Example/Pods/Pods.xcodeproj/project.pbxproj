@@ -36,6 +36,7 @@
 		108DE9AFC28EAE1273277EB68C66ED14 /* CharacterExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD82B7E5E1119C132479C4374F2F398 /* CharacterExt.swift */; };
 		12396DEF2D880C2B00806D59 /* RTPSApiExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12396DEE2D880C1E00806D59 /* RTPSApiExtension.swift */; };
 		12523184F7FDBDDFC1701B34478F24EF /* Example.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE6A1076196E92A31B119DD18B69EF4F /* Example.swift */; };
+		125DA1D02D91BC8900E1C3A1 /* HTMLElementsCreator.kt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 125DA1CF2D91BC8700E1C3A1 /* HTMLElementsCreator.kt.swift */; };
 		129A15112D5E2D440081A3A6 /* TextPlacementUICreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 129A15102D5E2D370081A3A6 /* TextPlacementUICreator.swift */; };
 		129A15132D5E3D6F0081A3A6 /* BreadPartnerTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 129A15122D5E3D6A0081A3A6 /* BreadPartnerTextView.swift */; };
 		129A15152D5E3DB00081A3A6 /* BreadPartnerButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 129A15142D5E3DAD0081A3A6 /* BreadPartnerButtonView.swift */; };
@@ -375,6 +376,7 @@
 		1162F298F3AF46E64ABD59314A3B114C /* CwlMachBadInstructionHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CwlMachBadInstructionHandler.m; path = Carthage/Checkouts/CwlPreconditionTesting/Sources/CwlMachBadInstructionHandler/CwlMachBadInstructionHandler.m; sourceTree = "<group>"; };
 		11E21CC6352A64B98B6779EBBEE4F07E /* Attributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Attributes.swift; path = Sources/Attributes.swift; sourceTree = "<group>"; };
 		12396DEE2D880C1E00806D59 /* RTPSApiExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTPSApiExtension.swift; sourceTree = "<group>"; };
+		125DA1CF2D91BC8700E1C3A1 /* HTMLElementsCreator.kt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLElementsCreator.kt.swift; sourceTree = "<group>"; };
 		129A15102D5E2D370081A3A6 /* TextPlacementUICreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPlacementUICreator.swift; sourceTree = "<group>"; };
 		129A15122D5E3D6A0081A3A6 /* BreadPartnerTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreadPartnerTextView.swift; sourceTree = "<group>"; };
 		129A15142D5E3DAD0081A3A6 /* BreadPartnerButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreadPartnerButtonView.swift; sourceTree = "<group>"; };
@@ -839,6 +841,7 @@
 		269D664A927585A766F2E66D4A93B21D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				125DA1CF2D91BC8700E1C3A1 /* HTMLElementsCreator.kt.swift */,
 				129A15102D5E2D370081A3A6 /* TextPlacementUICreator.swift */,
 				73CE6C7603CEA1DD67755572E4042D73 /* TextPlacementUIHandler.swift */,
 			);
@@ -1913,6 +1916,7 @@
 				0B5777D0DBFD6F44F93385A2FF484DDA /* CommonUtils.swift in Sources */,
 				0FEDCEE620B14EF24D6038F67006F2F7 /* Constants.swift in Sources */,
 				129A15112D5E2D440081A3A6 /* TextPlacementUICreator.swift in Sources */,
+				125DA1D02D91BC8900E1C3A1 /* HTMLElementsCreator.kt.swift in Sources */,
 				D8501478B789A8AF1EB02A6086E7F50E /* Extensions.swift in Sources */,
 				4A80029CB7BF7F4F6BB6C3C33171DF88 /* HTMLContentParser.swift in Sources */,
 				30ECF46AA9E268E6D4079165890BB353 /* HTMLContentRenderer.swift in Sources */,

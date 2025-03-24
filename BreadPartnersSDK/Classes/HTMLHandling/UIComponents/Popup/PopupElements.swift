@@ -40,9 +40,9 @@ internal class PopupElements: NSObject{
         return containerView
     }
     
-    func createLabel(withText text: String,style:PopupTextStyle,align: NSTextAlignment = .center) -> UILabel {
+    func createLabel(withText text: NSAttributedString,style:PopupTextStyle,align: NSTextAlignment = .center) -> UILabel {
         let label = UILabel()
-        label.text = text
+        label.attributedText = text
         label.applyTextStyle(style: style)
         label.textAlignment = align
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -88,11 +88,11 @@ internal class PopupElements: NSObject{
     func createLabelForTag(tag: String, value: String,popupStyle:PopUpStyling) -> UILabel? {
         switch tag.lowercased() {
         case "h3":
-            return createLabel(withText: value,style: popupStyle.headingThreePopupTextStyle)
+            return createLabel(withText: value.toAttributedString(),style: popupStyle.headingThreePopupTextStyle)
         case "p":
-            return createLabel(withText: value,style: popupStyle.paragraphPopupTextStyle)
+            return createLabel(withText: value.toAttributedString(),style: popupStyle.paragraphPopupTextStyle)
         case "connector":
-            return createLabel(withText: value,style: popupStyle.connectorPopupTextStyle)
+            return createLabel(withText: value.toAttributedString(),style: popupStyle.connectorPopupTextStyle)
         default:
             return nil
         }

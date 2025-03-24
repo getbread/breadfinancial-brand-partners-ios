@@ -148,10 +148,10 @@ extension BreadPartnersSDK {
                 brandLogoUrl: "",
                 webViewUrl: responseModel.placements?.first?.renderContext?
                     .embeddedUrl ?? "",
-                overlayTitle: "",
-                overlaySubtitle: "",
-                overlayContainerBarHeading: "",
-                bodyHeader: "",
+                overlayTitle: NSAttributedString(""),
+                overlaySubtitle: NSAttributedString(""),
+                overlayContainerBarHeading: NSAttributedString(""),
+                bodyHeader: NSAttributedString(""),
                 dynamicBodyModel: PopupPlacementModel.DynamicBodyModel(
                     bodyDiv: [
                         "": PopupPlacementModel.DynamicBodyContent(
@@ -159,7 +159,7 @@ extension BreadPartnersSDK {
                         )
                     ]
                 ),
-                disclosure: ""
+                disclosure: NSAttributedString("")
             )
             await htmlContentRenderer.createPopupOverlay(
                 popupPlacementModel: popupPlacementModel,

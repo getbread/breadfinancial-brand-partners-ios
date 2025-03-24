@@ -3,6 +3,7 @@ import Foundation
 public struct MerchantConfiguration {
     public var buyer: BreadPartnersBuyer?
     public var loyaltyID: String?
+    public var campaignID: String?
     public var storeNumber: String?
     public var departmentId: String?
     public var existingCardHolder: Bool?
@@ -35,6 +36,7 @@ public struct MerchantConfiguration {
     public init(
         buyer: BreadPartnersBuyer? = nil,
         loyaltyID: String? = nil,
+        campaignID: String? = nil,
         storeNumber: String? = nil,
         departmentId: String? = nil,
         existingCardHolder: Bool? = nil,
@@ -59,6 +61,7 @@ public struct MerchantConfiguration {
     ) {
         self.buyer = buyer
         self.loyaltyID = loyaltyID
+        self.campaignID = campaignID
         self.storeNumber = storeNumber
         self.departmentId = departmentId
         self.existingCardHolder = existingCardHolder

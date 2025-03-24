@@ -47,9 +47,12 @@ extension PopupController {
             disclosureLabel = PopupElements.shared.createLabel(
                 withText: popupModel.disclosure,
                 style: popupStyle.disclosurePopupTextStyle, align: .left)
+
             dynamicParentProductView = PopupElements.shared.createContainerView(
                 backgroundColor: .white, borderColor: popupStyle.borderColor,
                 borderWidth: 1.0, cornerRadius: 8.0)
+            dynamicParentProductView.translatesAutoresizingMaskIntoConstraints =
+                false
 
             headerLabel = PopupElements.shared.createLabel(
                 withText: popupModel.overlayContainerBarHeading,
@@ -58,6 +61,9 @@ extension PopupController {
             headerView.translatesAutoresizingMaskIntoConstraints = false
             headerView.backgroundColor = popupStyle.headerBgColor
 
+            if headerLabel.text?.isEmpty ?? true {
+                headerView.isHidden = true
+            }
             dynamicChildProductView = PopupElements.shared.createStackView(
                 axis: .vertical, spacing: 10)
 
@@ -75,7 +81,7 @@ extension PopupController {
             brandLogo.clipsToBounds = true
             brandLogo.setContentHuggingPriority(.defaultHigh, for: .vertical)
             brandLogo.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-            
+
             overlayProductView = UIView()
             overlayProductView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -239,6 +245,63 @@ extension PopupController {
     }
 
     func overlayProductConstraints() {
+        if !dynamicParentProductView.isHidden {
+
+            NSLayoutConstraint.activate([
+                dynamicParentProductView.topAnchor.constraint(
+                    equalTo: subtitleLabel.bottomAnchor,
+                    constant: paddingHorizontalTwenty),
+                dynamicParentProductView.leadingAnchor.constraint(
+                    equalTo: overlayProductView.leadingAnchor,
+                    constant: paddingHorizontalTwenty),
+                dynamicParentProductView.trailingAnchor.constraint(
+                    equalTo: overlayProductView.trailingAnchor,
+                    constant: -paddingHorizontalTwenty),
+                dynamicParentProductView.bottomAnchor.constraint(
+                    equalTo: dynamicChildProductView.bottomAnchor,
+                    constant: paddingHorizontalTwenty),
+
+                headerLabel.centerXAnchor.constraint(
+                    equalTo: headerView.centerXAnchor),
+                headerLabel.centerYAnchor.constraint(
+                    equalTo: headerView.centerYAnchor),
+                headerLabel.leadingAnchor.constraint(
+                    equalTo: headerView.leadingAnchor, constant: 10),
+                headerLabel.trailingAnchor.constraint(
+                    equalTo: headerView.trailingAnchor, constant: -10),
+
+                headerView.topAnchor.constraint(
+                    equalTo: dynamicParentProductView.topAnchor),
+                headerView.leadingAnchor.constraint(
+                    equalTo: dynamicParentProductView.leadingAnchor),
+                headerView.trailingAnchor.constraint(
+                    equalTo: dynamicParentProductView.trailingAnchor),
+                headerView.heightAnchor.constraint(
+                    greaterThanOrEqualTo: headerLabel.heightAnchor, constant: 30
+                ),
+
+                dynamicChildProductView.topAnchor.constraint(
+                    equalTo: headerView.bottomAnchor,
+                    constant: paddingHorizontalTen
+                ),
+                dynamicChildProductView.leadingAnchor.constraint(
+                    equalTo: dynamicParentProductView.leadingAnchor,
+                    constant: paddingHorizontalTen),
+                dynamicChildProductView.trailingAnchor.constraint(
+                    equalTo: dynamicParentProductView.trailingAnchor,
+                    constant: -paddingHorizontalTen),
+
+                disclosureLabel.topAnchor.constraint(
+                    equalTo: dynamicParentProductView.bottomAnchor,
+                    constant: paddingVerticalFive),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                disclosureLabel.topAnchor.constraint(
+                    equalTo: subtitleLabel.bottomAnchor,
+                    constant: paddingVerticalFive)
+            ])
+        }
         NSLayoutConstraint.activate([
 
             scrollView.topAnchor.constraint(equalTo: topRowView.bottomAnchor),
@@ -279,50 +342,6 @@ extension PopupController {
                 equalTo: overlayProductView.trailingAnchor,
                 constant: -paddingHorizontalTwenty),
 
-            dynamicParentProductView.topAnchor.constraint(
-                equalTo: subtitleLabel.bottomAnchor,
-                constant: paddingHorizontalTwenty),
-            dynamicParentProductView.leadingAnchor.constraint(
-                equalTo: overlayProductView.leadingAnchor,
-                constant: paddingHorizontalTwenty),
-            dynamicParentProductView.trailingAnchor.constraint(
-                equalTo: overlayProductView.trailingAnchor,
-                constant: -paddingHorizontalTwenty),
-            dynamicParentProductView.bottomAnchor.constraint(
-                equalTo: dynamicChildProductView.bottomAnchor,
-                constant: paddingHorizontalTwenty),
-
-            headerLabel.centerXAnchor.constraint(
-                equalTo: headerView.centerXAnchor),
-            headerLabel.centerYAnchor.constraint(
-                equalTo: headerView.centerYAnchor),
-            headerLabel.leadingAnchor.constraint(
-                equalTo: headerView.leadingAnchor, constant: 10),
-            headerLabel.trailingAnchor.constraint(
-                equalTo: headerView.trailingAnchor, constant: -10),
-
-            headerView.topAnchor.constraint(
-                equalTo: dynamicParentProductView.topAnchor),
-            headerView.leadingAnchor.constraint(
-                equalTo: dynamicParentProductView.leadingAnchor),
-            headerView.trailingAnchor.constraint(
-                equalTo: dynamicParentProductView.trailingAnchor),
-            headerView.heightAnchor.constraint(
-                greaterThanOrEqualTo: headerLabel.heightAnchor, constant: 30),
-
-            dynamicChildProductView.topAnchor.constraint(
-                equalTo: headerView.bottomAnchor, constant: paddingHorizontalTen
-            ),
-            dynamicChildProductView.leadingAnchor.constraint(
-                equalTo: dynamicParentProductView.leadingAnchor,
-                constant: paddingHorizontalTen),
-            dynamicChildProductView.trailingAnchor.constraint(
-                equalTo: dynamicParentProductView.trailingAnchor,
-                constant: -paddingHorizontalTen),
-
-            disclosureLabel.topAnchor.constraint(
-                equalTo: dynamicParentProductView.bottomAnchor,
-                constant: paddingVerticalFive),
             disclosureLabel.trailingAnchor.constraint(
                 equalTo: popupView.trailingAnchor,
                 constant: -paddingHorizontalTwenty),
@@ -424,6 +443,11 @@ extension PopupController {
             {
                 dynamicChildProductView.addArrangedSubview(label)
             }
+        }
+        if bodyDivModel.isEmpty {
+            dynamicParentProductView.isHidden = true
+        } else {
+            dynamicParentProductView.isHidden = false
         }
     }
 

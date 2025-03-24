@@ -3,13 +3,13 @@ internal struct PopupPlacementModel {
     var location: String?
     var brandLogoUrl: String
     var webViewUrl: String
-    var overlayTitle: String
-    var overlaySubtitle: String
-    var overlayContainerBarHeading: String
-    var bodyHeader: String
+    var overlayTitle: NSAttributedString
+    var overlaySubtitle: NSAttributedString
+    var overlayContainerBarHeading: NSAttributedString
+    var bodyHeader: NSAttributedString
     var primaryActionButtonAttributes: PrimaryActionButtonModel?
     var dynamicBodyModel: DynamicBodyModel
-    var disclosure: String
+    var disclosure: NSAttributedString
     
     struct DynamicBodyModel {
         var bodyDiv: [String: DynamicBodyContent]

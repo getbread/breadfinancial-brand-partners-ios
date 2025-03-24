@@ -30,8 +30,15 @@ public struct ContextRequestBody: Codable {
     let LOCATION: String?
     let PRICE: Double?
     let EXISTING_CH: Bool?
+    let CARDHOLDER_TIER: String?
+    let STORE_NUMBER: String?
+    let LOYALTY_ID: String?
     let OVERRIDE_KEY: String?
+    let CLIENT_VAR_1: String?
+    let CLIENT_VAR_2: String?
+    let CLIENT_VAR_3: String?
     let CLIENT_VAR_4: String?
+    let DEPARTMENT_ID: String?
     let channel: String?
     let subchannel: String?
     let CMP: String?
@@ -49,8 +56,15 @@ public struct ContextRequestBody: Codable {
         LOCATION: String? = nil,
         PRICE: Double? = nil,
         EXISTING_CH: Bool? = nil,
+        CARDHOLDER_TIER: String? = nil,
+        STORE_NUMBER: String? = nil,
+        LOYALTY_ID: String? = nil,
         OVERRIDE_KEY: String? = nil,
+        CLIENT_VAR_1: String? = nil,
+        CLIENT_VAR_2: String? = nil,
+        CLIENT_VAR_3: String? = nil,
         CLIENT_VAR_4: String? = nil,
+        DEPARTMENT_ID: String? = nil,
         channel: String? = nil,
         subchannel: String? = nil,
         CMP: String? = nil,
@@ -67,8 +81,15 @@ public struct ContextRequestBody: Codable {
         self.LOCATION = LOCATION
         self.PRICE = PRICE
         self.EXISTING_CH = EXISTING_CH
+        self.CARDHOLDER_TIER = CARDHOLDER_TIER
+        self.STORE_NUMBER = STORE_NUMBER
+        self.LOYALTY_ID = LOYALTY_ID
         self.OVERRIDE_KEY = OVERRIDE_KEY
+        self.CLIENT_VAR_1 = CLIENT_VAR_1
+        self.CLIENT_VAR_2 = CLIENT_VAR_2
+        self.CLIENT_VAR_3 = CLIENT_VAR_3
         self.CLIENT_VAR_4 = CLIENT_VAR_4
+        self.DEPARTMENT_ID = DEPARTMENT_ID
         self.channel = channel
         self.subchannel = subchannel
         self.CMP = CMP

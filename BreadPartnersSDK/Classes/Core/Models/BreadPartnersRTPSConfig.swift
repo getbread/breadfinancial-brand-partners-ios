@@ -37,6 +37,7 @@ public class RTPSData {
 }
 
 public enum BreadPartnersMockOptions: String, CaseIterable {
+    case noMock = ""
     case success = "success"
     case noHit = "noHit"
     case makeOffer = "makeOffer"
