@@ -83,7 +83,9 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var onResult: ((BreadPartnerEvents) -> Void)?
 
     func setUpInjectables() {
-
+        
+        self.logger.callback = callback
+        
         if brandConfiguration == nil {
             return callback(
                 .sdkError(
@@ -96,7 +98,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         alertHandler.setUpAlerts(rtpsFlow, logger, callback)
 
         analyticsManager.setApiKey(integrationKey)
-
+        
         self.htmlContentRenderer = HTMLContentRenderer(
             integrationKey: integrationKey,
             apiClient: self.apiClient,

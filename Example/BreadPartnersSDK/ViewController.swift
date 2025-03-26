@@ -102,7 +102,7 @@ class ViewController: UIViewController {
             await BreadPartnersSDK.shared.setup(
                 environment: env ?? BreadPartnersEnvironment.stage,
                 integrationKey: brandId ?? "",
-                enableLog: false)
+                enableLog: true)
 
             await BreadPartnersSDK.shared.registerPlacements(
                 merchantConfiguration: merchantConfiguration,
