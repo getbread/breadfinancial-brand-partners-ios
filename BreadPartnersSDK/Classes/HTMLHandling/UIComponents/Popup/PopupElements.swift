@@ -93,6 +93,8 @@ internal class PopupElements: NSObject{
             return createLabel(withText: value.toAttributedString(),style: popupStyle.paragraphPopupTextStyle)
         case "connector":
             return createLabel(withText: value.toAttributedString(),style: popupStyle.connectorPopupTextStyle)
+        case "footer":
+            return createLabel(withText: value.toAttributedString(),style: popupStyle.paragraphPopupTextStyle)
         default:
             return nil
         }

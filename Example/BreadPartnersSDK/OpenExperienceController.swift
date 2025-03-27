@@ -35,6 +35,7 @@ class OpenExperienceController: UIViewController {
             .placementConfigurations["textPlacementRequestType6"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
+        let loyaltyId = (placementRequestType!["loyaltyId"] as? String)
         let brandId = placementRequestType!["brandId"] as? String
         let channel = placementRequestType!["channel"] as? String
         let subChannel = placementRequestType!["subchannel"] as? String
@@ -91,7 +92,7 @@ class OpenExperienceController: UIViewController {
                     postalCode: "11222"
                 ),
                 shippingAddress: nil
-            ), loyaltyID: "xxxxxx",
+            ), loyaltyID: loyaltyId,
             storeNumber: "1234567",
             env: env,
             channel: channel,
@@ -116,6 +117,8 @@ class OpenExperienceController: UIViewController {
                     DispatchQueue.main.async {
                         self.present(view, animated: true)
                     }
+                case .onSDKEventLog(_):
+                    print("")
                 default:
                     print("BreadPartnerSDK: Event: \(event)")
                 }

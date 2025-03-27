@@ -413,37 +413,45 @@ extension PopupController {
     }
 
     func addSectionsToStackView(popupStyle: PopUpStyling) {
+        let tagPriorityList = ["h3", "h2", "p", "connector"]
         let bodyDivModel = popupModel.dynamicBodyModel.bodyDiv
-        for index in 0..<bodyDivModel.count {
 
-            if let result = bodyDivModel.first(where: {
-                Int($0.key.replacingOccurrences(of: "div", with: "")) == index
-            }) {
-                let tagValuePairs = result.value.tagValuePairs
-                let tagPriorityList = ["h3", "h2", "p"]
+        let sortedDictList = bodyDivModel.sorted { (first, second) -> Bool in
+            let firstKeyNumber =
+                Int(first.key.replacingOccurrences(of: "div", with: "")) ?? 0
+            let secondKeyNumber =
+                Int(second.key.replacingOccurrences(of: "div", with: "")) ?? 0
+            return firstKeyNumber < secondKeyNumber
+        }
 
-                for tag in tagPriorityList {
-                    if let content = tagValuePairs[tag],
-                        let label = PopupElements.shared.createLabelForTag(
-                            tag: tag, value: content, popupStyle: popupStyle)
-                    {
-                        dynamicChildProductView.addArrangedSubview(label)
-                    }
+        for (_, value) in sortedDictList.enumerated() {
+            let tagValuePairs = value.value.tagValuePairs
+
+            for tag in tagPriorityList {
+                if let content = tagValuePairs[tag],
+                    let label = PopupElements.shared.createLabelForTag(
+                        tag: tag, value: content, popupStyle: popupStyle)
+                {
+                    dynamicChildProductView.addArrangedSubview(label)
                 }
             }
+        }
 
-            if index % 2 != 0,
-                let connectorPair = popupModel.dynamicBodyModel.bodyDiv.first(
-                    where: { $0.value.tagValuePairs["connector"] != nil }),
-                let connectorValue = connectorPair.value.tagValuePairs[
-                    "connector"],
-                let label = PopupElements.shared.createLabelForTag(
-                    tag: "connector", value: connectorValue,
-                    popupStyle: popupStyle)
+        let containerFooter = bodyDivModel.first { key, value in
+            return key.contains("footer")
+        }
+
+        if containerFooter != nil {
+            if let label = PopupElements.shared.createLabelForTag(
+                tag: "footer",
+                value:
+                    "\(containerFooter?.value.tagValuePairs.values.first ?? "")",
+                popupStyle: popupStyle)
             {
                 dynamicChildProductView.addArrangedSubview(label)
             }
         }
+
         if bodyDivModel.isEmpty {
             dynamicParentProductView.isHidden = true
         } else {

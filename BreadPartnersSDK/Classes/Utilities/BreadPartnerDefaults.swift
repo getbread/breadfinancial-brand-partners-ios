@@ -96,6 +96,18 @@ public class BreadPartnerDefaults: NSObject {
             "subchannel": "X",
             "brandId": "217a0943-8031-457d-b9e3-7375c8af3a22",
         ],
+        /// Antaylore post SignIn use case
+        "textPlacementRequestType9": [
+            "placementID": "dadc4588-d67f-45f9-8096-81c1264fc2f3",
+            "sdkTid": "",
+            "env": BreadPartnersEnvironment.stage,
+            "location": BreadPartnersLocationType.footer,
+            "loyaltyId": "true",
+            "price": 11000,
+            "channel": "F",
+            "subchannel": "X",
+            "brandId": "b9464be2-3ea3-4018-80ed-e903f75acb18",
+        ],
     ]
 
     public let styleStruct: [String: [String: Any]] = [

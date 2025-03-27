@@ -18,6 +18,7 @@ class ViewController: UIViewController {
             .placementConfigurations["textPlacementRequestType1"]
         let placementID = placementRequestType!["placementID"] as? String
         let price = (placementRequestType!["price"] as? Int)
+        let loyaltyId = (placementRequestType!["loyaltyId"] as? String)
         let brandId = placementRequestType!["brandId"] as? String
         let channel = placementRequestType!["channel"] as? String
         let subChannel = placementRequestType!["subchannel"] as? String
@@ -91,7 +92,7 @@ class ViewController: UIViewController {
                     postalCode: "11222"
                 ),
                 shippingAddress: nil
-            ), loyaltyID: "xxxxxx",
+            ), loyaltyID: loyaltyId,
             storeNumber: "1234567",
             channel: channel,
             subchannel: subChannel
@@ -184,7 +185,8 @@ class ViewController: UIViewController {
                                 equalTo: textView.bottomAnchor, constant: 20),
                         ])
                     }
-
+                case .onSDKEventLog(_):
+                    print("")
                 case .renderPopupView(let view):
                     DispatchQueue.main.async {
                         /// Implement some process prior to loading the Web View popup

@@ -150,32 +150,55 @@ internal class HTMLContentParser {
             return dynamicBodyModel
         }
 
-        let valueProps = try bodyContainer.select(
-            ".epjs-css-overlay-value-prop")
-        let connectors = try bodyContainer.select(
-            ".epjs-css-overlay-value-prop-connector")
+        do {
 
-        var sequenceCounter = 1
+            var sequenceCounter = 0
 
-        for valueProp in valueProps.array() {
-            let bodyContent = PopupPlacementModel.DynamicBodyContent(
-                tagValuePairs: try valueProp.children()
-                    .reduce(into: [:]) { dict, child in
-                        dict[child.tagName()] = try child.html()
-                    }
-            )
-            dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] = bodyContent
-            sequenceCounter += 1
+            try bodyContainer.children().forEach { mainParent in
+
+                let valueProps = try mainParent.select(
+                    ".epjs-css-overlay-value-prop")
+
+                for valueProp in valueProps.array() {
+                    let bodyContent = PopupPlacementModel.DynamicBodyContent(
+                        tagValuePairs: try valueProp.children()
+                            .reduce(into: [:]) { dict, child in
+                                dict[child.tagName()] = try child.html()
+                            }
+                    )
+                    dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] =
+                        bodyContent
+                }
+
+                let connectors = try mainParent.select(
+                    ".epjs-css-overlay-value-prop-connector")
+                for connector in connectors.array() {
+                    let connectorContent =
+                        PopupPlacementModel.DynamicBodyContent(
+                            tagValuePairs: ["connector": try connector.html()]
+                        )
+                    dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] =
+                        connectorContent
+                }
+
+                let footers = try mainParent.select(
+                    ".epjs-css-overlay-body-footer")
+
+                for footers in footers.array() {
+                    let footers = PopupPlacementModel.DynamicBodyContent(
+                        tagValuePairs: try footers.children()
+                            .reduce(into: [:]) { dict, child in
+                                dict[child.tagName()] = try child.html()
+                            }
+                    )
+                    dynamicBodyModel.bodyDiv["footer\(sequenceCounter)"] =
+                        footers
+                }
+                sequenceCounter += 1
+            }
+        } catch {
+            throw error
         }
-
-        for connector in connectors.array() {
-            let connectorContent = PopupPlacementModel.DynamicBodyContent(
-                tagValuePairs: ["connector": try connector.html()]
-            )
-            dynamicBodyModel.bodyDiv["div\(sequenceCounter)"] = connectorContent
-            sequenceCounter += 1
-        }
-
         return dynamicBodyModel
     }
 
