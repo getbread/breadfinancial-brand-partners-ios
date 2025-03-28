@@ -13,6 +13,7 @@
 import Foundation
 import UIKit
 
+/// Renders parsed HTML content into native UI elements.
 @MainActor
 internal class HTMLContentRenderer {
 

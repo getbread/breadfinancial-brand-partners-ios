@@ -10,6 +10,7 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
+/// Builder class for constructing RTPS requests.
 class RTPSRequestBuilder {
 
     private var merchantConfiguration: MerchantConfiguration

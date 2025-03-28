@@ -12,6 +12,7 @@
 
 import Foundation
 
+/// Enum representing the results of a prescreen check in RTPS flow.
 enum PrescreenResult {
     case accountFound
     // Has been pre-approved
@@ -22,6 +23,7 @@ enum PrescreenResult {
     case acknowledge
 }
 
+/// Mapping of return codes to corresponding PrescreenResult.
 let prescreenResultMap: [String: PrescreenResult] = [
     "0": .accountFound,
     "01": .approved,
@@ -30,10 +32,12 @@ let prescreenResultMap: [String: PrescreenResult] = [
     "12": .acknowledge
 ]
 
+/// Returns the corresponding PrescreenResult based on the given API response string.
 func getPrescreenResult(from apiResponse: String) -> PrescreenResult {
     return prescreenResultMap[apiResponse] ?? .noHit
 }
 
+/// Represents the response model for an RTPS.
 struct RTPSResponse: Codable {
     let returnCode: String
     let prescreenId: Int

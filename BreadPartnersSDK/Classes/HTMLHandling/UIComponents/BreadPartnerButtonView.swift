@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+/// A SwiftUI view representing the Bread Partner action button.
 public struct BreadPartnerButtonView: View {
     var title: String
     private var font: Font = .headline

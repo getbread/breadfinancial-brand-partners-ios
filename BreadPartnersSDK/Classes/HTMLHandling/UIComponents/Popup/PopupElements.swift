@@ -20,6 +20,7 @@ internal class PopupElements: NSObject{
         super.init()
     }
     
+    /// Returns a close button with a system "xmark" icon.
     func addCloseButton(target: Any,color:UIColor,action: Selector)->UIButton {
         let closeButton = UIButton(type: .system)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -31,6 +32,7 @@ internal class PopupElements: NSObject{
         return closeButton
     }
     
+    /// Creates a simple horizontal divider view.
     func createHorizontalDivider(color:UIColor) -> UIView {
         let divider = UIView()
         divider.translatesAutoresizingMaskIntoConstraints = false
@@ -63,6 +65,7 @@ internal class PopupElements: NSObject{
         return label
     }
     
+    /// Returns a UIStackView with specified axis and spacing.
     func createStackView(axis: NSLayoutConstraint.Axis, spacing: CGFloat) -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = axis

@@ -12,6 +12,7 @@
 
 import Foundation
 
+/// Represents configuration details for a merchant.
 public struct MerchantConfiguration {
     public var buyer: BreadPartnersBuyer?
     public var loyaltyID: String?

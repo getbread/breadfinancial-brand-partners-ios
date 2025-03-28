@@ -12,6 +12,7 @@
 
 @preconcurrency import WebKit
 
+/// Manages WebView interactions and events within the SDK.
 internal class BreadFinancialWebViewInterstitial: NSObject,
     WKNavigationDelegate, WKScriptMessageHandler
 {

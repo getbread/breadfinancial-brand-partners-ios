@@ -13,12 +13,14 @@
 import Foundation
 import SwiftSoup
 
+/// Parses HTML content into a SwiftSoup Document.
 internal class SwiftSoupParser {
     func parse(_ htmlContent: String) async throws -> Document {
         return try SwiftSoup.parse(htmlContent)
     }
 }
 
+/// Actor responsible for extracting structured data from HTML using SwiftSoup.
 internal class HTMLContentParser {
 
     private let htmlParser: SwiftSoupParser

@@ -13,6 +13,8 @@
 import Foundation
 import UIKit
 
+/// The primary interface class for interacting with the Bread Partners SDK.
+/// Provides entry points for initialization, configuration, and SDK-level actions.
 public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     public static var shared: BreadPartnersSDK = {

@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+/// A SwiftUI view for rendering styled text content in the Bread Partner UI.
 public struct BreadPartnerTextView: View {
     var text: String
     private var font: Font = .body

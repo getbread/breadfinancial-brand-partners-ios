@@ -12,6 +12,7 @@
 
 import UIKit
 
+//  Provides reusable extension methods for use across apps integrating the Bread Partners SDK.
 public extension UIImageView {
     func loadImage(from url: URL, completion: @escaping (Bool) -> Void) {
         DispatchQueue.global().async {

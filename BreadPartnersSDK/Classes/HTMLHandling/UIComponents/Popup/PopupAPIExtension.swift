@@ -14,6 +14,7 @@ import Foundation
 
 extension PopupController {
 
+    /// Fetches the web view placement data asynchronously by constructing a placement request and calling the API.
     func fetchWebViewPlacement() async {
         let builder = PlacementRequestBuilder(
             integrationKey: integrationKey,
@@ -36,6 +37,7 @@ extension PopupController {
         await fetchData(requestBody: request)
     }
 
+    /// Fetches data asynchronously from the API using the given request body.
     private func fetchData(requestBody: Any) async {
         let apiUrl = APIUrl(urlType: .generatePlacements).url
         do {
@@ -52,6 +54,7 @@ extension PopupController {
         }
     }
 
+    /// Handles the API response asynchronously by decoding the response data into a PlacementsResponse model.
     private func handleResponse(_ response: Any) async {
         do {
             let responseModel: PlacementsResponse =

@@ -12,6 +12,11 @@
 
 import UIKit
 
+/// Class responsible for displaying alerts triggered by errors or events.
+///
+/// It provides options to:
+/// - Completely suppress all alerts
+/// - Suppress only alerts triggered during RTPS flow
 internal class AlertHandler {
 
     private var alertController: UIAlertController?

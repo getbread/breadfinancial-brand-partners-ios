@@ -14,6 +14,7 @@ import UIKit
 
 extension PopupController {
 
+    /// Sets up the user interface for the popup.
     func setupUI() async {
         await setupPopupView()
 

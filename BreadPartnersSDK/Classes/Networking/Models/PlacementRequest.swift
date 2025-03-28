@@ -12,6 +12,7 @@
 
 import Foundation
 
+/// Represents the request for placements.
 public struct PlacementRequest: Codable {
     let placements: [PlacementRequestBody]?
     let brandId: String?
@@ -22,6 +23,7 @@ public struct PlacementRequest: Codable {
     }
 }
 
+/// Represents individual placement request body.
 public struct PlacementRequestBody: Codable {
     let id: String?
     let context: ContextRequestBody?
@@ -32,6 +34,7 @@ public struct PlacementRequestBody: Codable {
     }
 }
 
+/// Represents the context for a placement request.
 public struct ContextRequestBody: Codable {
     let SDK_TID: String?
     let ENV: String?

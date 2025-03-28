@@ -12,11 +12,13 @@
 
 import Foundation
 
+/// Represents the response containing placements.
 internal struct PlacementsResponse: Codable {
     let placements: [PlacementsModel]?
     let placementContent: [PlacementContentModel]?
 }
 
+/// Represents individual placement details in the response.
 internal struct PlacementsModel: Codable {
     let id: String?
     let content: PlacementContentReferenceModel?

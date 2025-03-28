@@ -10,6 +10,7 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
+/// Struct representing the model for text placements.
 internal struct TextPlacementModel {
     let actionType: String?
     let actionTarget: String?
@@ -18,6 +19,7 @@ internal struct TextPlacementModel {
     let actionContentId: String?
 }
 
+/// Enum representing the different action types associated with a placement.
 internal enum PlacementActionType: String {
     case showOverlay = "SHOW_OVERLAY"
     case redirect = "REDIRECT"

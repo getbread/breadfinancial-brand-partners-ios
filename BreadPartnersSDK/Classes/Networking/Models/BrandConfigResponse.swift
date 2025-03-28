@@ -12,10 +12,12 @@
 
 import Foundation
 
+/// Represents the response from the brand config API.
 internal struct BrandConfigResponse: Codable {
     let config: Config
 }
 
+/// Contains the brand's configuration details.
 internal struct Config: Codable {
     let AEMContent: String
     let OVERRIDE_KEY: String
