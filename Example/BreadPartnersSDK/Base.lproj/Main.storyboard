@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,11 +19,79 @@
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mQY-sG-b85">
+                                <rect key="frame" x="154.5" y="612" width="66" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="RTPS"/>
+                                <connections>
+                                    <segue destination="eQD-M3-c2E" kind="show" id="269-F5-qUD"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gb4-1x-3KH">
+                                <rect key="frame" x="117" y="563" width="150" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="OpenExperience"/>
+                                <connections>
+                                    <segue destination="oTE-Oq-J33" kind="show" id="BsH-vS-1Sn"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="mQY-sG-b85" secondAttribute="bottom" constant="20" id="2rU-8c-SQV"/>
+                            <constraint firstItem="mQY-sG-b85" firstAttribute="top" secondItem="Gb4-1x-3KH" secondAttribute="bottom" constant="14" id="5E7-yc-ff8"/>
+                            <constraint firstItem="Gb4-1x-3KH" firstAttribute="centerX" secondItem="mQY-sG-b85" secondAttribute="centerX" id="R1b-aH-VQQ"/>
+                            <constraint firstItem="mQY-sG-b85" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="Rnh-xb-nHq"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="30" y="-36"/>
+        </scene>
+        <!--Controller-->
+        <scene sceneID="2Tg-tx-a4f">
+            <objects>
+                <viewController id="eQD-M3-c2E" customClass="RTPSController" customModule="BreadPartnersSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ypi-d3-2X3"/>
+                        <viewControllerLayoutGuide type="bottom" id="M0I-wM-wzk"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Dy6-xx-7ZD">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="rIq-1o-Lm6"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="o31-8e-804" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="702" y="-36"/>
+        </scene>
+        <!--Open Experience Controller-->
+        <scene sceneID="FFp-b8-J85">
+            <objects>
+                <viewController id="oTE-Oq-J33" customClass="OpenExperienceController" customModule="BreadPartnersSDK_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1Vk-mm-1TC"/>
+                        <viewControllerLayoutGuide type="bottom" id="9sh-BH-h4y"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="7Kn-su-a4P">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="vj2-Ra-NUw"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VlT-yC-Xfo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1358" y="-36"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
