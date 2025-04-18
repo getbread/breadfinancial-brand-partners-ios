@@ -76,6 +76,9 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        // Inject the anchor tag interception script on every page load
+        injectAnchorInterceptorScript(view: webView)
+        
         if let url = webView.url {
             onPageLoadCompleted?(.success(url))
         }
@@ -91,6 +94,19 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
             
             switch type {
                 
+            case "AnchorTags":
+                if let payload = action["payload"] as? [String] {
+                    logger.printWebAnchorLogs(data:"\(payload.joined(separator: "\n"))")
+                } else {
+                    logger.printWebAnchorLogs(data:"Anchor Tags: No anchors found")
+                }
+
+            case "OPEN_EXTERNAL":
+                if let url = action["payload"] as? String {
+                    if let externalURL = URL(string: url) {
+                        UIApplication.shared.open(externalURL, options: [:], completionHandler: nil)
+                    }
+                }
             case "HEIGHT_CHANGED":
                 break
                 
@@ -135,5 +151,49 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
             }
         }
 
+    }
+    
+    func injectAnchorInterceptorScript(view: WKWebView?) {
+        // JavaScript code to intercept anchor tags and log them
+        let script = """
+        (function() {
+            function handleAnchors() {
+                const anchors = document.querySelectorAll('a[target="_blank"], a[data-open-externally="true"]');
+                const anchorsHTML = Array.from(anchors).map(a => a.outerHTML);
+
+                if (anchorsHTML.length > 0) {
+                    window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'AnchorTags', payload: anchorsHTML } });
+                } else {
+                    window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'AnchorTags', payload: 'No anchors found' } });
+                }
+
+                anchors.forEach(a => {
+                    if (!a.__handled__) {
+                        a.__handled__ = true;
+                        a.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'OPEN_EXTERNAL', payload: a.href } });
+                        });
+                    }
+                });
+            }
+
+            handleAnchors();
+
+            // MutationObserver to handle dynamically added anchor tags
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        handleAnchors();
+                    }
+                });
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        })();
+        """
+        
+        // Inject the script into the WebView
+        view?.evaluateJavaScript(script, completionHandler: nil)
     }
 }

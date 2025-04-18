@@ -198,5 +198,11 @@ internal class Logger: NSObject {
         debugPrint("Status             : \(payload["status"] ?? "N/A")")
         debugPrint("\(dashLineFifty)\n")
     }
-
+    
+    func printWebAnchorLogs(data:String){
+        guard isLoggingEnabled else { return }
+        print("\n\(dashLineFifteen) Anchors List \(dashLineFifteen)")
+        print(data)
+        print("\(dashLineFifty)\n")
+    }
 }
