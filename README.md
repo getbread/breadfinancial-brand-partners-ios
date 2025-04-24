@@ -389,7 +389,56 @@ case .renderTextViewWithLink(let textView):
     ])
 ```
 
-### 2. Render a Popup View in UIKit
+### 2. Render a Text and Button View separately in UIKit
+
+```swift
+case .renderSeparateTextAndButton(let textView, let button):
+
+    /// Handles rendering of a text view and a button, placed separately.
+    /// - Modifies the font, text color for the text view, and the button's title color, font, and background.
+    /// - Adds the text view and button to the main view and sets up their layout constraints.
+    textView.font = UIFont(
+        name: fontFamily, size: Double(mediumTextSize))
+    textView.textColor = UIColor(hex: blackColor)
+
+    button.setTitleColor(UIColor.white, for: .normal)
+    button.titleLabel?.font = UIFont(
+        name: fontFamily, size: Double(mediumTextSize))
+    button.backgroundColor =
+        UIColor(hex: primaryColor)
+    button.layer.cornerRadius = 25.0
+
+    DispatchQueue.main.async {
+
+        self.view.addSubview(textView)
+        self.view.addSubview(button)
+        textView.translatesAutoresizingMaskIntoConstraints =
+            false
+        button.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            textView.centerXAnchor.constraint(
+                equalTo: self.view.centerXAnchor),
+            textView.topAnchor.constraint(
+                equalTo: self.view.topAnchor, constant: 100),
+            textView.leadingAnchor.constraint(
+                equalTo: self.view.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20
+            ),
+
+            button.widthAnchor.constraint(equalToConstant: 150),
+            button.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20
+            ),
+            button.heightAnchor.constraint(equalToConstant: 50),
+            button.topAnchor.constraint(
+                equalTo: textView.bottomAnchor, constant: 20),
+        ])
+    }
+```
+
+### 3. Render a Popup View in UIKit
 
 ```swift
 case .renderPopupView(let view):
@@ -407,7 +456,7 @@ case .renderPopupView(let view):
     }
 ```
 
-### 3. Render a TextView in SwiftUI
+### 4. Render a TextView in SwiftUI
 
 ```swift
 VStack {
@@ -445,7 +494,53 @@ VStack {
 }
 ```
 
-### 4. Render a Popup View in SwiftUI
+### 4. Render a Text and Button View separately in SwiftUI
+
+```swift
+@State private var textWithButton: (BreadPartnersTextView, BreadPartnersButton)?
+
+var body: some View {
+    VStack(alignment: .leading, spacing: 16) {
+        if let textWithButton = textWithButton {
+            textWithButton.0
+                .textColor(.black)
+                .font(.custom("JosefinSans-Bold", size: 16))
+
+            textWithButton.1
+                .font(.custom("JosefinSans-Bold", size: 16))
+                .textColor(.white)
+                .backgroundColor(.blue)
+                .cornerRadius(8)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+
+            Text("Other native brand-specific text about rewards or relevant information the customer typically needs to know.")
+                .padding(.top, 10)
+        } else {
+            Text("Loading text...")
+        }
+    }
+    .padding()
+    .onAppear {
+        Task {
+            await BreadPartnersSDK.shared.registerPlacements(
+                merchantConfiguration: merchantConfiguration1,
+                placementsConfiguration: placementsConfiguration1,
+                splitTextAndAction: true,
+                forSwiftUI: true
+            ) { event in
+                switch event {
+                case .renderSwiftUISeparateTextAndButton(let textView, let button):
+                    self.textWithButton = (textView, button)
+                default:
+                    print("Event: \(event)")
+                }
+            }
+        }
+    }
+}
+```
+
+### 6. Render a Popup View in SwiftUI
 
 ```swift
 VStack {}
