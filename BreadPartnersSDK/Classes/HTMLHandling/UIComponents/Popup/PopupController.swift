@@ -14,7 +14,7 @@ import Foundation
 import UIKit
 import WebKit
 
-internal class PopupController: UIViewController {
+internal class PopupController: UIViewController, AppRestartListener {
 
     var integrationKey: String
     var popupModel: PopupPlacementModel
@@ -130,6 +130,7 @@ internal class PopupController: UIViewController {
             callback: { event in
                 self.handleWebViewEvent(event: event)
             })
+        webViewManager.appRestartListener = self
 
         if let url = URL(string: popupModel.webViewUrl) {
             webView = webViewManager.createWebView(with: url)
@@ -157,5 +158,32 @@ internal class PopupController: UIViewController {
         default:
             callback(event)
         }
+    }
+
+    func onAppRestartClicked(url: String) {
+
+        if let oldWebView = webView {
+            oldWebView.removeFromSuperview()
+            oldWebView.stopLoading()
+        }
+
+        webView = webViewManager.createWebView(with: URL(string: url)!)
+        webViewManager.onPageLoadCompleted = { url in
+            self.loader.stopAnimating()
+        }
+
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        self.overlayEmbeddedView.addSubview(webView)
+
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: dividerTop.bottomAnchor),
+            webView.leadingAnchor.constraint(
+                equalTo: overlayEmbeddedView.leadingAnchor,
+                constant: paddingHorizontalTen),
+            webView.trailingAnchor.constraint(
+                equalTo: overlayEmbeddedView.trailingAnchor,
+                constant: -paddingHorizontalTen),
+            webView.bottomAnchor.constraint(equalTo: popupView.bottomAnchor),
+        ])
     }
 }

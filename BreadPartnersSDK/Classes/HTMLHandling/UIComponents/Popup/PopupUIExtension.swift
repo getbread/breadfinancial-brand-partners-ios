@@ -139,7 +139,8 @@ extension PopupController {
                 [weak self] event in
                 self?.handleWebViewEvent(event: event)
             }
-
+            webViewManager.appRestartListener = self
+            
             webView = webViewManager.createWebView(with: webViewURL)
             webView.translatesAutoresizingMaskIntoConstraints = false
             overlayEmbeddedView.addSubview(webView)

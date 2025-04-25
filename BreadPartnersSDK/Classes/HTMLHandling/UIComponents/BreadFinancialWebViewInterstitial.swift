@@ -29,7 +29,8 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
 
     let logger: Logger
     let callback: ((BreadPartnerEvents) -> Void)
-
+    var appRestartListener: AppRestartListener?
+    
     func createWebView(with url: URL) -> WKWebView {
 
         let contentController = WKUserContentController()
@@ -93,12 +94,17 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
            let type = action["type"] as? String {
             
             switch type {
-                
+            case "APP_RESTART":
+                if let payload = action["payload"] as? String {
+                    onAppRestartClicked(url: "\(payload)")
+                }else {
+                    logger.printLog("Issue in restarting application")
+                }
             case "AnchorTags":
                 if let payload = action["payload"] as? [String] {
-                    logger.printWebAnchorLogs(data:"\(payload.joined(separator: "\n"))")
+//                    logger.printWebAnchorLogs(data:"\(payload.joined(separator: "\n"))")
                 } else {
-                    logger.printWebAnchorLogs(data:"Anchor Tags: No anchors found")
+//                    logger.printWebAnchorLogs(data:"Anchor Tags: No anchors found")
                 }
 
             case "OPEN_EXTERNAL":
@@ -157,14 +163,22 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
         // JavaScript code to intercept anchor tags and log them
         let script = """
         (function() {
+            function isVisible(elem) {
+                return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+            }
+
             function handleAnchors() {
                 const anchors = document.querySelectorAll('a[target="_blank"], a[data-open-externally="true"]');
                 const anchorsHTML = Array.from(anchors).map(a => a.outerHTML);
 
                 if (anchorsHTML.length > 0) {
-                    window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'AnchorTags', payload: anchorsHTML } });
+                    window.webkit.messageHandlers.messageHandler.postMessage({
+                        action: { type: 'AnchorTags', payload: anchorsHTML }
+                    });
                 } else {
-                    window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'AnchorTags', payload: 'No anchors found' } });
+                    window.webkit.messageHandlers.messageHandler.postMessage({
+                        action: { type: 'AnchorTags', payload: 'No anchors found' }
+                    });
                 }
 
                 anchors.forEach(a => {
@@ -172,19 +186,42 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
                         a.__handled__ = true;
                         a.addEventListener('click', function(event) {
                             event.preventDefault();
-                            window.webkit.messageHandlers.messageHandler.postMessage({ action: { type: 'OPEN_EXTERNAL', payload: a.href } });
+                            window.webkit.messageHandlers.messageHandler.postMessage({
+                                action: { type: 'OPEN_EXTERNAL', payload: a.href }
+                            });
                         });
                     }
                 });
             }
 
-            handleAnchors();
+            function handleRestartButton() {
+                const btn = document.querySelector('#appRestart');
+                if (btn && isVisible(btn)) {
+                    if (!btn.__handled__) {
+                        btn.__handled__ = true;
+                        btn.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            if (btn.href) {
+                                // Send the URL to the native iOS code to trigger the restart
+                                window.webkit.messageHandlers.messageHandler.postMessage({
+                                    action: { type: 'APP_RESTART', payload: btn.href }
+                                });
+                            }
+                        });
+                    }
+                }
+            }
 
-            // MutationObserver to handle dynamically added anchor tags
+            // Initial run
+            handleAnchors();
+            handleRestartButton();
+
+            // MutationObserver to handle dynamically added elements like anchor tags and the restart button
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.addedNodes.length) {
                         handleAnchors();
+                        handleRestartButton();
                     }
                 });
             });
@@ -196,4 +233,12 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
         // Inject the script into the WebView
         view?.evaluateJavaScript(script, completionHandler: nil)
     }
+    
+    func onAppRestartClicked(url: String) {
+        appRestartListener?.onAppRestartClicked(url: url)
+    }
+}
+
+protocol AppRestartListener {
+    func onAppRestartClicked(url: String)
 }
