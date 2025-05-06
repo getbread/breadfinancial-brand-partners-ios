@@ -33,7 +33,10 @@ extension PopupController {
     func setupPopupView() async {
         await MainActor.run {
             view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-            let popupStyle = BreadPartnerDefaults.shared.popupStyle
+          
+            guard let popupStyle = placementsConfiguration?.popUpStyling else{
+                return
+            }
 
             popupView = PopupElements.shared.createContainerView(
                 backgroundColor: .white)
@@ -83,7 +86,8 @@ extension PopupController {
             actionButton = PopupElements.shared.createButton(
                 target: self,
                 title: popupModel.primaryActionButtonAttributes?.buttonText
-                    ?? "Action", buttonStyle: nil,
+                    ?? "Action",
+                buttonStyle: placementsConfiguration?.popUpStyling?.actionButtonStyle,
                 action: #selector(actionButtonTapped))
 
             view.addSubview(popupView)

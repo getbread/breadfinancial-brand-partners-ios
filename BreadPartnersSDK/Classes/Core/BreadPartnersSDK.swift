@@ -108,6 +108,11 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
                         code: 404)))
         }
 
+        
+        if self.placementsConfiguration?.popUpStyling == nil {
+            self.placementsConfiguration?.popUpStyling = BreadPartnerDefaults.shared.popupStyle
+        }
+        
         merchantConfiguration?.env = sdkEnvironment
         
         alertHandler.setUpAlerts(rtpsFlow, logger, callback)

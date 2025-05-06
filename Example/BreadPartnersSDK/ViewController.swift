@@ -29,18 +29,19 @@ class ViewController: UIViewController {
             as? BreadPartnersFinancingType
 
         // MARK: For development purposes
-        style = BreadPartnerDefaults.shared.styleStruct["cadet"]!
+        style = TestData.shared.styleStruct["blue"]!
         let primaryColor = style["primaryColor"] as! String
-        let secondaryColor = style["secondaryColor"] as! String
-        let tertiaryColor = style["tertiaryColor"] as! String
+        let lightColor = style["lightColor"] as! String
+        let darkColor = style["darkColor"] as! String
+        let boxColor = style["boxColor"] as! String
         let blackColor = "#000000"
 
         let fontFamily = style["fontFamily"] as! String
 
-        let smallTextSize = style["small"] as! Int
-        let mediumTextSize = style["medium"] as! Int
-        let largeTextSize = style["large"] as! Int
-        let xlargeTextSize = style["xlarge"] as! Int
+        let smallTextSize = style["smallTextSize"] as! Int
+        let mediumTextSize = style["mediumTextSize"] as! Int
+        let largeTextSize = style["largeTextSize"] as! Int
+        let xlargeTextSize = style["xlargeTextSize"] as! Int
 
         let placementData = PlacementData(
             financingType: financingType,
@@ -70,8 +71,62 @@ class ViewController: UIViewController {
                 fulfillmentType: "type",
                 items: []))
 
+        
+        /// Prepare popup styling configuration object for each style elemnt
+        let popUpStyling = PopUpStyling(
+            loaderColor: UIColor(hex: primaryColor),
+            crossColor: UIColor(hex: primaryColor),
+            dividerColor: UIColor(hex: boxColor),
+            borderColor: UIColor(hex: boxColor).cgColor,
+            titlePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(xlargeTextSize)),
+                textColor: UIColor(hex: darkColor)
+            ),
+            subTitlePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(mediumTextSize)),
+                textColor: UIColor(hex: lightColor)
+            ),
+            headerPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(mediumTextSize)),
+                textColor: UIColor(hex: darkColor)
+            ),
+            headerBgColor: UIColor(hex: boxColor),
+            headingThreePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(largeTextSize)),
+                textColor: UIColor(hex: primaryColor)
+            ),
+            paragraphPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(smallTextSize)),
+                textColor: UIColor(hex: lightColor)
+            ),
+            connectorPopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(largeTextSize)),
+                textColor: UIColor(hex: darkColor)
+            ),
+            disclosurePopupTextStyle: PopupTextStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(smallTextSize)),
+                textColor: UIColor(hex: lightColor)
+            ),
+            actionButtonStyle: PopupActionButtonStyle(
+                font: UIFont(
+                    name: fontFamily, size: Double(mediumTextSize)),
+                textColor: .white,
+                backgroundColor: UIColor(hex: primaryColor),
+                cornerRadius: 25.0,
+                padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            )
+        )
+        
         let placementsConfiguration = PlacementConfiguration(
-            placementData: placementData
+            placementData: placementData,
+            popUpStyling: popUpStyling
         )
 
         let merchantConfiguration = MerchantConfiguration(
@@ -119,7 +174,7 @@ class ViewController: UIViewController {
                     /// - Adds the text view to the main view and sets up its layout constraints.
 
                     textView.font = UIFont(
-                        name: fontFamily, size: Double(mediumTextSize))
+                        name: fontFamily, size: Double(xlargeTextSize))
                     textView.textColor = UIColor.black
                     textView.linkTextAttributes = [
                         .foregroundColor: UIColor(hex: primaryColor)

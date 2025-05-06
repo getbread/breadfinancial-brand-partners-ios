@@ -88,14 +88,6 @@ internal class PopupElements: NSObject{
         button.backgroundColor = buttonStyle?.backgroundColor ?? UIColor(hex: "d50132")
         button.layer.cornerRadius = buttonStyle?.cornerRadius ?? 8.0
         button.layer.masksToBounds = true
-        
-        var config = UIButton.Configuration.plain()
-        config.titlePadding = buttonStyle?.padding?.top ?? 0
-        
-        config.baseForegroundColor = .white
-        config.baseForegroundColor = .gray.withAlphaComponent(0.9)
-
-        button.configuration = config
         button.addTarget(target, action: action, for: .touchUpInside)
         return button
     }
