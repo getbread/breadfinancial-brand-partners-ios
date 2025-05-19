@@ -19,20 +19,14 @@ import UIKit
 /// 2. **View Placement**: When the user sees or interacts with the placement without clicking.
 internal class AnalyticsManager {
 
-    private let apiClient: APIClient
-    private let commonUtils: CommonUtils
-    private let dispatchQueue: DispatchQueue
-
     init(
-        apiClient: APIClient,
-        commonUtils: CommonUtils,
-        dispatchQueue: DispatchQueue
+        logger: Logger
     ) {
-        self.apiClient = apiClient
-        self.commonUtils = commonUtils
-        self.dispatchQueue = dispatchQueue
+        self.logger = logger
     }
 
+    var logger: Logger = Logger()
+    
     private var apiKey: String = ""
 
     func setApiKey(_ newApiKey: String) {
@@ -56,7 +50,7 @@ internal class AnalyticsManager {
         ]
 
         do {
-            _ = try await apiClient.request(
+            _ = try await APIClient(logger: logger).request(
                 urlString: apiUrl, method: .OPTIONS, headers: headers,
                 body: payload)
         } catch {
@@ -66,7 +60,7 @@ internal class AnalyticsManager {
     private func createAnalyticsPlacementPayload(
         name: String, placementResponse: PlacementsResponse
     ) -> Analytics.Payload {
-        let timestamp = commonUtils.getCurrentTimestamp()
+        let timestamp = CommonUtils().getCurrentTimestamp()
 
         return Analytics.Payload(
             name: name,
@@ -99,7 +93,7 @@ internal class AnalyticsManager {
                 browserCtx: Analytics.BrowserCtx(
                     library: Analytics.Library(
                         name: "bread-partners-sdk-ios", version: "0.0.1"),
-                    userAgent: commonUtils.getUserAgent(),
+                    userAgent: CommonUtils().getUserAgent(),
                     page: Analytics.Page(
                         path: "ToDo",
                         url: nil

@@ -126,14 +126,16 @@ extension PopupController {
 
     private func setupEmbeddedOverlay() async {
         guard let webViewURL = URL(string: popupModel.webViewUrl) else {
-            await MainActor.run {
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.unableToLoadWebURL(
-                        message: popupModel.webViewUrl),
-                    showOkButton: true
-                )
-            }
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey:
+                                Constants
+                                .unableToLoadWebURL(
+                                    message: popupModel.webViewUrl)
+                        ])))
             return
         }
 
@@ -158,14 +160,14 @@ extension PopupController {
             let loadedURL = try await webViewManager.loadPage(for: webView)
             logger.printLog("Loaded URL: \(loadedURL)")
         } catch {
-            await MainActor.run {
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.unableToLoadWebURL(
-                        message: error.localizedDescription),
-                    showOkButton: true
-                )
-            }
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants.apiError(
+                                message: error.localizedDescription)
+                        ])))
         }
 
         await MainActor.run { loader?.stopAnimating() }

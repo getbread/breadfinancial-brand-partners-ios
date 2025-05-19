@@ -20,17 +20,14 @@ internal enum HTTPMethod: String {
 /// A utility class for making HTTP API requests.
 internal class APIClient {
 
-    private let urlSession: URLSession
-    private let logger: Logger
-    private let commonUtils: CommonUtils
-
-    // Dependency Injection through the initializer
-    init(urlSession: URLSession, logger: Logger, commonUtils: CommonUtils) {
-        self.urlSession = urlSession
+    init(
+        logger: Logger
+    ) {
         self.logger = logger
-        self.commonUtils = commonUtils
     }
 
+    var logger: Logger = Logger()
+    
     /// Generic API call function
     ///
     /// - Parameters:
@@ -61,7 +58,7 @@ internal class APIClient {
 
         let genericHeader: [String: String] = [
             Constants.headerContentType: Constants.headerContentTypeValue,
-            Constants.headerUserAgentKey: commonUtils.getUserAgent(),
+            Constants.headerUserAgentKey: CommonUtils().getUserAgent(),
             Constants.headerOriginKey: Constants.headerOriginValue
         ]
 
@@ -107,7 +104,7 @@ internal class APIClient {
             headers: updatedHeaders,
             body: request.httpBody)
 
-        let (data, response) = try await urlSession.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NSError(

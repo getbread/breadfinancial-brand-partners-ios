@@ -99,7 +99,7 @@ extension HTMLContentRenderer {
             return
         }
 
-        if let actionType = htmlContentParser.handleActionType(
+        if let actionType = HTMLContentParser().handleActionType(
             from: placementModel.actionType ?? "")
         {
             switch actionType {
@@ -110,15 +110,24 @@ extension HTMLContentRenderer {
             case .noAction:
                 callback(.textClicked)
             default:
-                return alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.missingTextPlacementError,
-                    showOkButton: true)
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants
+                                    .missingTextPlacementError
+                            ])))
             }
         } else {
-            return alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.noTextPlacementError, showOkButton: true)
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants
+                                .noTextPlacementError
+                        ])))
         }
     }
 

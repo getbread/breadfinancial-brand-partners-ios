@@ -55,12 +55,8 @@ internal class PopupController: UIViewController, AppRestartListener {
     var merchantConfiguration: MerchantConfiguration?
     var placementsConfiguration: PlacementConfiguration?
     var brandConfiguration: BrandConfigResponse?
-    var recaptchaManager: RecaptchaManager
-    var apiClient: APIClient
-    var alertHandler: AlertHandler
-    var commonUtils: CommonUtils
-    let logger: Logger
 
+    var logger: Logger = Logger()
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
@@ -69,11 +65,7 @@ internal class PopupController: UIViewController, AppRestartListener {
         placementConfiguration: PlacementConfiguration,
         popupModel: PopupPlacementModel,
         overlayType: PlacementOverlayType,
-        apiClient: APIClient,
-        alertHandler: AlertHandler,
-        commonUtils: CommonUtils,
         brandConfiguration: BrandConfigResponse?,
-        recaptchaManager: RecaptchaManager,
         logger: Logger,
         callback: @escaping (BreadPartnerEvents) -> Void
     ) {
@@ -83,19 +75,15 @@ internal class PopupController: UIViewController, AppRestartListener {
         self.brandConfiguration = brandConfiguration
         self.popupModel = popupModel
         self.overlayType = overlayType
-        self.apiClient = apiClient
-        self.alertHandler = alertHandler
-        self.commonUtils = commonUtils
-        self.recaptchaManager = recaptchaManager
         self.logger = logger
         self.callback = callback
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) {
-        fatalError()
+        fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {

@@ -15,12 +15,8 @@ import UIKit
 /// `BreadPartnerDefaults` class provides default configurations/styles/properties used across the BreadPartner SDK.
 public class BreadPartnerDefaults: NSObject {
 
-    public static let shared = BreadPartnerDefaults()
-
-    private override init() {}
-
     /// Default Popup Style
-    let popupStyle = PopUpStyling(
+    static let popupStyle = PopUpStyling(
         loaderColor: UIColor(hex: "#0f2233"),
         crossColor: .black,
         dividerColor: UIColor(hex: "#ececec"),

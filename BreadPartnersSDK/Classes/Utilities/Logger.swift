@@ -15,18 +15,28 @@ import Foundation
 /// Class responsible for logging information for debugging and tracking purposes.
 internal class Logger: NSObject {
 
+    static let shared = Logger()
+    
     override init() {
         super.init()
     }
 
-    var isLoggingEnabled: Bool = true
-    var callback: (BreadPartnerEvents) -> Void = { _ in }
-    
+    private(set) var isLoggingEnabled: Bool = false
+    private(set) var callback: (BreadPartnerEvents) -> Void = { _ in }
+
     let dashLineFifty = String(repeating: "-", count: 50)
     let dashLineFifteen = String(repeating: "-", count: 15)
     let dashLineTen = String(repeating: "-", count: 10)
 
-    public func debugPrint(
+    func setLogging(enabled: Bool) {
+      self.isLoggingEnabled = enabled
+    }
+    
+    func setCallback(_ newCallback: @escaping (BreadPartnerEvents) -> Void) {
+          self.callback = newCallback
+      }
+
+    nonisolated public func debugPrint(
         _ items: Any..., separator: String = " ", terminator: String = "\n"
     ) {
         guard isLoggingEnabled else { return }
@@ -41,168 +51,223 @@ internal class Logger: NSObject {
         guard isLoggingEnabled else { return }
         debugPrint(items)
     }
-
     func logRequestDetails(
-        url: URL, method: String, headers: [String: String]?, body: Data?
+      url: URL,
+      method: String,
+      headers: [String: String]?,
+      body: Data?
+    ) {
+      guard isLoggingEnabled else { return }
+      
+      var lines: [String] = []
+      lines.append("\n\(dashLineFifteen) Request Details \(dashLineFifteen)")
+      lines.append("URL     : \(url)")
+      lines.append("Method  : \(method)")
+      
+      if let headers = headers {
+          let headerLines: [String] = headers
+              .compactMap { key, value in
+                  guard
+                      let keyStr = key as? CustomStringConvertible,
+                      let valStr = value as? CustomStringConvertible
+                  else { return nil }
+                  return "\(keyStr): \(valStr)"
+              }
+              .sorted()
+
+          lines.append("Headers :")
+          for headerLine in headerLines {
+              lines.append("  \(headerLine)")
+          }
+      } else {
+        lines.append("Headers : None")
+      }
+      
+      let bodyString: String
+      if let body = body,
+         let json = try? JSONSerialization.jsonObject(with: body),
+         let pretty = try? JSONSerialization.data(
+           withJSONObject: json,
+           options: .prettyPrinted),
+         let str = String(data: pretty, encoding: .utf8)
+      {
+        bodyString = str
+      } else {
+        bodyString = "No Body"
+      }
+      lines.append("Body    : \(bodyString)")
+      lines.append("\(dashLineFifty)\n")
+      
+      let message = lines.joined(separator: "\n")
+      
+      debugPrint(message)
+    }
+    
+    func logResponseDetails(
+        url: URL,
+        statusCode: Int,
+        headers: [AnyHashable: Any],
+        body: Data?
     ) {
         guard isLoggingEnabled else { return }
-        debugPrint("\n\(dashLineFifteen) Request Details \(dashLineFifteen)")
-        debugPrint("URL     : \(url)")
-        debugPrint("Method  : \(method)")
-        if let headers = headers {
-            debugPrint("Headers : \(headers)")
-        } else {
-            debugPrint("Headers : None")
+
+        var lines: [String] = []
+        lines.append("\n\(dashLineFifteen) Response Details \(dashLineFifteen)")
+        lines.append("URL         : \(url)")
+        lines.append("Status Code : \(statusCode)")
+
+        let headerLines: [String] = headers
+            .compactMap { key, value in
+                guard
+                    let keyStr = key as? CustomStringConvertible,
+                    let valStr = value as? CustomStringConvertible
+                else { return nil }
+                return "\(keyStr): \(valStr)"
+            }
+            .sorted()
+
+        lines.append("Headers :")
+        for headerLine in headerLines {
+            lines.append("  \(headerLine)")
         }
-        if let body = body,
-            let jsonObject = try? JSONSerialization.jsonObject(
-                with: body, options: []),
-            let prettyData = try? JSONSerialization.data(
-                withJSONObject: jsonObject, options: .prettyPrinted),
-            let prettyJsonString = String(data: prettyData, encoding: .utf8)
-        {
-            debugPrint("Body    : \(prettyJsonString)")
-        } else {
-            debugPrint("Body    : None or Unformatted")
-        }
-        debugPrint("\(dashLineFifty)\n")
+        
+        let bodyString: String = {
+            guard let data = body else { return "No Body" }
+
+            if let jsonObj = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObj, options: .prettyPrinted),
+               let pretty = String(data: prettyData, encoding: .utf8) {
+                return pretty
+            }
+            if let str = String(data: data, encoding: .utf8) {
+                return str
+            }
+            return "No Body"
+        }()
+        lines.append("Body        : \(bodyString)")
+        lines.append("\(dashLineFifty)\n")
+
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
 
-    func logResponseDetails(
-        url: URL, statusCode: Int, headers: [AnyHashable: Any], body: Data?
-    ) {
-        guard isLoggingEnabled else { return }
-        debugPrint("\n\(dashLineFifteen) Response Details \(dashLineFifteen)")
-        debugPrint("URL         : \(url)")
-        debugPrint("Status Code : \(statusCode)")
-        debugPrint("Headers     : \(headers)")
-        if let body = body,
-            let jsonObject = try? JSONSerialization.jsonObject(
-                with: body, options: []),
-            let prettyData = try? JSONSerialization.data(
-                withJSONObject: jsonObject, options: .prettyPrinted),
-            let prettyJsonString = String(data: prettyData, encoding: .utf8)
-        {
-            debugPrint("Body        : \(prettyJsonString)")
-        } else if let body = body,
-            let bodyString = String(data: body, encoding: .utf8)
-        {
-            debugPrint("Body        : \(bodyString)")
-        } else {
-            debugPrint("Body        : None or Unformatted")
-        }
-        debugPrint("\(dashLineFifty)\n")
-    }
 
     func logTextPlacementModelDetails(_ model: TextPlacementModel) {
         guard isLoggingEnabled else { return }
-        debugPrint(
-            "\n\(dashLineTen) Text Placement Model Details \(dashLineTen)")
-        debugPrint("Action Type       : \(model.actionType ?? "N/A")")
-        debugPrint("Action Target     : \(model.actionTarget ?? "N/A")")
-        debugPrint("Content Text      : \(model.contentText ?? "N/A")")
-        debugPrint("Action Link       : \(model.actionLink ?? "N/A")")
-        debugPrint("Action Content ID : \(model.actionContentId ?? "N/A")")
-        debugPrint("\(dashLineFifty)\n")
+        
+        var lines: [String] = []
+        lines.append("\n\(dashLineTen) Text Placement Model Details \(dashLineTen)")
+        lines.append("Action Type       : \(model.actionType ?? "N/A")")
+        lines.append("Action Target     : \(model.actionTarget ?? "N/A")")
+        lines.append("Content Text      : \(model.contentText ?? "N/A")")
+        lines.append("Action Link       : \(model.actionLink ?? "N/A")")
+        lines.append("Action Content ID : \(model.actionContentId ?? "N/A")")
+        lines.append("\(dashLineFifty)\n")
+        
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
 
     func logPopupPlacementModelDetails(_ model: PopupPlacementModel) {
         guard isLoggingEnabled else { return }
-        debugPrint(
-            "\n\(dashLineTen) Popup Placement Model Details \(dashLineTen)")
-        debugPrint("Overlay Type                  : \(model.overlayType)")
-        debugPrint("Location                      : \(model.location ?? "")")
-        debugPrint("Brand Logo URL                : \(model.brandLogoUrl)")
-        debugPrint("WebView URL                   : \(model.webViewUrl)")
-        debugPrint("Overlay Title                 : \(model.overlayTitle)")
-        debugPrint("Overlay Subtitle              : \(model.overlaySubtitle)")
-        debugPrint(
-            "Overlay Container Bar Heading : \(model.overlayContainerBarHeading)"
-        )
-        debugPrint("Body Header                   : \(model.bodyHeader)")
-        debugPrint("Disclosure                    : \(model.disclosure)")
-
+        
+        var lines: [String] = []
+        lines.append("\n\(dashLineTen) Popup Placement Model Details \(dashLineTen)")
+        lines.append("Overlay Type                  : \(model.overlayType)")
+        lines.append("Location                      : \(model.location ?? "")")
+        lines.append("Brand Logo URL                : \(model.brandLogoUrl)")
+        lines.append("WebView URL                   : \(model.webViewUrl)")
+        lines.append("Overlay Title                 : \(model.overlayTitle.string)")
+        lines.append("Overlay Subtitle              : \(model.overlaySubtitle.string)")
+        lines.append("Overlay Container Bar Heading : \(model.overlayContainerBarHeading.string)")
+        lines.append("Body Header                   : \(model.bodyHeader.string)")
+        lines.append("Disclosure                    : \(model.disclosure.string)")
+        
         if let primaryActionButton = model.primaryActionButtonAttributes {
-            debugPrint(
-                "\n\(dashLineTen) Primary Action Button Details \(dashLineTen)")
-            debugPrint(
-                "  Data Overlay Type       : \(primaryActionButton.dataOverlayType ?? "N/A")"
-            )
-            debugPrint(
-                "  Data Content Fetch      : \(primaryActionButton.dataContentFetch ?? "N/A")"
-            )
-            debugPrint(
-                "  Data Action Target      : \(primaryActionButton.dataActionTarget ?? "N/A")"
-            )
-            debugPrint(
-                "  Data Action Type        : \(primaryActionButton.dataActionType ?? "N/A")"
-            )
-            debugPrint(
-                "  Data Action Content ID  : \(primaryActionButton.dataActionContentId ?? "N/A")"
-            )
-            debugPrint(
-                "  Data Location           : \(primaryActionButton.dataLocation ?? "N/A")"
-            )
-            debugPrint(
-                "  Button Text             : \(primaryActionButton.buttonText ?? "N/A")"
-            )
+            lines.append("\n\(dashLineTen) Primary Action Button Details \(dashLineTen)")
+            lines.append("  Data Overlay Type       : \(primaryActionButton.dataOverlayType ?? "N/A")")
+            lines.append("  Data Content Fetch      : \(primaryActionButton.dataContentFetch ?? "N/A")")
+            lines.append("  Data Action Target      : \(primaryActionButton.dataActionTarget ?? "N/A")")
+            lines.append("  Data Action Type        : \(primaryActionButton.dataActionType ?? "N/A")")
+            lines.append("  Data Action Content ID  : \(primaryActionButton.dataActionContentId ?? "N/A")")
+            lines.append("  Data Location           : \(primaryActionButton.dataLocation ?? "N/A")")
+            lines.append("  Button Text             : \(primaryActionButton.buttonText ?? "N/A")")
         } else {
-            debugPrint(
-                "\(dashLineTen) Primary Action Button: N/A \(dashLineTen)")
+            lines.append("\(dashLineTen) Primary Action Button: N/A \(dashLineTen)")
         }
-
+        
         if !model.dynamicBodyModel.bodyDiv.isEmpty {
-            var logOutput =
-                "\n\(dashLineTen) Dynamic Body Model Details \(dashLineTen)\n"
+            lines.append("\n\(dashLineTen) Dynamic Body Model Details \(dashLineTen)")
             for (key, bodyContent) in model.dynamicBodyModel.bodyDiv {
-                logOutput += "  Body Div Key [\(key)]:\n"
+                lines.append("  Body Div Key [\(key)]:")
                 for (tag, value) in bodyContent.tagValuePairs {
-                    logOutput += "    - \(tag): \(value)\n"
+                    lines.append("    - \(tag): \(value)")
                 }
             }
-            logOutput += "\(dashLineFifty)\n"
-            debugPrint(logOutput)
+            lines.append("\(dashLineFifty)\n")
         } else {
-            debugPrint(
-                "\n\(dashLineTen) Dynamic Body Model Details \(dashLineTen)")
-            debugPrint("Dynamic Body Model: N/A")
-            debugPrint("\(dashLineFifty)\n")
+            lines.append("\n\(dashLineTen) Dynamic Body Model Details \(dashLineTen)")
+            lines.append("Dynamic Body Model: N/A")
+            lines.append("\(dashLineFifty)\n")
         }
+        
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
 
     func logLoadingURL(url: URL) {
         guard isLoggingEnabled else { return }
-        debugPrint("\(dashLineFifteen) WebView URL \(dashLineFifteen)")
-        debugPrint(
-            url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines))
-        debugPrint("\(dashLineFifty)")
+
+        var lines: [String] = []
+        lines.append("\(dashLineFifteen) WebView URL \(dashLineFifteen)")
+        lines.append(url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines))
+        lines.append("\(dashLineFifty)")
+
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
 
     func logReCaptchaToken(token: String) {
         guard isLoggingEnabled else { return }
-        debugPrint("\(dashLineFifteen) ReCAPTCHA TOKEN \(dashLineFifteen)")
-        debugPrint(token)
-        debugPrint("\(dashLineFifty)")
+
+        var lines: [String] = []
+        lines.append("\(dashLineFifteen) ReCAPTCHA TOKEN \(dashLineFifteen)")
+        lines.append(token)
+        lines.append("\(dashLineFifty)")
+
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
 
     func logApplicationResultDetails(_ payload: [String: Any]) {
         guard isLoggingEnabled else { return }
-        debugPrint("\n\(dashLineTen) Application Result Details \(dashLineTen)")
-        debugPrint("Application ID     : \(payload["applicationId"] ?? "N/A")")
-        debugPrint("Call ID            : \(payload["callId"] ?? "N/A")")
-        debugPrint("Card Type          : \(payload["cardType"] ?? "N/A")")
-        debugPrint("Email Address      : \(payload["emailAddress"] ?? "N/A")")
-        debugPrint("Message            : \(payload["message"] ?? "N/A")")
-        debugPrint("Mobile Phone       : \(payload["mobilePhone"] ?? "N/A")")
-        debugPrint("Result             : \(payload["result"] ?? "N/A")")
-        debugPrint("Status             : \(payload["status"] ?? "N/A")")
-        debugPrint("\(dashLineFifty)\n")
+
+        var lines: [String] = []
+        lines.append("\n\(dashLineTen) Application Result Details \(dashLineTen)")
+        lines.append("Application ID     : \(payload["applicationId"] ?? "N/A")")
+        lines.append("Call ID            : \(payload["callId"] ?? "N/A")")
+        lines.append("Card Type          : \(payload["cardType"] ?? "N/A")")
+        lines.append("Email Address      : \(payload["emailAddress"] ?? "N/A")")
+        lines.append("Message            : \(payload["message"] ?? "N/A")")
+        lines.append("Mobile Phone       : \(payload["mobilePhone"] ?? "N/A")")
+        lines.append("Result             : \(payload["result"] ?? "N/A")")
+        lines.append("Status             : \(payload["status"] ?? "N/A")")
+        lines.append("\(dashLineFifty)\n")
+
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
-    
-    func printWebAnchorLogs(data:String){
+
+    func printWebAnchorLogs(data: String) {
         guard isLoggingEnabled else { return }
-        print("\n\(dashLineFifteen) Anchors List \(dashLineFifteen)")
-        print(data)
-        print("\(dashLineFifty)\n")
+
+        var lines: [String] = []
+        lines.append("\n\(dashLineFifteen) Anchors List \(dashLineFifteen)")
+        lines.append(data)
+        lines.append("\(dashLineFifty)\n")
+
+        let message = lines.joined(separator: "\n")
+        debugPrint(message)
     }
+
 }

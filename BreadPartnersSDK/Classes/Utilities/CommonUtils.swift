@@ -15,45 +15,6 @@ import Foundation
 /// `CommonUtils` class provides utility methods for common operations across the BreadPartner SDK.
 internal class CommonUtils: NSObject {
 
-    private let dispatchQueue: DispatchQueue
-    private let alertHandler: AlertHandler
-
-    init(dispatchQueue: DispatchQueue, alertHandler: AlertHandler) {
-        self.dispatchQueue = dispatchQueue
-        self.alertHandler = alertHandler
-        super.init()
-    }
-
-    func executeAfterDelay(_ delay: TimeInterval) async {
-        try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-    }
-
-    func handleSecurityCheckFailure(error: Error?) async {
-        await executeAfterDelay(2)
-        alertHandler.hideAlert()
-
-        await executeAfterDelay(0.5)
-        alertHandler.showAlert(
-            title: Constants.securityCheckFailureAlertTitle,
-            message: Constants.securityCheckAlertFailedMessage(
-                error: error?.localizedDescription ?? ""
-            ),
-            showOkButton: true
-        )
-    }
-
-    func handleSecurityCheckPassed() async {
-        await executeAfterDelay(2)
-        alertHandler.hideAlert()
-
-        await executeAfterDelay(0.5)
-        alertHandler.showAlert(
-            title: Constants.securityCheckSuccessAlertTitle,
-            message: Constants.securityCheckSuccessAlertSubTitle,
-            showOkButton: true
-        )
-    }
-
     func getCurrentTimestamp() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

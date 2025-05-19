@@ -6,6 +6,7 @@
 </p>
 
 # **Bread Partners SDK – iOS Library**  
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/getbread/breadfinancial-brand-partners-ios?sort=semver)](https://github.com/getbread/breadfinancial-brand-partners-ios/releases)
 
 ## **Overview of the Bread Financial Brand Partners SDK – Apply and Buy**  
 
@@ -213,6 +214,110 @@ await BreadPartnersSDK.shared.registerPlacements(
   forSwiftUI: true
 )
 ```
+
+---
+
+## Displaying an Overlay (Popup) without User Interaction
+
+This method allows you to present an overlay (popup) directly to the customer without requiring any user interaction, such as clicking on a placement.
+
+To trigger the overlay, you still need to configure the necessary placement and merchant details as you would for a normal placement. However, instead of rendering any text or button, this method immediately presents the overlay to the user.
+
+
+### 1. Define Placement Data
+
+Create a `PlacementData` object to specify the financing type, order details, and placement ID. This includes subtotal, discounts, total price, shipping, tax, discount codes, and pickup information like name, phone, address, and email.
+
+```swift
+let placementData = PlacementData(
+    financingType: BreadPartnersFinancingType.installments,
+    locationType: BreadPartnersLocationType.category,
+    placementId: "03d69ff1-f90c-41b2-8a27-836af7f1eb98",
+    domID: "123",
+    order: Order(
+        subTotal: CurrencyValue(currency: "USD", value: 0),
+        totalDiscounts: CurrencyValue(currency: "USD", value: 0),
+        totalPrice: CurrencyValue(
+            currency: "USD", value: Double(73900)),
+        totalShipping: CurrencyValue(currency: "USD", value: 0),
+        totalTax: CurrencyValue(currency: "USD", value: 0),
+        discountCode: "string",
+        pickupInformation: PickupInformation(
+            name: Name(
+                givenName: "John",
+                familyName: "Doe"),
+            phone: "+14539842345",
+            address: Address(
+                address1: "156 5th Avenue",
+                locality: "New York",
+                postalCode: "10019",
+                region: "US-NY",
+                country: "US"),
+            email: "john.doe@gmail.com"),
+        fulfillmentType: "type",
+        items: []))
+```
+
+### 2. Configure
+
+Pass the `placementData` inside a `PlacementConfiguration` object.
+
+```swift
+let placementsConfiguration = PlacementConfiguration(
+    placementData: placementData
+)
+```
+
+### 3. Set Up Merchant Information
+
+Define the merchant and buyer details in `MerchantConfiguration`. This includes buyer information like name, birth date, email, phone, billing address, and optional shipping address. It also contains merchant-related data like store number, channel, and subchannel.
+
+```swift
+let merchantConfiguration = MerchantConfiguration(
+    buyer: BreadPartnersBuyer(
+        givenName: "Jack",
+        familyName: "Seamus",
+        additionalName: "C.",
+        birthDate: "1974-08-21",
+        email: "johncseamus@gmail.com",
+        phone: "+13235323423",
+        billingAddress: BreadPartnersAddress(
+            address1: "323 something lane",
+            address2: "apt. B",
+            country: "USA",
+            locality: "NYC",
+            region: "NY",
+            postalCode: "11222"
+        ),
+        shippingAddress: nil
+    ), 
+    loyaltyID: "xxxxxx",
+    storeNumber: "1234567",
+    channel: "P",
+    subchannel: "X"
+)
+```
+
+### 4. Make the OpenExperienceForPlacement call
+
+Call the openExperienceForPlacement method with the configured merchantConfiguration and placementsConfiguration. The forSwiftUI flag specifies whether the overlay (popup) is being registered for a SwiftUI or UIKit based UI.
+
+- `merchantConfiguration`: Provide user account details in this configuration.
+- `placementsConfiguration`: Specify the pre-defined placement details required for building the UI.
+- `forSwiftUI`: A Boolean flag indicating whether the text view should be created as a SwiftUI-compatible view.
+- `callback`: A function that handles user interactions and ongoing events related to the placements.
+
+```swift
+await BreadPartnersSDK.shared.openExperienceForPlacement(
+    merchantConfiguration: merchantConfiguration,
+    placementsConfiguration: placementConfiguration,
+    forSwiftUI: true
+) { event in
+                
+}
+```
+
+---
 
 ## Making a RTPS Request
 

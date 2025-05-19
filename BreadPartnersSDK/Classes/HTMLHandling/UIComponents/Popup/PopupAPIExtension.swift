@@ -41,16 +41,18 @@ extension PopupController {
     private func fetchData(requestBody: Any) async {
         let apiUrl = APIUrl(urlType: .generatePlacements).url
         do {
-            let response = try await apiClient.request(
+            let response = try await APIClient(logger: logger).request(
                 urlString: apiUrl, method: .POST, body: requestBody)
             await handleResponse(response)
         } catch {
-            alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.apiError(
-                    message: error.localizedDescription),
-                showOkButton: true
-            )
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants.apiError(
+                                message: error.localizedDescription)
+                        ])))
         }
     }
 
@@ -58,7 +60,7 @@ extension PopupController {
     private func handleResponse(_ response: Any) async {
         do {
             let responseModel: PlacementsResponse =
-                try await commonUtils.decodeJSON(
+                try await CommonUtils().decodeJSON(
                     from: response, to: PlacementsResponse.self)
             guard
                 let popupPlacementHTMLContent = responseModel.placementContent?
@@ -69,21 +71,25 @@ extension PopupController {
                             ?? ""
                     )
             else {
-                alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.popupPlacementParsingError,
-                    showOkButton: true
-                )
-                return
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants
+                                    .popupPlacementParsingError
+                            ])))
             }
             self.webViewPlacementModel = popupPlacementModel
         } catch {
-            alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.catchError(
-                    message: error.localizedDescription),
-                showOkButton: true
-            )
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants.apiError(
+                                message: error.localizedDescription)
+                        ])))
         }
     }
 

@@ -20,53 +20,34 @@ internal class HTMLContentRenderer {
     var integrationKey: String = ""
     var merchantConfiguration: MerchantConfiguration?
     var placementsConfiguration: PlacementConfiguration?
-    let apiClient: APIClient
-    let alertHandler: AlertHandler
-    let commonUtils: CommonUtils
-    let analyticsManager: AnalyticsManager
-    let logger: Logger
-    let htmlContentParser: HTMLContentParser
-    let dispatchQueue: DispatchQueue
+
     let brandConfiguration: BrandConfigResponse?
-    let recaptchaManager: RecaptchaManager
     var splitTextAndAction: Bool = false
     var forSwiftUI: Bool = false
 
+    var logger: Logger = Logger()
     let callback: ((BreadPartnerEvents) -> Void)
 
     init(
         integrationKey: String,
-        apiClient: APIClient,
-        alertHandler: AlertHandler,
-        commonUtils: CommonUtils,
-        analyticsManager: AnalyticsManager,
-        logger: Logger,
-        htmlContentParser: HTMLContentParser,
-        dispatchQueue: DispatchQueue,
         merchantConfiguration: MerchantConfiguration?,
         placementsConfiguration: PlacementConfiguration?,
         brandConfiguration: BrandConfigResponse?,
-        recaptchaManager: RecaptchaManager,
         splitTextAndAction: Bool = false,
         forSwiftUI: Bool = false,
+        logger: Logger,
         callback: @escaping ((BreadPartnerEvents) -> Void)
     ) {
         self.integrationKey = integrationKey
-        self.apiClient = apiClient
-        self.alertHandler = alertHandler
-        self.commonUtils = commonUtils
-        self.analyticsManager = analyticsManager
-        self.logger = logger
-        self.htmlContentParser = htmlContentParser
-        self.dispatchQueue = dispatchQueue
         self.merchantConfiguration = merchantConfiguration
         self.placementsConfiguration = placementsConfiguration
         self.brandConfiguration = brandConfiguration
-        self.recaptchaManager = recaptchaManager
         self.splitTextAndAction = splitTextAndAction
         self.forSwiftUI = forSwiftUI
+        self.logger = logger
         self.callback = callback
     }
+
 
     var textPlacementModel: TextPlacementModel? = nil
     var responseModel: PlacementsResponse? = nil
@@ -79,23 +60,29 @@ internal class HTMLContentRenderer {
                 let placementContent = responseModel.placementContent?.first?
                     .contentData?.htmlContent
             else {
-                return alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.noTextPlacementError,
-                    showOkButton: true
-                )
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants
+                                    .noTextPlacementError
+                            ])))
             }
 
             guard
                 let parseTextPlacementModel =
-                    try await htmlContentParser.extractTextPlacementModel(
+                    try await HTMLContentParser().extractTextPlacementModel(
                         htmlContent: placementContent)
             else {
-                return alertHandler.showAlert(
-                    title: Constants.nativeSDKAlertTitle(),
-                    message: Constants.textPlacementParsingError,
-                    showOkButton: true
-                )
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants
+                                    .textPlacementParsingError
+                            ])))
             }
 
             textPlacementModel = parseTextPlacementModel
@@ -103,7 +90,7 @@ internal class HTMLContentRenderer {
 
             logger.logTextPlacementModelDetails(textPlacementModel)
             Task {
-                await analyticsManager.sendViewPlacement(
+                await AnalyticsManager(logger: logger).sendViewPlacement(
                     placementResponse: responseModel)
             }
 
@@ -113,12 +100,14 @@ internal class HTMLContentRenderer {
                 renderTextViewWithLink()
             }
         } catch {
-            alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.catchError(
-                    message: error.localizedDescription),
-                showOkButton: true
-            )
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants.catchError(
+                                message: error.localizedDescription)
+                        ])))
         }
     }
 
@@ -132,32 +121,38 @@ internal class HTMLContentRenderer {
                     $0.id == textPlacementModel.actionContentId
                 }),
             let popupPlacementModel =
-                try? await htmlContentParser.extractPopupPlacementModel(
+                try? await HTMLContentParser().extractPopupPlacementModel(
                     from: popupPlacementHTMLContent.contentData?.htmlContent
                         ?? "")
         else {
-            return alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.popupPlacementParsingError,
-                showOkButton: true
-            )
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants
+                                .popupPlacementParsingError
+                        ])))
         }
 
         logger.logPopupPlacementModelDetails(popupPlacementModel)
 
         guard
-            let overlayType = htmlContentParser.handleOverlayType(
+            let overlayType = HTMLContentParser().handleOverlayType(
                 from: popupPlacementModel.overlayType)
         else {
-            return alertHandler.showAlert(
-                title: Constants.nativeSDKAlertTitle(),
-                message: Constants.missingPopupPlacementError,
-                showOkButton: true
-            )
+            return callback(
+                .sdkError(
+                    error: NSError(
+                        domain: "", code: 500,
+                        userInfo: [
+                            NSLocalizedDescriptionKey: Constants
+                                .missingPopupPlacementError
+                        ])))
         }
 
         Task {
-            await analyticsManager.sendClickPlacement(
+            await AnalyticsManager(logger: logger).sendClickPlacement(
                 placementResponse: responseModel)
         }
         await createPopupOverlay(
@@ -174,12 +169,8 @@ internal class HTMLContentRenderer {
             placementConfiguration: placementsConfiguration!,
             popupModel: popupPlacementModel,
             overlayType: overlayType,
-            apiClient: apiClient,
-            alertHandler: alertHandler,
-            commonUtils: commonUtils,
             brandConfiguration: brandConfiguration,
-            recaptchaManager: recaptchaManager,
-            logger: logger,
+            logger:logger,
             callback: callback
         )
         configurePopupPresentation(popupViewController)
