@@ -43,8 +43,11 @@ internal class APIUrl {
         case .prod:
             self.baseURL = "https://brands.kmsmep.com"
             self.rtpsBaseURL = "https://acquire1.comenity.net"
+        case .uat:
+            self.baseURL = "https://brands.kmsmep.com"
+            self.rtpsBaseURL = "https://acquire1-uat.comenity.net"
         }
-    }
+}
 
     /// Set the environment
     static func setEnvironment(_ environment: BreadPartnersEnvironment) {

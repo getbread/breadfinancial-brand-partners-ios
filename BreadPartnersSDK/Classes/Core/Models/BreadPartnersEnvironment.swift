@@ -17,4 +17,5 @@
 public enum BreadPartnersEnvironment: String, CaseIterable {
     case stage = "STAGE"
     case prod = "PROD"
+    case uat = "UAT"
 }
