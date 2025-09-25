@@ -20,7 +20,6 @@ public struct BreadPartnerLinkTextSwitUI: View {
     private var linkColor: Color
     private var linkFontName: String
     private var linkFontSize: CGFloat
-    private var attributedText: AttributedString
 
     public init(
         _ text: String, links: [String] = [], onTap: (() -> Void)? = nil,
@@ -32,8 +31,6 @@ public struct BreadPartnerLinkTextSwitUI: View {
         self.linkColor = .blue
         self.linkFontName = fontName
         self.linkFontSize = fontSize
-
-        self.attributedText = AttributedString(text)
     }
 
     public var body: some View {
