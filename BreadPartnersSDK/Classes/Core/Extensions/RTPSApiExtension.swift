@@ -201,6 +201,8 @@ extension BreadPartnersSDK {
                                     .popupPlacementParsingError
                             ])))
             }
+            var emptyString
+            
             let popupPlacementModel = PopupPlacementModel(
                 overlayType: "EMBEDDED_OVERLAY",
                 location: responseModel.placements?.first?.renderContext?
