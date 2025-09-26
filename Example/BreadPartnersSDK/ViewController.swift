@@ -180,7 +180,7 @@ class ViewController: UIViewController {
                 ),
                 shippingAddress: nil
             ), loyaltyID: loyaltyId,
-            storeNumber: "1234567",
+//            storeNumber: "1234567",
             channel: channel,
             subchannel: subChannel
         )
