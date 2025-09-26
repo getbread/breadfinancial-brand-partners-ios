@@ -15,10 +15,23 @@ import RecaptchaEnterprise
 /// `RecaptchaManager` handles the process of executing a reCAPTCHA for verifying user actions.
 internal class RecaptchaManager {
 
+    static let shared = RecaptchaManager()
     private let logger: Logger
+    private var recaptchaClient: RecaptchaClient? = nil
 
-    init(logger: Logger = Logger()) {
+    private init(logger: Logger = Logger()) {
         self.logger = logger
+    }
+    
+    func fetchRecaptchaClient(siteKey: String) async throws {
+        if recaptchaClient != nil {
+            return
+        }
+        do {
+            self.recaptchaClient = try await Recaptcha.fetchClient(withSiteKey: siteKey)
+        } catch let error as RecaptchaError {
+            throw error
+        }
     }
 
     func executeReCaptcha(
@@ -27,14 +40,25 @@ internal class RecaptchaManager {
         timeout: Double = 10000,
         debug: Bool = false
     ) async throws -> String {
-        let client = try await Recaptcha.fetchClient(withSiteKey: siteKey)
-        let token = try await client.execute(
-            withAction: action, withTimeout: timeout)
-
-        if debug {
-            logger.logReCaptchaToken(token: token)
+        do {
+            try await fetchRecaptchaClient(siteKey: siteKey)
+            if (recaptchaClient != nil) {
+                do {
+                    let token = try await recaptchaClient!.execute(
+                        withAction: action, withTimeout: timeout)
+                    if debug {
+                        logger.logReCaptchaToken(token: token)
+                    }
+                    
+                    return token
+                } catch let error as RecaptchaError {
+                    throw error
+                }
+            }
+        } catch let error as RecaptchaError {
+            throw error
         }
-        return token
+        
+        return ""
     }
-
 }
