@@ -130,7 +130,7 @@ extension BreadPartnersSDK {
                     callback: callback
                 ).createPopupOverlay(
                     popupPlacementModel: popupPlacementModel,
-                    overlayType: .singleProductOverlay
+                    overlayType: PlacementOverlayType(rawValue: popupPlacementModel.overlayType) ?? .singleProductOverlay
                 )
 
 

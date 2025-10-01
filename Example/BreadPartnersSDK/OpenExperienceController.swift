@@ -5,29 +5,7 @@ class OpenExperienceController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
         openExperienceFlow()
-    }
-    func setupUI() {
-        view.backgroundColor = .white
-
-        let headerLabel = UILabel()
-        headerLabel.text = "Random Content over here"
-        headerLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        headerLabel.textAlignment = .center
-        headerLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(headerLabel)
-
-        NSLayoutConstraint.activate([
-            headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            headerLabel.topAnchor.constraint(
-                equalTo: view.topAnchor, constant: 20),
-            headerLabel.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor, constant: 20),
-            headerLabel.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -20),
-        ])
     }
 
     func openExperienceFlow() {
