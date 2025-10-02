@@ -101,7 +101,7 @@ extension BreadPartnersSDK {
                 guard
                     let popupPlacementHTMLContent = responseModel
                         .placementContent?
-                        .first,
+                        .first(where: { $0.metadata?.templateId?.contains("overlay") == true }),
                     let popupPlacementModel = try await HTMLContentParser()
                         .extractPopupPlacementModel(
                             from: popupPlacementHTMLContent.contentData?
@@ -130,7 +130,7 @@ extension BreadPartnersSDK {
                     callback: callback
                 ).createPopupOverlay(
                     popupPlacementModel: popupPlacementModel,
-                    overlayType: .embeddedOverlay
+                    overlayType: PlacementOverlayType(rawValue: popupPlacementModel.overlayType) ?? .singleProductOverlay
                 )
 
 
