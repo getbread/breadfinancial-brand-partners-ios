@@ -53,7 +53,7 @@ extension BreadPartnersSDK {
     ///      then trigger `virtualLookup`.
     /// - Else call pre-screen endpoint to fetch `prescreenId`.
     /// - Both endpoints require user details to build request payload.
-    func preScreenLookupCall(
+    private func preScreenLookupCall(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
