@@ -26,6 +26,14 @@ internal struct Config: Codable {
     let qaAdServerUrl: String
     let recaptchaEnabledQA: String
     let recaptchaSiteKeyQA: String
+    let recaptchaSiteKeyPROD: String
+    let recaptchaEnabledPROD: String
+    let rskUatNativeIos: String
+    let rskUatNativeAndroid: String
+    let rskStageNativeIos: String
+    let rskStageNativeAndroid: String
+    let rskProdNativeIos: String
+    let rskProdNativeAndroid: String
     let test: String
 
     enum CodingKeys: String, CodingKey {
@@ -36,6 +44,14 @@ internal struct Config: Codable {
         case qaAdServerUrl
         case recaptchaEnabledQA
         case recaptchaSiteKeyQA
+        case recaptchaSiteKeyPROD
+        case recaptchaEnabledPROD
+        case rskUatNativeIos = "rsk_UAT_NATIVE_IOS"
+        case rskUatNativeAndroid = "rsk_UAT_NATIVE_ANDROID"
+        case rskStageNativeIos = "rsk_STAGE_NATIVE_IOS"
+        case rskStageNativeAndroid = "rsk_STAGE_NATIVE_ANDROID"
+        case rskProdNativeIos = "rsk_PROD_NATIVE_IOS"
+        case rskProdNativeAndroid = "rsk_PROD_NATIVE_ANDROID"
         case test
     }
 
@@ -62,7 +78,45 @@ internal struct Config: Codable {
         self.recaptchaSiteKeyQA =
             try container.decodeIfPresent(
                 String.self, forKey: .recaptchaSiteKeyQA) ?? ""
+        self.recaptchaSiteKeyPROD =
+            try container.decodeIfPresent(
+                String.self, forKey: .recaptchaSiteKeyPROD) ?? ""
+        self.recaptchaEnabledPROD =
+            try container.decodeIfPresent(
+                String.self, forKey: .recaptchaEnabledPROD) ?? ""
+        self.rskUatNativeIos = 
+            try container.decodeIfPresent(
+                String.self, forKey: .rskUatNativeIos) ?? ""
+        self.rskUatNativeAndroid =
+            try container.decodeIfPresent(
+                String.self, forKey: .rskUatNativeAndroid) ?? ""
+        self.rskStageNativeIos =
+            try container.decodeIfPresent(
+                String.self, forKey: .rskStageNativeIos) ?? ""
+        self.rskStageNativeAndroid =
+            try container.decodeIfPresent(
+                String.self, forKey: .rskStageNativeAndroid) ?? ""
+        self.rskProdNativeIos =
+            try container.decodeIfPresent(
+                String.self, forKey: .rskProdNativeIos) ?? ""
+        self.rskProdNativeAndroid =
+            try container.decodeIfPresent(
+                String.self, forKey: .rskProdNativeAndroid) ?? ""
         self.test =
-            try container.decodeIfPresent(String.self, forKey: .test) ?? ""
+            try container.decodeIfPresent(
+                String.self, forKey: .test) ?? ""
+    }
+}
+
+extension Config {
+    func getRecaptchaKey(for environment: BreadPartnersEnvironment) -> String {
+        switch environment {
+        case .uat:
+            return rskUatNativeIos
+        case .stage:
+            return rskStageNativeIos
+        case .prod:
+            return rskProdNativeIos
+        }
     }
 }
