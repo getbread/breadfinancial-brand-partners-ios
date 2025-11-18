@@ -26,7 +26,7 @@ public class PlacementData {
     public var financingType: BreadPartnersFinancingType?
     public var locationType: BreadPartnersLocationType?
     public var placementId: String?
-    public var domID: String
+    public var domID: String?
     public var allowCheckout: Bool?
     public var order: Order?
     public var defaultSelectedCardKey: String?
@@ -36,7 +36,7 @@ public class PlacementData {
         financingType: BreadPartnersFinancingType? = nil,
         locationType: BreadPartnersLocationType? = nil,
         placementId: String? = nil,
-        domID: String, allowCheckout: Bool? = nil, order: Order? = nil,
+        domID: String? = nil, allowCheckout: Bool? = nil, order: Order? = nil,
         defaultSelectedCardKey: String? = nil, selectedCardKey: String? = nil
     ) {
         self.financingType = financingType
@@ -66,6 +66,31 @@ public enum BreadPartnersLocationType: String, CaseIterable {
     case product
     case header
     case search
+    case myaccount
+    
+    /// Maps location types to their corresponding channel codes
+    public static let locationChannelMap: [BreadPartnersLocationType: String] = [
+        .homepage: "H",
+        .landing: "L",
+        .search: "S",
+        .product: "P",
+        .category: "C",
+        .banner: "U",
+        .checkout: "O",
+        .cart: "A",
+        .mobile: "E",
+        .loyalty: "D",
+        .footer: "F",
+        .bag: "2",
+        .dashboard: "5",
+        .myaccount: "5",
+        .header: "R"
+    ]
+
+    /// Returns the channel code for this location type
+    public var channelCode: String? {
+        return Self.locationChannelMap[self]
+    }
 }
 
 /// Specifies the type of financing for the placement.
