@@ -143,6 +143,12 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
                     callback(.webViewSuccess(result: payload))
                 }
                 
+            case "RECEIVE_PRESCREEN_APPLICATION_RESULT":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.logApplicationResultDetails(payload)
+                    callback(.webViewSuccess(result: payload))
+                }
+                
             case "APPLICATION_COMPLETED":
                 callback(.screenName(name: "application-completed"))
                 callback(.popupClosed)
