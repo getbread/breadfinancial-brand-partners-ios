@@ -29,6 +29,7 @@ struct RTPSRequest: Codable {
     let mockResponse: String?
     let overrideConfig: OverrideConfig?
     let prescreenId: String?
+    let platform: String
     
     struct OverrideConfig: Codable {
         let enhancedPresentment: Bool?
@@ -66,6 +67,6 @@ struct RTPSRequest: Codable {
         self.mockResponse = mockResponse
         self.overrideConfig = overrideConfig
         self.prescreenId = prescreenId
-        
+        self.platform = "ios"
     }
 }
