@@ -114,15 +114,13 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
         
-        //        await executeSecurityCheck()
-        await preScreenLookupCall(
+        await executeSecurityCheck(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,
-            splitTextAndAction: false, openPlacementExperience: false,
             forSwiftUI: forSwiftUI,
             logger: logger,
-            callback: callback,
-            token: "\(UUID().uuidString)")
+            callback: callback
+        )
     }
 
     /// Display an overlay to the customer without requiring them to click on a placement to trigger it.

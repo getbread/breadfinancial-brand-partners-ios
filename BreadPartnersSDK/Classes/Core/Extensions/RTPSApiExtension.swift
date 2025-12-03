@@ -10,31 +10,52 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
+import RecaptchaEnterprise
+
 extension BreadPartnersSDK {
     /// This method does bot behavior check using the Recaptcha v3 SDK,
     /// to protect against malicious attacks.
-//    func executeSecurityCheck() async {
-//        let siteKey = brandConfiguration?.config.recaptchaSiteKeyQA
-//
-//        do {
-//            let token = try await recaptchaManager.executeReCaptcha(
-//                siteKey: siteKey ?? "",
-//                action: .init(customAction: "checkout"),
-//                timeout: 10000,
-//                debug: logger.isLoggingEnabled
-//            )
-//            await preScreenLookupCall(token: token)
-//        } catch {
-//            await CommonUtils().handleSecurityCheckFailure(error: error)
-//        }
-//    }
+    func executeSecurityCheck(
+        merchantConfiguration: MerchantConfiguration,
+        placementsConfiguration: PlacementConfiguration,
+        forSwiftUI: Bool = false,
+        logger: Logger,
+        callback: @Sendable @escaping (
+            BreadPartnerEvents
+        ) -> Void
+    ) async {
+        let siteKey = brandConfiguration?.config.getRecaptchaKey(
+            for: merchantConfiguration.env ?? BreadPartnersEnvironment.prod
+        )
+
+        do {
+            let token = try await RecaptchaManager.shared.executeReCaptcha(
+                siteKey: siteKey ?? "",
+                action: .init(customAction: "checkout"),
+                timeout: 10000,
+                debug: logger.isLoggingEnabled
+            )
+            await preScreenLookupCall(
+                merchantConfiguration: merchantConfiguration,
+                placementsConfiguration: placementsConfiguration,
+                splitTextAndAction: false, openPlacementExperience: false,
+                forSwiftUI: forSwiftUI,
+                logger: logger,
+                callback: callback,
+                token: token)
+        } catch let error as RecaptchaError {
+            print("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
+        } catch {
+            print("Unknown error: \(error)")
+        }
+    }
 
     /// Once the Recaptcha token is obtained, make the pre-screen lookup API call.
     /// - If  `prescreenId` was previously saved by the brand partner when calling the pre-screen endpoint,
     ///      then trigger `virtualLookup`.
     /// - Else call pre-screen endpoint to fetch `prescreenId`.
     /// - Both endpoints require user details to build request payload.
-    func preScreenLookupCall(
+    private func preScreenLookupCall(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
