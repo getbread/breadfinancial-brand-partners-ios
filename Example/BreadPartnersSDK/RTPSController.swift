@@ -14,7 +14,7 @@ class RTPSController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        rtpsCall()
+        rtpsCall(showCaptcha: true)
     }
 
     func setupUI() {
