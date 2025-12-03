@@ -100,6 +100,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
         forSwiftUI: Bool = false,
+        showCaptcha: Bool = false,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -114,12 +115,17 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
         
+        if (brandConfiguration == nil) {
+            await fetchBrandConfig()
+        }
+        
         await executeSecurityCheck(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,
             forSwiftUI: forSwiftUI,
             logger: logger,
-            callback: callback
+            showCaptcha: showCaptcha,
+            callback: callback,
         )
     }
 

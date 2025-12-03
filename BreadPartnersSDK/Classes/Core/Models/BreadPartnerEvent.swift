@@ -74,4 +74,8 @@ public enum BreadPartnerEvents {
     
     /// Logs requests, responses, errors, and successes.
     case onSDKEventLog(logs: String)
+    
+    case displayChallenge(view: UIViewController)
+    
+    case challengeCompleted
 }

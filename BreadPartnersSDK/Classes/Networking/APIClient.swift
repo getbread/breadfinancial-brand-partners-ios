@@ -127,7 +127,38 @@ internal class APIClient {
                         "Server returned an error: \(httpResponse.statusCode)"
                 ])
         }
-
+        
+        // Check content type before attempting JSON parsing
+        let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type") ?? ""
+        guard contentType.contains("application/json") else {
+            let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response"
+            
+            // Check if this is an Incapsula challenge page
+            if responseString.contains("_Incapsula_Resource") || responseString.contains("incap_ses") {
+                print("Security challenge detected")
+                print("Expected JSON but received content type: \(contentType)")
+                print("Response body: \(responseString)")
+                
+                // Return a structured error that can be handled by the caller
+                throw NSError(
+                    domain: "IncapsulaChallenge",
+                    code: 403,
+                    userInfo: [
+                        NSLocalizedDescriptionKey: "Security challenge detected. User interaction required.",
+                        "htmlContent": responseString,
+                        "url": urlString
+                    ])
+            }
+            
+            throw NSError(
+                domain: "InvalidContentType",
+                code: 415,
+                userInfo: [
+                    NSLocalizedDescriptionKey: "Server returned \(contentType) instead of JSON.",
+                    "responseBody": responseString
+                ])
+        }
+            
         // Decode the response data
         do {
             return try JSONSerialization.jsonObject(with: data, options: [])

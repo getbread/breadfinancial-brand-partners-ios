@@ -78,7 +78,7 @@ class RTPSController: UIViewController {
         return stack
     }
 
-    func rtpsCall() {
+    func rtpsCall(showCaptcha: Bool = false) {
 
         let rtpsData = RTPSData(
             order: Order(
@@ -112,18 +112,25 @@ class RTPSController: UIViewController {
         Task {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
-                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                integrationKey: "3735d557-c08e-4335-abd6-2b8292188c6f",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.silentRTPSRequest(
                 merchantConfiguration: merchantConfiguration,
-                placementsConfiguration: placementsConfiguration
+                placementsConfiguration: placementsConfiguration,
+                showCaptcha: showCaptcha,
             ) {
                 event in
                 switch event {
                 case .renderPopupView(let view):
                     self.present(view, animated: true)
                     print("BreadPartnerSDK::Successfully rendered PopupView.")
+                case .displayChallenge(let view):
+                    self.present(view, animated: true)
+                    print("BreadPartnerSDK::Successfully displayed challenge PopupView.")
+                case .challengeCompleted:
+                    print("BreadPartnerSDK::Challenge completed.")
+                    self.rtpsCall()
                 default:
                     break
                 }
