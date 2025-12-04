@@ -14,7 +14,7 @@ class RTPSController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        rtpsCall(showCaptcha: true)
+        rtpsCall()
     }
 
     func setupUI() {
@@ -78,7 +78,7 @@ class RTPSController: UIViewController {
         return stack
     }
 
-    func rtpsCall(showCaptcha: Bool = false) {
+    func rtpsCall() {
 
         let rtpsData = RTPSData(
             order: Order(
@@ -117,8 +117,7 @@ class RTPSController: UIViewController {
 
             await BreadPartnersSDK.shared.silentRTPSRequest(
                 merchantConfiguration: merchantConfiguration,
-                placementsConfiguration: placementsConfiguration,
-                showCaptcha: showCaptcha,
+                placementsConfiguration: placementsConfiguration
             ) {
                 event in
                 switch event {

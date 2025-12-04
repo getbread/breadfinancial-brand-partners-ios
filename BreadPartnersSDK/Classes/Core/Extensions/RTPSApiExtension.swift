@@ -20,7 +20,6 @@ extension BreadPartnersSDK {
         placementsConfiguration: PlacementConfiguration,
         forSwiftUI: Bool = false,
         logger: Logger,
-        showCaptcha: Bool = false,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -43,8 +42,7 @@ extension BreadPartnersSDK {
                 forSwiftUI: forSwiftUI,
                 logger: logger,
                 callback: callback,
-                token: token,
-                showCaptcha: showCaptcha,
+                token: token
             )
         } catch let error as RecaptchaError {
             logger.printLog("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
@@ -68,8 +66,7 @@ extension BreadPartnersSDK {
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void,
-        token: String,
-        showCaptcha: Bool = false
+        token: String
     ) async {
         do {
 
@@ -89,10 +86,6 @@ extension BreadPartnersSDK {
                 Constants.headerRequestedWithKey: Constants
                     .headerRequestedWithValue,
             ]
-            
-            if showCaptcha {
-                headers["X-Bread-Testing"] = "captcha"
-            }
 
             let rtpsRequestBuilt = requestBuilder.build()
 
@@ -145,15 +138,13 @@ extension BreadPartnersSDK {
                     callback: callback,
                     retryRequest: { [weak self] in
                         Task { @MainActor in
-                            print("Olga: retrying request after challenge in RTPSApiExtention...")
-                            // ✅ Restart from executeSecurityCheck to get fresh reCAPTCHA token
+                            // Restart from executeSecurityCheck to get fresh reCAPTCHA token
                             // and clean WebKit process
                             await self?.executeSecurityCheck(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
-                                showCaptcha: false, // ⚠️ Don't show captcha on retry
                                 callback: callback
                             )
                         }

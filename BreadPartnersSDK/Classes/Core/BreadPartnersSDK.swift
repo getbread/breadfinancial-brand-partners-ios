@@ -100,7 +100,6 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
         forSwiftUI: Bool = false,
-        showCaptcha: Bool = false,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -124,7 +123,6 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             placementsConfiguration: mutablePlacementsConfiguration,
             forSwiftUI: forSwiftUI,
             logger: logger,
-            showCaptcha: showCaptcha,
             callback: callback,
         )
     }

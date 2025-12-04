@@ -136,8 +136,6 @@ internal class APIClient {
             // Check if this is an Incapsula challenge page
             if responseString.contains("_Incapsula_Resource") || responseString.contains("incap_ses") {
                 print("Security challenge detected")
-                print("Expected JSON but received content type: \(contentType)")
-                print("Response body: \(responseString)")
                 
                 // Return a structured error that can be handled by the caller
                 throw NSError(

@@ -423,14 +423,12 @@ class ViewController: UIViewController {
 
             await BreadPartnersSDK.shared.silentRTPSRequest(
                 merchantConfiguration: merchantConfiguration,
-                placementsConfiguration: placementsConfiguration,
-                showCaptcha: true
+                placementsConfiguration: placementsConfiguration
             ) {
                 event in
                 switch event {
                 case .renderPopupView(let view):
                     self.present(view, animated: true)
-                    print("Olga BreadPartnerSDK::Successfully rendered PopupView.")
                 default:
                     break
                 }
