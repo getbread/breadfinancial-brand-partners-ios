@@ -112,7 +112,7 @@ class RTPSController: UIViewController {
         Task {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
-                integrationKey: "3735d557-c08e-4335-abd6-2b8292188c6f",
+                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.silentRTPSRequest(

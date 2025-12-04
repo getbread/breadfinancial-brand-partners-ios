@@ -114,6 +114,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
         
+        // This will fetch reCaptcha keys if it was not done yet.
         if (brandConfiguration == nil) {
             await fetchBrandConfig()
         }
@@ -123,7 +124,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             placementsConfiguration: mutablePlacementsConfiguration,
             forSwiftUI: forSwiftUI,
             logger: logger,
-            callback: callback,
+            callback: callback
         )
     }
 

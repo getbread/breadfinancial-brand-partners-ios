@@ -42,8 +42,7 @@ extension BreadPartnersSDK {
                 forSwiftUI: forSwiftUI,
                 logger: logger,
                 callback: callback,
-                token: token
-            )
+                token: token)
         } catch let error as RecaptchaError {
             logger.printLog("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
         } catch {
@@ -81,7 +80,7 @@ extension BreadPartnersSDK {
                 reCaptchaToken: token
             )
 
-            var headers: [String: String] = [
+            let headers: [String: String] = [
                 Constants.headerClientKey: integrationKey,
                 Constants.headerRequestedWithKey: Constants
                     .headerRequestedWithValue,
