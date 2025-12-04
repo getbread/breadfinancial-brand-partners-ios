@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//  File:          PopupController.swift
+//  File:          ChallengeController.swift
 //  Author(s):     Bread Financial
 //  Date:          3 December 2025
 //
