@@ -108,11 +108,10 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
                 print("ChallengeController: Redirected back to original URL")
                 decisionHandler(.cancel)
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    print("ChallengeController: Challenge completed successfully")
-                    self.callback?(.challengeCompleted)
-                    print("ChallengeController: Challenge completed callback sent")
-                    self.dismiss(animated: true)
+                self.dismiss(animated: true) {
+                    print("ChallengeController: dismiss is completed")
+                    self.retryRequest?()
+                    print("ChallengeController: retryRequest is called")
                 }
                 return
             } else if (urlString.isEmpty) {

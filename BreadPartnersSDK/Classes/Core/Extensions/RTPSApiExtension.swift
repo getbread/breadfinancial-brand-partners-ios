@@ -147,13 +147,14 @@ extension BreadPartnersSDK {
                     retryRequest: { [weak self] in
                         Task { @MainActor in
                             print("Olga: retrying request after challenge in RTPSApiExtention...")
-                            await self?.fetchRTPSData(
+                            // ✅ Restart from executeSecurityCheck to get fresh reCAPTCHA token
+                            // and clean WebKit process
+                            await self?.executeSecurityCheck(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
-                                splitTextAndAction: splitTextAndAction,
-                                openPlacementExperience: openPlacementExperience,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
+                                showCaptcha: false, // ⚠️ Don't show captcha on retry
                                 callback: callback
                             )
                         }
