@@ -44,9 +44,9 @@ extension BreadPartnersSDK {
                 callback: callback,
                 token: token)
         } catch let error as RecaptchaError {
-            print("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
+            logger.printLog("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
         } catch {
-            print("Unknown error: \(error)")
+            logger.printLog("Unknown error: \(error)")
         }
     }
 
@@ -124,15 +124,43 @@ extension BreadPartnersSDK {
                 logger: logger,
                 callback: callback)
 
-        } catch {
-            return callback(
-                .sdkError(
-                    error: NSError(
-                        domain: "", code: 500,
-                        userInfo: [
-                            NSLocalizedDescriptionKey: Constants.apiError(
-                                message: error.localizedDescription)
-                        ])))
+        } catch let error as NSError {
+            if error.domain == "IncapsulaChallenge" {
+                guard let htmlContent = error.userInfo["htmlContent"] as? String,
+                      let url = error.userInfo["url"] as? String else {
+                    return callback(.sdkError(error: error))
+                }
+
+                let challengeController = ChallengeController(
+                    htmlContent: htmlContent,
+                    originalURL: url,
+                    callback: callback,
+                    retryRequest: { [weak self] in
+                        Task { @MainActor in
+                            // Restart from executeSecurityCheck to get fresh reCAPTCHA token
+                            // and clean WebKit process
+                            await self?.executeSecurityCheck(
+                                merchantConfiguration: merchantConfiguration,
+                                placementsConfiguration: placementsConfiguration,
+                                forSwiftUI: forSwiftUI,
+                                logger: logger,
+                                callback: callback
+                            )
+                        }
+                    }
+                )
+
+                return callback(.renderPopupView(view: challengeController))
+            } else {
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants.apiError(
+                                    message: error.localizedDescription)
+                            ])))
+            }
         }
     }
 

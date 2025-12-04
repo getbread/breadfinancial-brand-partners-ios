@@ -114,6 +114,11 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
         
+        // This will fetch reCaptcha keys if it was not done yet.
+        if (brandConfiguration == nil) {
+            await fetchBrandConfig()
+        }
+        
         await executeSecurityCheck(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,

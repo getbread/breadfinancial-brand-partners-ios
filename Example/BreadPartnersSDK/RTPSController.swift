@@ -122,8 +122,10 @@ class RTPSController: UIViewController {
                 event in
                 switch event {
                 case .renderPopupView(let view):
-                    self.present(view, animated: true)
-                    print("BreadPartnerSDK::Successfully rendered PopupView.")
+                    DispatchQueue.main.async {
+                        self.present(view, animated: true)
+                        print("BreadPartnerSDK::Successfully rendered PopupView.")
+                    }
                 default:
                     break
                 }
