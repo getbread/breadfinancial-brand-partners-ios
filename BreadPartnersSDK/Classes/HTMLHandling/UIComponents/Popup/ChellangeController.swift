@@ -108,13 +108,6 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
                     self.retryRequest?()
                 }
                 return
-            } else if (urlString.isEmpty) {
-                decisionHandler(.cancel)
-
-                DispatchQueue.main.async() {
-                    self.dismiss(animated: true)
-                }
-                return
             }
         }
 
