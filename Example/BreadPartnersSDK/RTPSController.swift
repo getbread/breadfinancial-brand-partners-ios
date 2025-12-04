@@ -127,11 +127,6 @@ class RTPSController: UIViewController {
                         self.present(view, animated: true)
                         print("BreadPartnerSDK::Successfully rendered PopupView.")
                     }
-                case .displayChallenge(let view):
-                    DispatchQueue.main.async {
-                        self.present(view, animated: true)
-                        print("BreadPartnerSDK::Successfully displayed challenge PopupView.")
-                    }
                 default:
                     break
                 }

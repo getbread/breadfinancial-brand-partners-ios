@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //  File:          PopupController.swift
 //  Author(s):     Bread Financial
-//  Date:          3 DEcember 2025
+//  Date:          3 December 2025
 //
 //  Descriptions:  This file is part of the BreadPartnersSDK for iOS,
 //  providing UI components and functionalities to integrate Bread Financial
@@ -97,21 +97,15 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         }
 
         let urlString = url.absoluteString
-        print("ChallengeController: Initial webView called for URL: \(urlString)")
-        print("Olga: \(hasInitialLoadCompleted)")
 
         // Only check for completion after initial load
         if hasInitialLoadCompleted {
             // If we navigated back to the original URL after challenge
-            print("Olga: originalURL: \(originalURL), currentURL: \(urlString)")
             if urlString == originalURL {
-                print("ChallengeController: Redirected back to original URL")
                 decisionHandler(.cancel)
 
                 self.dismiss(animated: true) {
-                    print("ChallengeController: dismiss is completed")
                     self.retryRequest?()
-                    print("ChallengeController: retryRequest is called")
                 }
                 return
             } else if (urlString.isEmpty) {
@@ -139,15 +133,13 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
             decisionHandler(.allow)
             return
         }
-
-        print("ChallengeController: Blocked navigation to: \(urlString)")
+        
         decisionHandler(.cancel)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if !hasInitialLoadCompleted {
             hasInitialLoadCompleted = true
-            print("ChallengeController: Initial page load completed")
         }
     }
 

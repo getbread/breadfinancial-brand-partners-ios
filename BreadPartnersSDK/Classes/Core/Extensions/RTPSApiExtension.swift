@@ -47,9 +47,9 @@ extension BreadPartnersSDK {
                 showCaptcha: showCaptcha,
             )
         } catch let error as RecaptchaError {
-            print("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
+            logger.printLog("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
         } catch {
-            print("Unknown error: \(error)")
+            logger.printLog("Unknown error: \(error)")
         }
     }
 
@@ -133,7 +133,6 @@ extension BreadPartnersSDK {
                 callback: callback)
 
         } catch let error as NSError {
-            print("Olga: catching error in preScreenLookupCall: \(error), \(error.userInfo)")
             if error.domain == "IncapsulaChallenge" {
                 guard let htmlContent = error.userInfo["htmlContent"] as? String,
                       let url = error.userInfo["url"] as? String else {
@@ -161,7 +160,7 @@ extension BreadPartnersSDK {
                     }
                 )
 
-                return callback(.displayChallenge(view: challengeController))
+                return callback(.renderPopupView(view: challengeController))
             } else {
                 return callback(
                     .sdkError(
