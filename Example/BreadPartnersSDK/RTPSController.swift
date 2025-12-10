@@ -126,6 +126,8 @@ class RTPSController: UIViewController {
                         self.present(view, animated: true)
                         print("BreadPartnerSDK::Successfully rendered PopupView.")
                     }
+                case .sdkError(let error):
+                    print("BreadPartnerSDK::RTPS SDK Error - \(error.localizedDescription)")
                 default:
                     break
                 }

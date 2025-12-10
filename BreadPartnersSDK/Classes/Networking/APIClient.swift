@@ -120,11 +120,21 @@ internal class APIClient {
 
         // Validate HTTP status code
         guard (200...299).contains(httpResponse.statusCode) else {
+            let messageString: String = {
+                if let jsonObj = try? JSONSerialization.jsonObject(with: data, options: []),
+                   let message = (jsonObj as? [String: Any])?["message"] as? String {
+                    return message
+                }
+                if let str = String(data: data, encoding: .utf8) {
+                    return str
+                }
+                return "Message is blank"
+            }()
             throw NSError(
                 domain: "HTTPError", code: httpResponse.statusCode,
                 userInfo: [
                     NSLocalizedDescriptionKey:
-                        "Server returned an error: \(httpResponse.statusCode)"
+                        "\(messageString)"
                 ])
         }
         
