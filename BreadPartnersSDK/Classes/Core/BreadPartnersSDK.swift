@@ -27,6 +27,22 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
 
     var sdkEnvironment: BreadPartnersEnvironment = .stage
     var brandConfiguration: BrandConfigResponse?
+    private var isInitialized: Bool = false
+    
+    private func checkInitialized(
+        callback: @Sendable @escaping (BreadPartnerEvents) -> Void
+    ) -> Bool {
+        guard isInitialized else {
+            let error = NSError(
+                domain: "BreadPartnersSDK",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "SDK not initialized. Call setup() first."]
+            )
+            callback(.sdkError(error: error))
+            return false
+        }
+        return true
+    }
     
     /// Call this function when the app launches.
     /// - Parameters:
@@ -42,6 +58,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         sdkEnvironment = environment
         self.integrationKey = integrationKey
         self.isLoggingEnabled = enableLog
+        isInitialized = true
         return await fetchBrandConfig()
     }
 
@@ -61,6 +78,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             BreadPartnerEvents
         ) -> Void
     ) async {
+        guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
         
         if mutablePlacementsConfiguration.popUpStyling == nil {
@@ -104,6 +122,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             BreadPartnerEvents
         ) -> Void
     ) async {
+        guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
         
         if mutablePlacementsConfiguration.popUpStyling == nil {
@@ -142,6 +161,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             BreadPartnerEvents
         ) -> Void
     ) async {
+        guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
         
         if mutablePlacementsConfiguration.popUpStyling == nil {
