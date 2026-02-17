@@ -250,34 +250,32 @@ extension BreadPartnersSDK {
                                     .popupPlacementParsingError
                             ])))
             }
-            var emptyAttributedString: NSAttributedString
             
-            if #available(iOS 15, *) {
-                emptyAttributedString = NSAttributedString("")
-            } else {
-                emptyAttributedString = NSAttributedString(string: "")
+            guard
+                let popupPlacementHTMLContent = responseModel
+                    .placementContent?
+                    .first(where: {$0.metadata?.templateId?.contains("overlay") == true}),
+                var popupPlacementModel = try await HTMLContentParser()
+                    .extractPopupPlacementModel(
+                        from: popupPlacementHTMLContent.contentData?
+                            .htmlContent
+                            ?? ""
+                    )
+            else {
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants
+                                    .popupPlacementParsingError
+                            ])))
             }
             
-            let popupPlacementModel = PopupPlacementModel(
-                overlayType: "EMBEDDED_OVERLAY",
-                location: responseModel.placements?.first?.renderContext?
-                    .LOCATION,
-                brandLogoUrl: "",
-                webViewUrl: responseModel.placements?.first?.renderContext?
-                    .embeddedUrl ?? "",
-                overlayTitle: emptyAttributedString,
-                overlaySubtitle: emptyAttributedString,
-                overlayContainerBarHeading: emptyAttributedString,
-                bodyHeader: emptyAttributedString,
-                dynamicBodyModel: PopupPlacementModel.DynamicBodyModel(
-                    bodyDiv: [
-                        "": PopupPlacementModel.DynamicBodyContent(
-                            tagValuePairs: ["": ""]
-                        )
-                    ]
-                ),
-                disclosure: emptyAttributedString
-            )
+            popupPlacementModel.overlayType = "EMBEDDED_OVERLAY"
+            popupPlacementModel.location = responseModel.placements?.first?.renderContext?.LOCATION
+            popupPlacementModel.webViewUrl = responseModel.placements?.first?.renderContext?.embeddedUrl ?? ""
+            
             await HTMLContentRenderer(
                 integrationKey: integrationKey,
                 merchantConfiguration: merchantConfiguration,
