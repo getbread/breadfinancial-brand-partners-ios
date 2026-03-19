@@ -17,7 +17,7 @@ import UIKit
 ///   - placementData: Defines text placements on the brand partner screen for the `registerPlacementFlow`.
 ///   - rtpsData: Specifies the real-time pre-screen configuration for the prescreen flow.
 ///   - popUpStyling: Configures the popup styling for each element rendered within the popup.
-public struct PlacementConfiguration {
+public struct PlacementConfiguration: @unchecked Sendable {
     public let placementData: PlacementData?
     public let rtpsData: RTPSData?
     public var popUpStyling: PopUpStyling?
@@ -38,7 +38,7 @@ public struct PlacementConfiguration {
 /// - Colors are defined using `UIColor` or `CGColor` for various popup elements like header background, border..
 /// - Text style are configured using `PopupTextStyle`structure  for titles, headers, and other text elements.
 /// - Button style can be optionally specified using `PopupActionButtonStyle`.
-public struct PopUpStyling {
+public struct PopUpStyling: @unchecked Sendable {
     public let loaderColor: UIColor
     public let crossColor: UIColor
     public let dividerColor: UIColor
@@ -88,7 +88,7 @@ public struct PopUpStyling {
 ///
 /// - `font`: Specifies the font family and font size for the text.
 /// - `textColor`: Specifies the color of the text.
-public struct PopupTextStyle {
+public struct PopupTextStyle: @unchecked Sendable {
     public var font: UIFont? = nil
     public var textColor: UIColor? = nil
 

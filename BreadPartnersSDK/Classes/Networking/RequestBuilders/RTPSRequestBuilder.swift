@@ -10,16 +10,17 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
-class RTPSRequestBuilder {
+/// Builder class for constructing RTPS requests.
+class RTPSRequestBuilder: @unchecked Sendable {
 
     private var merchantConfiguration: MerchantConfiguration
     private var rtpsData: RTPSData
-    private var token: String
+    private var token: String?
 
     init(
         merchantConfiguration: MerchantConfiguration,
         rtpsData: RTPSData,
-        reCaptchaToken: String
+        reCaptchaToken: String?
     ) {
         self.merchantConfiguration = merchantConfiguration
         self.rtpsData = rtpsData
@@ -45,7 +46,8 @@ class RTPSRequestBuilder {
                 reCaptchaToken: token,
                 mockResponse: rtpsData.mockResponse?.rawValue,
                 overrideConfig: RTPSRequest.OverrideConfig(
-                    enhancedPresentment: true)
+                    enhancedPresentment: true),
+                customerAcceptedOffer: rtpsData.customerAcceptedOffer
             )
         } else {
             return RTPSRequest(
@@ -56,7 +58,8 @@ class RTPSRequestBuilder {
                 mockResponse: rtpsData.mockResponse?.rawValue,
                 overrideConfig: RTPSRequest.OverrideConfig(
                     enhancedPresentment: true),
-                prescreenId: String(rtpsData.prescreenId!)
+                prescreenId: String(rtpsData.prescreenId!),
+                customerAcceptedOffer: rtpsData.customerAcceptedOffer
             )
         }
 

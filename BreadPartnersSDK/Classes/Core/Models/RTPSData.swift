@@ -13,14 +13,14 @@
 import Foundation
 
 /// Represents data for an RTPS call.
-public class RTPSData {
+public class RTPSData: @unchecked Sendable {
     public var financingType: BreadPartnersFinancingType?
     public var order: Order?
     public var locationType: BreadPartnersLocationType?
     public var screenName: String?
     public var cardType: String?
     public var country: String?
-    public var prescreenId: Int?
+    public var prescreenId: Int64?
     public var correlationData: String?
     public var customerAcceptedOffer: Bool?
     public var channel: String?
@@ -31,7 +31,7 @@ public class RTPSData {
         financingType: BreadPartnersFinancingType? = nil, order: Order? = nil,
         locationType: BreadPartnersLocationType? = nil,
         screenName: String? = nil, cardType: String? = nil,
-        country: String? = nil, prescreenId: Int? = nil,
+        country: String? = nil, prescreenId: Int64? = nil,
         correlationData: String? = nil,
         customerAcceptedOffer: Bool? = nil, channel: String? = nil,
         subChannel: String? = nil,
@@ -53,7 +53,8 @@ public class RTPSData {
 }
 
 /// Enum representing mock options for supporting testing and mock configurations.
-public enum BreadPartnersMockOptions: String, CaseIterable {
+public enum BreadPartnersMockOptions: String, CaseIterable, @unchecked Sendable
+{
     case noMock = ""
     case success = "success"
     case noHit = "noHit"
