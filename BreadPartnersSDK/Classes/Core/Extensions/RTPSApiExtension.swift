@@ -48,7 +48,7 @@ extension BreadPartnersSDK {
     ///   - forSwiftUI: Whether the view is for SwiftUI.
     ///   - logger: Logger instance for tracking events.
     ///   - callback: Callback to handle SDK events.
-    func rtpsCall(
+    internal func rtpsCall(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
