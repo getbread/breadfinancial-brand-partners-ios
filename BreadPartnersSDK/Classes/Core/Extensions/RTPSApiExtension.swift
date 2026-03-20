@@ -48,7 +48,7 @@ extension BreadPartnersSDK {
     ///   - forSwiftUI: Whether the view is for SwiftUI.
     ///   - logger: Logger instance for tracking events.
     ///   - callback: Callback to handle SDK events.
-    internal func rtpsCall(
+    func rtpsCall(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
@@ -90,6 +90,7 @@ extension BreadPartnersSDK {
                       let region = billingAddress?.region, !region.isEmpty,
                       let postalCode = billingAddress?.postalCode, !postalCode.isEmpty
                 else {
+                    logger.printLog("Buyer information is missing or wrong.")
                     return callback(
                         .sdkError(
                             error: NSError(
@@ -112,6 +113,7 @@ extension BreadPartnersSDK {
                 )
             } else {
                 reCaptchaToken = nil
+                logger.printLog("Skipping reCaptcha token generation for virtual lookup call.")
             }
 
             let apiUrl = APIUrl(
@@ -147,13 +149,6 @@ extension BreadPartnersSDK {
             let prescreenResult = getPrescreenResult(
                 from: returnResultType ?? "10")
 
-            // Map response data back to configurations.
-            placementsConfiguration.rtpsData!.prescreenId =
-                preScreenLookupResponse.prescreenId
-            placementsConfiguration.rtpsData?.cardType = preScreenLookupResponse.cardType
-
-            let updatedMerchantConfiguration = preScreenLookupResponse.updateMerchantConfiguration(merchantConfiguration)
-
             logger.printLog("PreScreenID:Result: \(prescreenResult)")
 
             // Since this call runs in the background without user interaction,
@@ -161,13 +156,18 @@ extension BreadPartnersSDK {
             // or prescreenId is nill (in case user is approved, but already has an account),
             // we simply return without taking any further action.
             if (prescreenResult != .approved && prescreenResult != .accountFound)
-                || placementsConfiguration.rtpsData?.prescreenId == nil
+                || preScreenLookupResponse.prescreenId == nil
             {
                 return
             }
 
+            // Map response data back to configurations.
+            placementsConfiguration.rtpsData!.prescreenId =
+                preScreenLookupResponse.prescreenId
+            placementsConfiguration.rtpsData?.cardType = preScreenLookupResponse.cardType
+
             await fetchRTPSData(
-                merchantConfiguration: updatedMerchantConfiguration,
+                merchantConfiguration: preScreenLookupResponse.updateMerchantConfiguration(merchantConfiguration),
                 placementsConfiguration: placementsConfiguration,
                 splitTextAndAction: splitTextAndAction,
                 openPlacementExperience: openPlacementExperience,
