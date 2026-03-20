@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          Constants.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,10 +8,9 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
-internal class Constants{
-    
+class Constants {
     // API constants
     static let headerClientKey = "X-Client-Key"
     static let headerRequestedWithKey = "X-Requested-With"
@@ -34,11 +33,11 @@ internal class Constants{
     static let headerAccessControlRequestMethodKey = "Access-Control-Request-Method"
     static let headerAccessControlRequestMethodValue = "POST"
     
-    static func nativeSDKAlertTitle() -> String{
+    static func nativeSDKAlertTitle() -> String {
         return "Bread Partner"
     }
     
-    static func catchError(message:String)->String{
+    static func catchError(message: String) -> String {
         return "\(error) \(message)"
     }
     
@@ -50,16 +49,16 @@ internal class Constants{
     
     static let securityCheckAlertAcknolwedgeMessage = "Your web view will load once the captcha verification is successfully completed. This ensures that all transactions are secure."
     
-    static func securityCheckAlertFailedMessage(error:String) -> String {        
+    static func securityCheckAlertFailedMessage(error: String) -> String {
         return "Error: \(error)"
     }
     
     static let error = "Error:"
     
-
-    static func apiError(message:String)->String{
-        return  "\(error) \(message)"
+    static func apiError(message: String) -> String {
+        return "\(error) \(message)"
     }
+
     static let consecutivePlacementRequestDataError = "Consecutive placement request data not found"
     
     static let apiResToJsonMapError = "Unable to convert response to map."
@@ -72,8 +71,10 @@ internal class Constants{
     static let popupPlacementParsingError = "\(error) Unable to parse popup placement."
     static let missingPopupPlacementError = "Unhandled popup placement type."
     static let somethingWentWrong = "Something went wrong. Please try again later."
+    
+    static let prescreenRequiredFieldsError = "Error: Prescreen requires customer information: firstname, lastname, and complete billing address must be provided in MerchantConfiguration."
 
-    static func unableToLoadWebURL(message:String)->String{
-        return  "\(error) Web Url Loading Issue: \(message)"
+    static func unableToLoadWebURL(message: String) -> String {
+        return "\(error) Web Url Loading Issue: \(message)"
     }
 }

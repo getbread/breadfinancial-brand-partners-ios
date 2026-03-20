@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          RTPSApiExtension.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,54 +8,47 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import RecaptchaEnterprise
 
 extension BreadPartnersSDK {
     /// This method does bot behavior check using the Recaptcha v3 SDK,
     /// to protect against malicious attacks.
-    func executeSecurityCheck(
+    private func executeSecurityCheck(
         merchantConfiguration: MerchantConfiguration,
-        placementsConfiguration: PlacementConfiguration,
-        forSwiftUI: Bool = false,
-        logger: Logger,
-        callback: @Sendable @escaping (
-            BreadPartnerEvents
-        ) -> Void
-    ) async {
+        logger: Logger
+    ) async throws -> String {
         let siteKey = brandConfiguration?.config.getRecaptchaKey(
             for: merchantConfiguration.env ?? BreadPartnersEnvironment.prod
         )
 
-        do {
-            let token = try await RecaptchaManager.shared.executeReCaptcha(
-                siteKey: siteKey ?? "",
-                action: .init(customAction: "checkout"),
-                timeout: 10000,
-                debug: logger.isLoggingEnabled
-            )
-            await preScreenLookupCall(
-                merchantConfiguration: merchantConfiguration,
-                placementsConfiguration: placementsConfiguration,
-                splitTextAndAction: false, openPlacementExperience: false,
-                forSwiftUI: forSwiftUI,
-                logger: logger,
-                callback: callback,
-                token: token)
-        } catch let error as RecaptchaError {
-            logger.printLog("Recaptcha Error: code \(error.errorCode), message \(error.errorMessage ?? "")")
-        } catch {
-            logger.printLog("Unknown error: \(error)")
-        }
+        let token = try await RecaptchaManager.shared.executeReCaptcha(
+            siteKey: siteKey ?? "",
+            action: .init(customAction: "checkout"),
+            timeout: 10000,
+            debug: logger.isLoggingEnabled
+        )
+
+        return token
     }
 
-    /// Once the Recaptcha token is obtained, make the pre-screen lookup API call.
-    /// - If  `prescreenId` was previously saved by the brand partner when calling the pre-screen endpoint,
-    ///      then trigger `virtualLookup`.
-    /// - Else call pre-screen endpoint to fetch `prescreenId`.
-    /// - Both endpoints require user details to build request payload.
-    private func preScreenLookupCall(
+    /// Makes RTPS (Real-Time Pre-Screen) API calls with conditional reCaptcha token validation.
+    ///
+    /// This method handles three different flows:
+    /// 1. **Batch Prescreen Flow**: When `customerAcceptedOffer` is true, skips RTPS and directly fetches placement data.
+    /// 2. **Prescreen Flow**: When `prescreenId` is nil, calls the prescreen endpoint with a reCaptcha token for bot protection.
+    /// 3. **Virtual Lookup Flow**: When `prescreenId` is known, calls the virtualLookup endpoint without a reCaptcha token.
+    ///
+    /// - Parameters:
+    ///   - merchantConfiguration: Merchant and buyer configuration details.
+    ///   - placementsConfiguration: Placement configuration including RTPS data.
+    ///   - splitTextAndAction: Whether to split text and action components.
+    ///   - openPlacementExperience: Whether to automatically open the placement experience.
+    ///   - forSwiftUI: Whether the view is for SwiftUI.
+    ///   - logger: Logger instance for tracking events.
+    ///   - callback: Callback to handle SDK events.
+    func rtpsCall(
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
         splitTextAndAction: Bool = false,
@@ -64,26 +57,79 @@ extension BreadPartnersSDK {
         logger: Logger,
         callback: @Sendable @escaping (
             BreadPartnerEvents
-        ) -> Void,
-        token: String
+        ) -> Void
     ) async {
         do {
+            // Check for Batch Prescreen Flow when prescreen id has to be entered by user.
+            if placementsConfiguration.rtpsData?.customerAcceptedOffer == true {
+                return await fetchRTPSData(
+                    merchantConfiguration: merchantConfiguration,
+                    placementsConfiguration: placementsConfiguration,
+                    splitTextAndAction: splitTextAndAction,
+                    openPlacementExperience: openPlacementExperience,
+                    forSwiftUI: forSwiftUI,
+                    logger: logger,
+                    callback: callback
+                )
+            }
+
+            // Check if it is a regular RTPS flow or Batch Prescreen (prescreenId is known).
+            let isPrescreen = placementsConfiguration.rtpsData?.prescreenId == nil
+
+            // Validate required fields for prescreen requests
+            if isPrescreen {
+                let buyer = merchantConfiguration.buyer
+                let billingAddress = buyer?.billingAddress
+
+                // Check if firstname, lastname, and complete address are provided
+                guard let givenName = buyer?.givenName, !givenName.isEmpty,
+                      let familyName = buyer?.familyName, !familyName.isEmpty,
+                      let address1 = billingAddress?.address1, !address1.isEmpty,
+                      let country = billingAddress?.country, !country.isEmpty,
+                      let locality = billingAddress?.locality, !locality.isEmpty,
+                      let region = billingAddress?.region, !region.isEmpty,
+                      let postalCode = billingAddress?.postalCode, !postalCode.isEmpty
+                else {
+                    logger.printLog("Buyer information is missing or wrong.")
+                    return callback(
+                        .sdkError(
+                            error: NSError(
+                                domain: "", code: 400,
+                                userInfo: [
+                                    NSLocalizedDescriptionKey: Constants.prescreenRequiredFieldsError
+                                ]
+                            )
+                        )
+                    )
+                }
+            }
+
+            // Only obtain reCaptcha token for prescreen requests
+            let reCaptchaToken: String?
+            if isPrescreen {
+                reCaptchaToken = try await executeSecurityCheck(
+                    merchantConfiguration: merchantConfiguration,
+                    logger: logger
+                )
+            } else {
+                reCaptchaToken = nil
+                logger.printLog("Skipping reCaptcha token generation for virtual lookup call.")
+            }
 
             let apiUrl = APIUrl(
-                urlType: placementsConfiguration.rtpsData?.prescreenId == nil
-                    ? .prescreen : .virtualLookup
+                urlType: isPrescreen ? .prescreen : .virtualLookup
             ).url
 
             let requestBuilder = RTPSRequestBuilder(
                 merchantConfiguration: merchantConfiguration,
                 rtpsData: placementsConfiguration.rtpsData!,
-                reCaptchaToken: token
+                reCaptchaToken: reCaptchaToken
             )
 
             let headers: [String: String] = [
                 Constants.headerClientKey: integrationKey,
                 Constants.headerRequestedWithKey: Constants
-                    .headerRequestedWithValue,
+                    .headerRequestedWithValue
             ]
 
             let rtpsRequestBuilt = requestBuilder.build()
@@ -102,32 +148,39 @@ extension BreadPartnersSDK {
             let returnResultType = preScreenLookupResponse.returnCode
             let prescreenResult = getPrescreenResult(
                 from: returnResultType ?? "10")
-            placementsConfiguration.rtpsData!.prescreenId =
-                preScreenLookupResponse.prescreenId
-            logger.printLog("PreScreenID:Result: \(prescreenResult )")
 
-            /// Since this call runs in the background without user interaction,
-            /// if the result is not "approved" or prescreenId is nill,
-            /// we simply return without taking any further action.
-            if prescreenResult != .approved
-                || placementsConfiguration.rtpsData?.prescreenId == nil
+            logger.printLog("PreScreenID:Result: \(prescreenResult)")
+
+            // Since this call runs in the background without user interaction,
+            // if the result is not "approved"(in case of regular prescreen call) and not "account found" (in case of lookup call)
+            // or prescreenId is nill (in case user is approved, but already has an account),
+            // we simply return without taking any further action.
+            if (prescreenResult != .approved && prescreenResult != .accountFound)
+                || preScreenLookupResponse.prescreenId == nil
             {
                 return
             }
 
+            // Map response data back to configurations.
+            placementsConfiguration.rtpsData!.prescreenId =
+                preScreenLookupResponse.prescreenId
+            placementsConfiguration.rtpsData?.cardType = preScreenLookupResponse.cardType
+
             await fetchRTPSData(
-                merchantConfiguration: merchantConfiguration,
+                merchantConfiguration: preScreenLookupResponse.updateMerchantConfiguration(merchantConfiguration),
                 placementsConfiguration: placementsConfiguration,
                 splitTextAndAction: splitTextAndAction,
                 openPlacementExperience: openPlacementExperience,
                 forSwiftUI: forSwiftUI,
                 logger: logger,
-                callback: callback)
+                callback: callback
+            )
 
         } catch let error as NSError {
             if error.domain == "IncapsulaChallenge" {
                 guard let htmlContent = error.userInfo["htmlContent"] as? String,
-                      let url = error.userInfo["url"] as? String else {
+                      let url = error.userInfo["url"] as? String
+                else {
                     return callback(.sdkError(error: error))
                 }
 
@@ -137,11 +190,13 @@ extension BreadPartnersSDK {
                     callback: callback,
                     retryRequest: { [weak self] in
                         Task { @MainActor in
-                            // Restart from executeSecurityCheck to get fresh reCAPTCHA token
+                            // Restart from rtpsCall to get fresh reCAPTCHA token
                             // and clean WebKit process
-                            await self?.executeSecurityCheck(
+                            await self?.rtpsCall(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
+                                splitTextAndAction: splitTextAndAction,
+                                openPlacementExperience: openPlacementExperience,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
                                 callback: callback
@@ -159,7 +214,8 @@ extension BreadPartnersSDK {
                             userInfo: [
                                 NSLocalizedDescriptionKey: Constants.apiError(
                                     message: error.localizedDescription)
-                            ])))
+                            ]
+                        )))
             }
         }
     }
@@ -180,12 +236,21 @@ extension BreadPartnersSDK {
         do {
             let apiUrl = APIUrl(urlType: .generatePlacements).url
 
-            let rtpsWebURL = await CommonUtils().buildRTPSWebURL(
-                integrationKey: integrationKey,
-                merchantConfiguration: merchantConfiguration,
-                rtpsData: placementsConfiguration.rtpsData!,
-                prescreenId: placementsConfiguration.rtpsData!.prescreenId
-            )?.absoluteString
+            let webURL: String?
+            if placementsConfiguration.rtpsData?.customerAcceptedOffer == true {
+                webURL = await CommonUtils().buildBpsWebURL(
+                    integrationKey: integrationKey,
+                    merchantConfiguration: merchantConfiguration,
+                    placementConfiguration: placementsConfiguration
+                )?.absoluteString
+            } else {
+                webURL = await CommonUtils().buildRTPSWebURL(
+                    integrationKey: integrationKey,
+                    merchantConfiguration: merchantConfiguration,
+                    rtpsData: placementsConfiguration.rtpsData!,
+                    prescreenId: placementsConfiguration.rtpsData!.prescreenId
+                )?.absoluteString
+            }
 
             let request = PlacementRequest(
                 placements: [
@@ -193,7 +258,7 @@ extension BreadPartnersSDK {
                         context: ContextRequestBody(
                             ENV: merchantConfiguration.env?.rawValue,
                             LOCATION: "RTPS-Approval",
-                            embeddedUrl: rtpsWebURL
+                            embeddedUrl: webURL
                         )
                     )
                 ], brandId: integrationKey
@@ -209,7 +274,8 @@ extension BreadPartnersSDK {
                 forSwiftUI: false,
                 logger: logger,
                 callback: callback,
-                response)
+                response
+            )
         } catch {
             return callback(
                 .sdkError(
@@ -218,7 +284,8 @@ extension BreadPartnersSDK {
                         userInfo: [
                             NSLocalizedDescriptionKey: Constants.apiError(
                                 message: error.localizedDescription)
-                        ])))
+                        ]
+                    )))
         }
     }
 
@@ -232,7 +299,7 @@ extension BreadPartnersSDK {
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void,
-        _ response: Any
+        _ response: AnySendable
     ) async {
         do {
             let responseModel: PlacementsResponse =
@@ -248,19 +315,20 @@ extension BreadPartnersSDK {
                             userInfo: [
                                 NSLocalizedDescriptionKey: Constants
                                     .popupPlacementParsingError
-                            ])))
+                            ]
+                        )))
             }
-            
+
             guard
                 let popupPlacementHTMLContent = responseModel
-                    .placementContent?
-                    .first(where: {$0.metadata?.templateId?.contains("overlay") == true}),
+                .placementContent?
+                .first(where: { $0.metadata?.templateId?.contains("overlay") == true }),
                 var popupPlacementModel = try await HTMLContentParser()
-                    .extractPopupPlacementModel(
-                        from: popupPlacementHTMLContent.contentData?
-                            .htmlContent
-                            ?? ""
-                    )
+                .extractPopupPlacementModel(
+                    from: popupPlacementHTMLContent.contentData?
+                        .htmlContent
+                        ?? ""
+                )
             else {
                 return callback(
                     .sdkError(
@@ -269,13 +337,13 @@ extension BreadPartnersSDK {
                             userInfo: [
                                 NSLocalizedDescriptionKey: Constants
                                     .popupPlacementParsingError
-                            ])))
+                            ]
+                        )))
             }
-            
+
             popupPlacementModel.overlayType = "EMBEDDED_OVERLAY"
             popupPlacementModel.location = responseModel.placements?.first?.renderContext?.LOCATION
             popupPlacementModel.webViewUrl = responseModel.placements?.first?.renderContext?.embeddedUrl ?? ""
-            
             await HTMLContentRenderer(
                 integrationKey: integrationKey,
                 merchantConfiguration: merchantConfiguration,
@@ -289,6 +357,7 @@ extension BreadPartnersSDK {
                 popupPlacementModel: popupPlacementModel,
                 overlayType: .embeddedOverlay
             )
+
         } catch {
             return callback(
                 .sdkError(
@@ -297,7 +366,8 @@ extension BreadPartnersSDK {
                         userInfo: [
                             NSLocalizedDescriptionKey: Constants.catchError(
                                 message: error.localizedDescription)
-                        ])))
+                        ]
+                    )))
         }
     }
 }

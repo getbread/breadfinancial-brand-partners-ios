@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          RTPSRequest.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,7 +8,7 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import Foundation
 
@@ -29,12 +29,13 @@ struct RTPSRequest: Codable {
     let mockResponse: String?
     let overrideConfig: OverrideConfig?
     let prescreenId: String?
+    let customerAcceptedOffer: Bool?
     let platform: String
-    
+
     struct OverrideConfig: Codable {
         let enhancedPresentment: Bool?
     }
-    
+
     init(
         urlPath: String? = nil,
         firstName: String? = nil,
@@ -50,7 +51,8 @@ struct RTPSRequest: Codable {
         reCaptchaToken: String? = nil,
         mockResponse: String? = nil,
         overrideConfig: OverrideConfig? = nil,
-        prescreenId: String? = nil
+        prescreenId: String? = nil,
+        customerAcceptedOffer: Bool? = nil
     ) {
         self.urlPath = urlPath
         self.firstName = firstName
@@ -67,6 +69,7 @@ struct RTPSRequest: Codable {
         self.mockResponse = mockResponse
         self.overrideConfig = overrideConfig
         self.prescreenId = prescreenId
+        self.customerAcceptedOffer = customerAcceptedOffer
         self.platform = "ios"
     }
 }

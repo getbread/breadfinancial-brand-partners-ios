@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          BreadPartnersSDK.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,7 +8,7 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import Foundation
 import UIKit
@@ -16,7 +16,6 @@ import UIKit
 /// The primary interface class for interacting with the Bread Partners SDK.
 /// Provides entry points for initialization, configuration, and SDK-level actions.
 public class BreadPartnersSDK: NSObject, UITextViewDelegate {
-
     public static var shared: BreadPartnersSDK = {
         let instance = BreadPartnersSDK()
         return instance
@@ -28,7 +27,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     var sdkEnvironment: BreadPartnersEnvironment = .stage
     var brandConfiguration: BrandConfigResponse?
     private var isInitialized: Bool = false
-    
+
     private func checkInitialized(
         callback: @Sendable @escaping (BreadPartnerEvents) -> Void
     ) -> Bool {
@@ -43,7 +42,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         }
         return true
     }
-    
+
     /// Call this function when the app launches.
     /// - Parameters:
     ///   - integrationKey: A unique key specific to the brand.
@@ -54,12 +53,14 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         integrationKey: String,
         enableLog: Bool
     ) async {
-        APIUrl.setEnvironment(environment)
+        await APIUrl.setEnvironment(environment)
         sdkEnvironment = environment
         self.integrationKey = integrationKey
-        self.isLoggingEnabled = enableLog
+        isLoggingEnabled = enableLog
+        let logger = Logger()
+        logger.setLogging(enabled: isLoggingEnabled)
         isInitialized = true
-        return await fetchBrandConfig()
+        return await fetchBrandConfig(logger: logger)
     }
 
     /// Use this function to display text placements in your app's UI.
@@ -80,7 +81,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ) async {
         guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
-        
+
         if mutablePlacementsConfiguration.popUpStyling == nil {
             mutablePlacementsConfiguration.popUpStyling = BreadPartnerDefaults.popupStyle
         }
@@ -88,7 +89,7 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
         let logger = Logger()
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
-                
+
         await fetchPlacementData(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,
@@ -98,7 +99,6 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             logger: logger,
             callback: callback
         )
-
     }
 
     /// Calls this function to check if the user qualifies for a pre-screen card application.
@@ -124,23 +124,25 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ) async {
         guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
-        
+
         if mutablePlacementsConfiguration.popUpStyling == nil {
             mutablePlacementsConfiguration.popUpStyling = BreadPartnerDefaults.popupStyle
         }
-        
+
         let logger = Logger()
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
-        
+
         // This will fetch reCaptcha keys if it was not done yet.
-        if (brandConfiguration == nil) {
-            await fetchBrandConfig()
+        if brandConfiguration == nil {
+            await fetchBrandConfig(logger: logger)
         }
-        
-        await executeSecurityCheck(
+
+        await rtpsCall(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,
+            splitTextAndAction: splitTextAndAction,
+            openPlacementExperience: false,
             forSwiftUI: forSwiftUI,
             logger: logger,
             callback: callback
@@ -163,15 +165,15 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
     ) async {
         guard checkInitialized(callback: callback) else { return }
         var mutablePlacementsConfiguration = placementsConfiguration
-        
+
         if mutablePlacementsConfiguration.popUpStyling == nil {
             mutablePlacementsConfiguration.popUpStyling = BreadPartnerDefaults.popupStyle
         }
-        
+
         let logger = Logger()
         logger.setLogging(enabled: isLoggingEnabled)
         logger.setCallback(callback)
-        
+
         await fetchPlacementData(
             merchantConfiguration: merchantConfiguration,
             placementsConfiguration: mutablePlacementsConfiguration,
@@ -181,5 +183,4 @@ public class BreadPartnersSDK: NSObject, UITextViewDelegate {
             callback: callback
         )
     }
-
 }

@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          APIUrl.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,13 +8,14 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import Foundation
 
 /// Enum to define different types of API URLs.
-internal enum APIUrlType {
+enum APIUrlType {
     case rtpsWebUrl(type: String)
+    case bpsWebUrl
     case brandStyle(brandId: String)
     case brandConfig(brandId: String)
     case generatePlacements
@@ -24,9 +25,8 @@ internal enum APIUrlType {
     case virtualLookup
 }
 
-internal class APIUrl {
-
-    static var currentEnvironment: BreadPartnersEnvironment = .prod
+actor APIUrl {
+    nonisolated(unsafe) static var currentEnvironment: BreadPartnersEnvironment = .prod
 
     private let baseURL: String
     private let rtpsBaseURL: String
@@ -38,27 +38,29 @@ internal class APIUrl {
 
         switch APIUrl.currentEnvironment {
         case .stage:
-            self.baseURL = "https://brands.kmsmep.com"
-            self.rtpsBaseURL = "https://acquire1stage.comenity.net"
+            baseURL = "https://brands.kmsmep.com"
+            rtpsBaseURL = "https://acquire1stage.comenity.net"
         case .prod:
-            self.baseURL = "https://brands.kmsmep.com"
-            self.rtpsBaseURL = "https://acquire1.comenity.net"
+            baseURL = "https://brands.kmsmep.com"
+            rtpsBaseURL = "https://acquire1.comenity.net"
         case .uat:
-            self.baseURL = "https://brands.kmsmep.com"
-            self.rtpsBaseURL = "https://acquire1uat.comenity.net"
+            baseURL = "https://brands.kmsmep.com"
+            rtpsBaseURL = "https://acquire1uat.comenity.net"
         }
-}
+    }
 
     /// Set the environment
-    static func setEnvironment(_ environment: BreadPartnersEnvironment) {
+    static func setEnvironment(_ environment: BreadPartnersEnvironment) async {
         currentEnvironment = environment
     }
 
     /// Generates the correct URL based on the URL type
-    var url: String {
+    nonisolated var url: String {
         switch urlType {
         case .rtpsWebUrl(let type):
             return "\(rtpsBaseURL)/prescreen/\(type)"
+        case .bpsWebUrl:
+            return "\(rtpsBaseURL)/batch-prescreen/start"
         case .brandStyle(let brandId):
             return "\(baseURL)/brands/\(brandId)/style"
         case .brandConfig(let brandId):
