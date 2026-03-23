@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          AnalyticsManager.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,7 +8,7 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import Foundation
 import UIKit
@@ -17,16 +17,15 @@ import UIKit
 /// It tracks two events:
 /// 1. **Click Placement**: When the user clicks on the placement.
 /// 2. **View Placement**: When the user sees or interacts with the placement without clicking.
-internal class AnalyticsManager {
-
+class AnalyticsManager {
     init(
         logger: Logger
     ) {
         self.logger = logger
     }
 
-    var logger: Logger = Logger()
-    
+    var logger: Logger = .init()
+
     private var apiKey: String = ""
 
     func setApiKey(_ newApiKey: String) {
@@ -52,17 +51,18 @@ internal class AnalyticsManager {
         do {
             _ = try await APIClient(logger: logger).request(
                 urlString: apiUrl, method: .OPTIONS, headers: headers,
-                body: payload)
-        } catch {
-        }
+                body: payload
+            )
+        } catch {}
     }
-    /// TODO: Setup analytics payload
+
+    // TODO: Setup analytics payload
     private func createAnalyticsPlacementPayload(
         name: String, placementResponse: PlacementsResponse
-    ) -> Analytics.Payload {
-        let timestamp = CommonUtils().getCurrentTimestamp()
+    ) async -> Analytics.Payload {
+        let timestamp = await CommonUtils().getCurrentTimestamp()
 
-        return Analytics.Payload(
+        return await Analytics.Payload(
             name: name,
             props: Analytics.Props(
                 eventProperties: Analytics.EventProperties(
@@ -71,7 +71,8 @@ internal class AnalyticsManager {
                         placementContentId: placementResponse.placementContent?
                             .first?.id,
                         overlayContentId: placementResponse.placementContent?
-                            .first?.id),
+                            .first?.id
+                    ),
                     placementContent: Analytics.PlacementContent(
                         id: placementResponse.placementContent?.first?.id,
                         contentType: placementResponse.placementContent?.first?
@@ -81,7 +82,7 @@ internal class AnalyticsManager {
                     ),
                     metadata: [
                         "location": placementResponse.placements?.first?
-                            .renderContext?.LOCATION
+                            .renderContext?.LOCATION,
                     ],
                     actionTarget: nil
                 ),
@@ -92,8 +93,9 @@ internal class AnalyticsManager {
                 apiKey: apiKey,
                 browserCtx: Analytics.BrowserCtx(
                     library: Analytics.Library(
-                        name: "bread-partners-sdk-ios", version: "0.0.1"),
-                    userAgent: CommonUtils().getUserAgent(),
+                        name: "bread-partners-sdk-ios", version: "0.0.1"
+                    ),
+                    userAgent: await CommonUtils().getUserAgent(),
                     page: Analytics.Page(
                         path: "ToDo",
                         url: nil
@@ -102,7 +104,8 @@ internal class AnalyticsManager {
                 trackingInfo: Analytics.TrackingInfo(
                     userTrackingId: placementResponse.placements?.first?
                         .renderContext?.SDK_TID,
-                    sessionTrackingId: "ToDO")
+                    sessionTrackingId: "ToDO"
+                )
             )
         )
     }
@@ -111,8 +114,9 @@ internal class AnalyticsManager {
         name: String, placementResponse: PlacementsResponse,
         apiUrlType: APIUrlType
     ) async {
-        let payload = createAnalyticsPlacementPayload(
-            name: name, placementResponse: placementResponse)
+        let payload = await createAnalyticsPlacementPayload(
+            name: name, placementResponse: placementResponse
+        )
         let apiUrl = APIUrl(urlType: apiUrlType).url
         await sendAnalyticsPayload(apiUrl: apiUrl, payload: payload)
     }
@@ -120,12 +124,14 @@ internal class AnalyticsManager {
     func sendViewPlacement(placementResponse: PlacementsResponse) async {
         await sendPlacementAnalytics(
             name: "view-placement", placementResponse: placementResponse,
-            apiUrlType: .viewPlacement)
+            apiUrlType: .viewPlacement
+        )
     }
 
     func sendClickPlacement(placementResponse: PlacementsResponse) async {
         await sendPlacementAnalytics(
             name: "click-placement", placementResponse: placementResponse,
-            apiUrlType: .clickPlacement)
+            apiUrlType: .clickPlacement
+        )
     }
 }

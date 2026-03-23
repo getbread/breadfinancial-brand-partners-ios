@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          APIClient.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,26 +8,29 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 import Foundation
 
+struct AnySendable: @unchecked Sendable {
+    let value: Any
+}
+
 /// Enum for HTTP Method Types.
-internal enum HTTPMethod: String {
+enum HTTPMethod: String, Sendable {
     case GET, POST, PUT, DELETE, OPTIONS
 }
 
 /// A utility class for making HTTP API requests.
-internal class APIClient {
-
+class APIClient: @unchecked Sendable {
     init(
         logger: Logger
     ) {
         self.logger = logger
     }
 
-    var logger: Logger = Logger()
-    
+    var logger: Logger = .init()
+
     /// Generic API call function
     ///
     /// - Parameters:
@@ -41,7 +44,7 @@ internal class APIClient {
         method: HTTPMethod = .POST,
         headers: [String: String]? = nil,
         body: Any? = nil
-    ) async throws -> Any {
+    ) async throws -> AnySendable {
         // Validate the URL
         guard let url = URL(string: urlString) else {
             throw NSError(
@@ -56,7 +59,7 @@ internal class APIClient {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let genericHeader: [String: String] = [
+        let genericHeader: [String: String] = await [
             Constants.headerContentType: Constants.headerContentTypeValue,
             Constants.headerUserAgentKey: CommonUtils().getUserAgent(),
             Constants.headerOriginKey: Constants.headerOriginValue
@@ -72,21 +75,27 @@ internal class APIClient {
         // Add body if provided
         if let body = body {
             do {
-                if let bodyDictionary = body as? [String: Any] {
-                    request.httpBody = try JSONSerialization.data(
+                let jsonData: Data
+
+                let unwrappedBody = (body as? AnySendable)?.value ?? body
+
+                if let bodyDictionary = unwrappedBody as? [String: Any] {
+                    jsonData = try JSONSerialization.data(
                         withJSONObject: bodyDictionary, options: [])
-                } else if let bodyCodable = body as? Encodable {
+                } else if let bodyCodable = unwrappedBody as? Encodable {
                     let encoder = JSONEncoder()
                     encoder.keyEncodingStrategy = .useDefaultKeys
-                    request.httpBody = try encoder.encode(bodyCodable)
+                    jsonData = try encoder.encode(bodyCodable)
                 } else {
                     throw NSError(
                         domain: "UnsupportedBodyType", code: 400,
                         userInfo: [
                             NSLocalizedDescriptionKey:
-                                "The request body is not supported."
+                                "The request body type is not supported. Type: \(type(of: unwrappedBody))"
                         ])
                 }
+
+                request.httpBody = jsonData
             } catch {
                 throw NSError(
                     domain: "SerializationError", code: 500,
@@ -119,10 +128,11 @@ internal class APIClient {
             headers: httpResponse.allHeaderFields, body: data)
 
         // Validate HTTP status code
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let messageString: String = {
                 if let jsonObj = try? JSONSerialization.jsonObject(with: data, options: []),
-                   let message = (jsonObj as? [String: Any])?["message"] as? String {
+                   let message = (jsonObj as? [String: Any])?["message"] as? String
+                {
                     return message
                 }
                 if let str = String(data: data, encoding: .utf8) {
@@ -137,16 +147,16 @@ internal class APIClient {
                         "\(messageString)"
                 ])
         }
-        
+
         // Check content type before attempting JSON parsing
         let contentType = httpResponse.value(forHTTPHeaderField: "Content-Type") ?? ""
         guard contentType.contains("application/json") else {
             let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response"
-            
+
             // Check if this is an Incapsula challenge page
             if responseString.contains("_Incapsula_Resource") || responseString.contains("incap_ses") {
                 print("Security challenge detected")
-                
+
                 // Return a structured error that can be handled by the caller
                 throw NSError(
                     domain: "IncapsulaChallenge",
@@ -157,7 +167,7 @@ internal class APIClient {
                         "url": urlString
                     ])
             }
-            
+
             throw NSError(
                 domain: "InvalidContentType",
                 code: 415,
@@ -166,10 +176,18 @@ internal class APIClient {
                     "responseBody": responseString
                 ])
         }
-            
+
         // Decode the response data
         do {
-            return try JSONSerialization.jsonObject(with: data, options: [])
+            if let jsonDict = try JSONSerialization.jsonObject(
+                with: data, options: []) as? [String: Any]
+            {
+                return AnySendable(value: jsonDict)
+            } else {
+                throw NSError(
+                    domain: "BreadPartnersSDKSwift", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"])
+            }
         } catch {
             throw NSError(
                 domain: "DecodingError", code: 500,
@@ -178,6 +196,5 @@ internal class APIClient {
                         "Failed to decode the server response."
                 ])
         }
-
     }
 }

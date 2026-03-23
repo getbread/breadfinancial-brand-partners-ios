@@ -159,7 +159,7 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
                     }
                 }                
             default:
-                logger.printLog("BreadPartnersSDK: WebViewMessage: \(message.body)")
+                callback(.onSDKEventLog(logs: "\(message)"))
             }
         }
 
