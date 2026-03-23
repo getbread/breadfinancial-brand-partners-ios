@@ -17,7 +17,7 @@ struct AnySendable: @unchecked Sendable {
 }
 
 /// Enum for HTTP Method Types.
-enum HTTPMethod: String, Sendable {
+internal enum HTTPMethod: String, Sendable {
     case GET, POST, PUT, DELETE, OPTIONS
 }
 
