@@ -17,6 +17,10 @@
 		12D9F1F02D5394E000799C72 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1EE2D5394E000799C72 /* Lato-Bold.ttf */; };
 		12D9F1F22D53956800799C72 /* Poppins-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1F12D53956800799C72 /* Poppins-Bold.otf */; };
 		12D9F1F32D53956800799C72 /* Poppins-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 12D9F1F12D53956800799C72 /* Poppins-Bold.otf */; };
+		4EBA47962F71846400FE0D88 /* Podfile.lock in Resources */ = {isa = PBXBuildFile; fileRef = 4EBA47952F71846400FE0D88 /* Podfile.lock */; };
+		4EBA47972F71846400FE0D88 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 4EBA47942F71846400FE0D88 /* Podfile */; };
+		4EBA47982F71846400FE0D88 /* Podfile.lock in Resources */ = {isa = PBXBuildFile; fileRef = 4EBA47952F71846400FE0D88 /* Podfile.lock */; };
+		4EBA47992F71846400FE0D88 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 4EBA47942F71846400FE0D88 /* Podfile */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -48,6 +52,8 @@
 		1469BBF46180D765F71B4C3C /* Pods-BreadPartnersSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Example/Pods-BreadPartnersSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		198F385AA96D18A5C1A70BE7 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		25DAC38EDE3AC67C92EC3B0B /* Pods-BreadPartnersSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BreadPartnersSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BreadPartnersSDK_Tests/Pods-BreadPartnersSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		4EBA47942F71846400FE0D88 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		4EBA47952F71846400FE0D88 /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		536656BA262FB1F56BC7D6A2 /* Pods_BreadPartnersSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BreadPartnersSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD01AFB9204008FA782 /* BreadPartnersSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreadPartnersSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -162,6 +168,8 @@
 			isa = PBXGroup;
 			children = (
 				9A17460150109AC2B569919E /* BreadPartnersSDK.podspec */,
+				4EBA47942F71846400FE0D88 /* Podfile */,
+				4EBA47952F71846400FE0D88 /* Podfile.lock */,
 				198F385AA96D18A5C1A70BE7 /* LICENSE */,
 			);
 			name = "Podspec Metadata";
@@ -277,6 +285,8 @@
 				12D9F1F32D53956800799C72 /* Poppins-Bold.otf in Resources */,
 				12D9F1EA2D53932600799C72 /* JosefinSans-Bold.ttf in Resources */,
 				12D9F1EF2D5394E000799C72 /* Lato-Bold.ttf in Resources */,
+				4EBA47982F71846400FE0D88 /* Podfile.lock in Resources */,
+				4EBA47992F71846400FE0D88 /* Podfile in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
@@ -287,6 +297,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EBA47962F71846400FE0D88 /* Podfile.lock in Resources */,
+				4EBA47972F71846400FE0D88 /* Podfile in Resources */,
 				12D9F1F22D53956800799C72 /* Poppins-Bold.otf in Resources */,
 				12D9F1E82D53932600799C72 /* JosefinSans-Bold.ttf in Resources */,
 				12D9F1F02D5394E000799C72 /* Lato-Bold.ttf in Resources */,

@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  File:          PlacementApiExtension.swift
 //  Author(s):     Bread Financial
 //  Date:          27 March 2025
@@ -8,16 +8,15 @@
 //  services into partner applications.
 //
 //  © 2025 Bread Financial
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 extension BreadPartnersSDK {
-
     /// Retrieve brand-specific configurations, such as the Recaptcha key.
-    func fetchBrandConfig() async {
+    func fetchBrandConfig(logger: Logger) async {
         let apiUrl = APIUrl(urlType: .brandConfig(brandId: integrationKey)).url
 
         do {
-            let response = try await APIClient(logger: Logger()).request(
+            let response = try await APIClient(logger: logger).request(
                 urlString: apiUrl, method: .GET, body: nil)
             brandConfiguration = try await CommonUtils().decodeJSON(
                 from: response, to: BrandConfigResponse.self)
@@ -46,13 +45,11 @@ extension BreadPartnersSDK {
                 integrationKey: integrationKey,
                 merchantConfiguration: merchantConfiguration,
                 placementConfig: placementsConfiguration.placementData,
-                environment: APIUrl.currentEnvironment
-            )
+                environment: APIUrl.currentEnvironment)
             request = builder.build()
 
             let response = try await APIClient(logger: logger).request(
-                urlString: apiUrl, method: .POST, body: request
-            )
+                urlString: apiUrl, method: .POST, body: request)
             await handlePlacementResponse(
                 response,
                 merchantConfiguration: merchantConfiguration,
@@ -90,8 +87,7 @@ extension BreadPartnersSDK {
             let responseModel: PlacementsResponse =
                 try await CommonUtils().decodeJSON(
                     from: response,
-                    to: PlacementsResponse.self
-                )
+                    to: PlacementsResponse.self)
 
             /// Opens the overlay automatically to simulate user behavior of manually tapping the placement.
             if openPlacementExperience {
@@ -102,12 +98,14 @@ extension BreadPartnersSDK {
                     let popupPlacementHTMLContent = responseModel
                         .placementContent?
                         .first(where: { $0.metadata?.templateId?.contains("overlay") == true }),
+
                     let popupPlacementModel = try await HTMLContentParser()
                         .extractPopupPlacementModel(
-                            from: popupPlacementHTMLContent.contentData?
+                            from: popupPlacementHTMLContent
+                                .contentData?
                                 .htmlContent
                                 ?? ""
-                        )
+                    )
                 else {
                     return callback(
                         .sdkError(
@@ -133,7 +131,6 @@ extension BreadPartnersSDK {
                     overlayType: PlacementOverlayType(rawValue: popupPlacementModel.overlayType) ?? .singleProductOverlay
                 )
 
-
             } else {
                 /// Handles the text placement UI that will be rendered on the brand partner's app screen
                 /// for manual tap behavior.
@@ -149,7 +146,6 @@ extension BreadPartnersSDK {
                 ).handleTextPlacement(
                     responseModel: responseModel
                 )
-
             }
 
         } catch {
