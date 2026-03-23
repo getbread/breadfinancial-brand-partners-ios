@@ -62,7 +62,7 @@ class AnalyticsManager {
     ) async -> Analytics.Payload {
         let timestamp = await CommonUtils().getCurrentTimestamp()
 
-        return await Analytics.Payload(
+        return Analytics.Payload(
             name: name,
             props: Analytics.Props(
                 eventProperties: Analytics.EventProperties(

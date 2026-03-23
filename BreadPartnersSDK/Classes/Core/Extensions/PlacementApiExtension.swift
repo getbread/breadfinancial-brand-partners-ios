@@ -96,13 +96,15 @@ extension BreadPartnersSDK {
                         from: response, to: PlacementsResponse.self)
                 guard
                     let popupPlacementHTMLContent = responseModel
-                    .placementContent?
-                    .first(where: { $0.metadata?.templateId?.contains("overlay") == true }),
+                        .placementContent?
+                        .first(where: { $0.metadata?.templateId?.contains("overlay") == true }),
+
                     let popupPlacementModel = try await HTMLContentParser()
-                    .extractPopupPlacementModel(
-                        from: popupPlacementHTMLContent.contentData?
-                            .htmlContent
-                            ?? ""
+                        .extractPopupPlacementModel(
+                            from: popupPlacementHTMLContent
+                                .contentData?
+                                .htmlContent
+                                ?? ""
                     )
                 else {
                     return callback(
@@ -123,9 +125,11 @@ extension BreadPartnersSDK {
                     splitTextAndAction: splitTextAndAction,
                     forSwiftUI: forSwiftUI,
                     logger: logger,
-                    callback: callback).createPopupOverlay(
+                    callback: callback
+                ).createPopupOverlay(
                     popupPlacementModel: popupPlacementModel,
-                    overlayType: PlacementOverlayType(rawValue: popupPlacementModel.overlayType) ?? .singleProductOverlay)
+                    overlayType: PlacementOverlayType(rawValue: popupPlacementModel.overlayType) ?? .singleProductOverlay
+                )
 
             } else {
                 /// Handles the text placement UI that will be rendered on the brand partner's app screen
@@ -138,7 +142,8 @@ extension BreadPartnersSDK {
                     splitTextAndAction: splitTextAndAction,
                     forSwiftUI: forSwiftUI,
                     logger: logger,
-                    callback: callback).handleTextPlacement(
+                    callback: callback
+                ).handleTextPlacement(
                     responseModel: responseModel
                 )
             }

@@ -22,7 +22,7 @@ enum HTTPMethod: String, Sendable {
 }
 
 /// A utility class for making HTTP API requests.
-class APIClient: @unchecked Sendable {
+internal class APIClient: @unchecked Sendable {
     init(
         logger: Logger
     ) {
@@ -128,7 +128,7 @@ class APIClient: @unchecked Sendable {
             headers: httpResponse.allHeaderFields, body: data)
 
         // Validate HTTP status code
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
+        guard (200...299).contains(httpResponse.statusCode) else {
             let messageString: String = {
                 if let jsonObj = try? JSONSerialization.jsonObject(with: data, options: []),
                    let message = (jsonObj as? [String: Any])?["message"] as? String

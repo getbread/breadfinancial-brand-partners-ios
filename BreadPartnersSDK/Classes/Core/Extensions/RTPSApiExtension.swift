@@ -88,7 +88,8 @@ extension BreadPartnersSDK {
                       let country = billingAddress?.country, !country.isEmpty,
                       let locality = billingAddress?.locality, !locality.isEmpty,
                       let region = billingAddress?.region, !region.isEmpty,
-                      let postalCode = billingAddress?.postalCode, !postalCode.isEmpty else {
+                      let postalCode = billingAddress?.postalCode, !postalCode.isEmpty
+                else {
                     return callback(
                         .sdkError(
                             error: NSError(
