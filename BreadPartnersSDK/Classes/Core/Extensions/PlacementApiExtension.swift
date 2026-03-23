@@ -71,7 +71,7 @@ extension BreadPartnersSDK {
         }
     }
 
-    func handlePlacementResponse(
+    internal func handlePlacementResponse(
         _ response: Any,
         merchantConfiguration: MerchantConfiguration,
         placementsConfiguration: PlacementConfiguration,
