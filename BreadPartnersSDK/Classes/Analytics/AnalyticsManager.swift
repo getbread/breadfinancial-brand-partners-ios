@@ -17,7 +17,7 @@ import UIKit
 /// It tracks two events:
 /// 1. **Click Placement**: When the user clicks on the placement.
 /// 2. **View Placement**: When the user sees or interacts with the placement without clicking.
-class AnalyticsManager {
+internal class AnalyticsManager {
     init(
         logger: Logger
     ) {
