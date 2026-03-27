@@ -70,3 +70,21 @@ extension Optional where Wrapped == String {
         return self
     }
 }
+
+extension String {
+    /// Converts an HTML string to NSAttributedString with formatting preserved
+    func htmlToAttributedString() -> NSAttributedString? {
+        guard let data = self.data(using: .utf8) else { return nil }
+        
+        do {
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            return try NSAttributedString(data: data, options: options, documentAttributes: nil)
+        } catch {
+            return nil
+        }
+    }
+}

@@ -15,6 +15,7 @@ import UIKit
 /// A custom UITextView for displaying tappable link-styled text in Bread Partner UI.
 public class BreadPartnerLinkText: UITextView {
     private var tapHandler: ((String) -> Void)?
+    private var allowTapWithoutLink: Bool = false
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -43,6 +44,18 @@ public class BreadPartnerLinkText: UITextView {
     ) {
         self.attributedText = attributedText
         self.tapHandler = tapHandler
+        
+        // Check if the attributed string has any .link attributes
+        var hasLinkAttribute = false
+        attributedText.enumerateAttribute(.link, in: NSRange(location: 0, length: attributedText.length)) { value, _, stop in
+            if value != nil {
+                hasLinkAttribute = true
+                stop.pointee = true
+            }
+        }
+        
+        // If no link attributes found, allow tap anywhere on the text
+        self.allowTapWithoutLink = !hasLinkAttribute
     }
 
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -80,7 +93,16 @@ public class BreadPartnerLinkText: UITextView {
                 Task {
                     await handleLinkTap(link)
                 }
-
+            } else if allowTapWithoutLink {
+                // For NO_ACTION text without link attributes, trigger tap handler with empty string
+                Task {
+                    await handleLinkTap("")
+                }
+            }
+        } else if allowTapWithoutLink {
+            // Tapped outside text bounds but still within view - trigger for NO_ACTION
+            Task {
+                await handleLinkTap("")
             }
         }
     }

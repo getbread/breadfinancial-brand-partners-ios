@@ -10,6 +10,8 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
+import UIKit
+
 extension HTMLContentRenderer {
 
     /// Renders a text view and action button for either SwiftUI or UIKit.
@@ -40,12 +42,71 @@ extension HTMLContentRenderer {
         var contentText = textPlacementModel?.contentText ?? ""
         var actionLink = textPlacementModel?.actionLink ?? ""
         let actionType = textPlacementModel?.actionType
+        let htmlContent = textPlacementModel?.htmlContent
+
+        // For NO_ACTION type, render as formatted HTML text that's clickable (triggers textClicked callback)
+        if actionType == PlacementActionType.noAction.rawValue,
+           let htmlString = htmlContent, !htmlString.isEmpty {
+            
+            // Convert HTML to attributed string
+            if let attributedString = htmlString.htmlToAttributedString() {
+                // Create a mutable copy to remove any link attributes and underlines
+                let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
+                let range = NSRange(location: 0, length: mutableAttributedString.length)
+                mutableAttributedString.removeAttribute(.link, range: range)
+                mutableAttributedString.removeAttribute(.underlineStyle, range: range)
+                
+                if forSwiftUI {
+                    let swiftUIView = BreadPartnerLinkTextSwitUI(
+                        attributedString: mutableAttributedString,
+                        onTap: {
+                            Task {
+                                await self.handleLinkInteraction(link: "")
+                            }
+                        }
+                    )
+                    self.callback(.renderSwiftUITextViewWithLink(textView: swiftUIView))
+                } else {
+                    let textView = BreadPartnerLinkText()
+                
+                    textView.configure(with: mutableAttributedString) { [self] _ in
+                        Task {
+                            await handleLinkInteraction(link: "")
+                        }
+                    }
+                    self.callback(.renderTextViewWithLink(textView: textView))
+                }
+            } else {
+                // Fallback to plain text if HTML conversion fails
+                if forSwiftUI {
+                    let swiftUIView = BreadPartnerLinkTextSwitUI(
+                        contentText,
+                        links: [],
+                        onTap: {
+                            Task {
+                                await self.handleLinkInteraction(link: "")
+                            }
+                        }
+                    )
+                    self.callback(.renderSwiftUITextViewWithLink(textView: swiftUIView))
+                } else {
+                    let textView = BreadPartnerLinkText()
+                    let plainAttributedString = NSAttributedString(string: contentText)
+                    textView.configure(with: plainAttributedString) { [self] _ in
+                        Task {
+                            await handleLinkInteraction(link: "")
+                        }
+                    }
+                    self.callback(.renderTextViewWithLink(textView: textView))
+                }
+            }
+            return
+        }
 
         if actionLink.isEmpty {
             actionLink = contentText
             contentText = ""
         }
-        
         if forSwiftUI {
             let combinedText = contentText + actionLink
             let swiftUIView = BreadPartnerLinkTextSwitUI(
@@ -59,6 +120,7 @@ extension HTMLContentRenderer {
                     }
                 }
             )
+
             self.callback(.renderSwiftUITextViewWithLink(textView: swiftUIView))
         } else {
             let textView = BreadPartnerLinkText()
@@ -77,7 +139,6 @@ extension HTMLContentRenderer {
                     await handleLinkInteraction(link: link)
                 }
             }
-
             self.callback(.renderTextViewWithLink(textView: textView))
         }
     }
@@ -99,7 +160,7 @@ extension HTMLContentRenderer {
             return
         }
 
-        if let actionType = HTMLContentParser().handleActionType(
+        if let actionType = await HTMLContentParser().handleActionType(
             from: placementModel.actionType ?? "")
         {
             switch actionType {
@@ -110,6 +171,7 @@ extension HTMLContentRenderer {
             case .noAction:
                 callback(.textClicked)
             default:
+
                 return callback(
                     .sdkError(
                         error: NSError(

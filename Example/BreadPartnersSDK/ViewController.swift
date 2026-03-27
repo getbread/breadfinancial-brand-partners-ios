@@ -48,7 +48,7 @@ class ViewController: UIViewController {
         // like placement ID, SDK transaction ID, environment, price, and brand ID.
         // This allows testing of various placement setups by fetching specific configurations
         // based on the placement type key.
-        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType1"]!
+        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["NO_ACTION"]!
         let placementID = placementRequestType["placementID"] as? String
         let price = (placementRequestType["price"] as? Int)
         let loyaltyId = (placementRequestType["loyaltyId"] as? String)
@@ -202,6 +202,7 @@ class ViewController: UIViewController {
                 switch event {
                 case .renderTextViewWithLink(let textView):
 
+                 
                     /// Handles rendering of a text view with a clickable link.
                     /// - Modifies the font, text color, and link color for the text view.
                     /// - Adds the text view to the main view and sets up its layout constraints.
