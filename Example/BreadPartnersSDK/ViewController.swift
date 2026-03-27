@@ -201,8 +201,6 @@ class ViewController: UIViewController {
                 event in
                 switch event {
                 case .renderTextViewWithLink(let textView):
-
-                 
                     /// Handles rendering of a text view with a clickable link.
                     /// - Modifies the font, text color, and link color for the text view.
                     /// - Adds the text view to the main view and sets up its layout constraints.
@@ -282,7 +280,7 @@ class ViewController: UIViewController {
                         self.present(view, animated: true)
                     }
                 default:
-                    // MARK: Other events.
+                    print("BreadPartnerSDK:: \(event)")
                     break
                 }
 
