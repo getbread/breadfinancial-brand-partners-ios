@@ -204,28 +204,24 @@ class ViewController: UIViewController {
                     /// Handles rendering of a text view with a clickable link.
                     /// - Modifies the font, text color, and link color for the text view.
                     /// - Adds the text view to the main view and sets up its layout constraints.
-
-                    textView.font = UIFont(
-                        name: fontFamily, size: Double(xlargeTextSize))
-                    textView.textColor = UIColor.black
-                    textView.linkTextAttributes = [
-                        .foregroundColor: UIColor(hex: primaryColor)
-                    ]
-
+                    
                     self.view.addSubview(textView)
 
                     textView.translatesAutoresizingMaskIntoConstraints = false
 
-                    NSLayoutConstraint.activate([
-                        textView.centerXAnchor.constraint(
-                            equalTo: self.view.centerXAnchor),
-                        textView.topAnchor.constraint(
-                            equalTo: self.view.topAnchor, constant: 100),
-                        textView.leadingAnchor.constraint(
-                            equalTo: self.view.leadingAnchor, constant: 20),
-                        textView.trailingAnchor.constraint(
-                            equalTo: self.view.trailingAnchor, constant: -20),
-                    ])
+                    // If you want to correctly style the text view with link functionality,
+                    // you can call the actionPlacement function,
+//                    self.actionPlacement(
+//                        textView: textView,
+//                        fontFamily: fontFamily,
+//                        xlargeTextSize: xlargeTextSize,
+//                        primaryColor: primaryColor
+//                    )
+                    
+                    // If you want to correctly style the text view without link functionality,
+                    // you can call the noActionPlacement function,
+                    self.noActionPlacement(textView: textView)
+           
 
                 case .renderSeparateTextAndButton(let textView, let button):
 
@@ -287,6 +283,44 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    func actionPlacement(textView: BreadPartnerLinkText, fontFamily: String, xlargeTextSize: Int, primaryColor: String) {
+        textView.font = UIFont(
+            name: fontFamily, size: Double(xlargeTextSize))
+        textView.textColor = UIColor.black
+        textView.linkTextAttributes = [
+            .foregroundColor: UIColor(hex: primaryColor)
+        ]
+
+        NSLayoutConstraint.activate([
+            textView.centerXAnchor.constraint(
+                equalTo: self.view.centerXAnchor),
+            textView.topAnchor.constraint(
+                equalTo: self.view.topAnchor, constant: 100),
+            textView.leadingAnchor.constraint(
+                equalTo: self.view.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20),
+        ])
+    }
+    
+ 
+    func noActionPlacement(textView: BreadPartnerLinkText) {
+        
+             
+        NSLayoutConstraint.activate([
+            textView.centerXAnchor.constraint(
+                equalTo: self.view.centerXAnchor),
+            textView.topAnchor.constraint(
+                equalTo: self.view.topAnchor, constant: 100),
+            textView.leadingAnchor.constraint(
+                equalTo: self.view.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20),
+             ])
+    }
+  
+
     
     func openExperienceFlow() {
         let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType6"]!
