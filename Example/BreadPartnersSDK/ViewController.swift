@@ -211,16 +211,16 @@ class ViewController: UIViewController {
 
                     // If you want to correctly style the text view with link functionality,
                     // you can call the actionPlacement function,
-//                    self.actionPlacement(
-//                        textView: textView,
-//                        fontFamily: fontFamily,
-//                        xlargeTextSize: xlargeTextSize,
-//                        primaryColor: primaryColor
-//                    )
+                    self.actionPlacement(
+                        textView: textView,
+                        fontFamily: fontFamily,
+                        xlargeTextSize: xlargeTextSize,
+                        primaryColor: primaryColor
+                    )
                     
                     // If you want to correctly style the text view without link functionality,
                     // you can call the noActionPlacement function,
-                    self.noActionPlacement(textView: textView)
+//                    self.noActionPlacement(textView: textView, fontSize: 15)
            
 
                 case .renderSeparateTextAndButton(let textView, let button):
@@ -305,9 +305,42 @@ class ViewController: UIViewController {
     }
     
  
-    func noActionPlacement(textView: BreadPartnerLinkText) {
-        
-             
+    func noActionPlacement(textView: BreadPartnerLinkText, fontSize: Int) {
+        // Apply font size to the attributed text while preserving HTML formatting
+        if let attributedText = textView.attributedText {
+            let mutableAttributedString = NSMutableAttributedString(attributedString: attributedText)
+            let fullRange = NSRange(location: 0, length: mutableAttributedString.length)
+            
+            // Set base text color to black
+            mutableAttributedString.addAttribute(.foregroundColor, value: UIColor.black, range: fullRange)
+            
+            // Update font sizes while preserving traits (bold, italic, superscript, etc.)
+            mutableAttributedString.enumerateAttributes(in: fullRange, options: []) { attributes, range, _ in
+                // Check if this is superscript by looking for baseline offset
+                let baselineOffset = attributes[.baselineOffset] as? NSNumber
+                let isSuperscript = (baselineOffset?.floatValue ?? 0) > 0
+                
+                if let currentFont = attributes[.font] as? UIFont {
+                    // Use smaller size for superscript, regular size for normal text
+                    let newSize = CGFloat(fontSize)
+
+                    // Preserve font traits (bold, italic)
+                    let fontDescriptor = currentFont.fontDescriptor
+                    let newFontDescriptor = fontDescriptor.withSize(newSize)
+                    let newFont = UIFont(descriptor: newFontDescriptor, size: newSize)
+                    
+                    mutableAttributedString.addAttribute(.font, value: newFont, range: range)
+                } else {
+                    // If no font attribute, add default font
+                    let defaultSize = CGFloat(fontSize)
+                    let defaultFont = UIFont.systemFont(ofSize: defaultSize)
+                    mutableAttributedString.addAttribute(.font, value: defaultFont, range: range)
+                }
+            }
+            
+            textView.attributedText = mutableAttributedString
+        }
+
         NSLayoutConstraint.activate([
             textView.centerXAnchor.constraint(
                 equalTo: self.view.centerXAnchor),
@@ -317,7 +350,7 @@ class ViewController: UIViewController {
                 equalTo: self.view.leadingAnchor, constant: 20),
             textView.trailingAnchor.constraint(
                 equalTo: self.view.trailingAnchor, constant: -20),
-             ])
+        ])
     }
   
 
