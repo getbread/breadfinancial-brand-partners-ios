@@ -201,32 +201,27 @@ class ViewController: UIViewController {
                 event in
                 switch event {
                 case .renderTextViewWithLink(let textView):
-
                     /// Handles rendering of a text view with a clickable link.
                     /// - Modifies the font, text color, and link color for the text view.
                     /// - Adds the text view to the main view and sets up its layout constraints.
-
-                    textView.font = UIFont(
-                        name: fontFamily, size: Double(xlargeTextSize))
-                    textView.textColor = UIColor.black
-                    textView.linkTextAttributes = [
-                        .foregroundColor: UIColor(hex: primaryColor)
-                    ]
-
+                    
                     self.view.addSubview(textView)
 
                     textView.translatesAutoresizingMaskIntoConstraints = false
 
-                    NSLayoutConstraint.activate([
-                        textView.centerXAnchor.constraint(
-                            equalTo: self.view.centerXAnchor),
-                        textView.topAnchor.constraint(
-                            equalTo: self.view.topAnchor, constant: 100),
-                        textView.leadingAnchor.constraint(
-                            equalTo: self.view.leadingAnchor, constant: 20),
-                        textView.trailingAnchor.constraint(
-                            equalTo: self.view.trailingAnchor, constant: -20),
-                    ])
+                    // If you want to correctly style the text view with link functionality,
+                    // you can call the actionPlacement function,
+                    self.actionPlacement(
+                        textView: textView,
+                        fontFamily: fontFamily,
+                        xlargeTextSize: xlargeTextSize,
+                        primaryColor: primaryColor
+                    )
+                    
+                    // If you want to correctly style the text view without link functionality,
+                    // you can call the noActionPlacement function,
+//                    self.noActionPlacement(textView: textView, fontSize: 15)
+           
 
                 case .renderSeparateTextAndButton(let textView, let button):
 
@@ -281,13 +276,84 @@ class ViewController: UIViewController {
                         self.present(view, animated: true)
                     }
                 default:
-                    // MARK: Other events.
+                    print("BreadPartnerSDK:: \(event)")
                     break
                 }
 
             }
         }
     }
+    
+    func actionPlacement(textView: BreadPartnerLinkText, fontFamily: String, xlargeTextSize: Int, primaryColor: String) {
+        textView.font = UIFont(
+            name: fontFamily, size: Double(xlargeTextSize))
+        textView.textColor = UIColor.black
+        textView.linkTextAttributes = [
+            .foregroundColor: UIColor(hex: primaryColor)
+        ]
+
+        NSLayoutConstraint.activate([
+            textView.centerXAnchor.constraint(
+                equalTo: self.view.centerXAnchor),
+            textView.topAnchor.constraint(
+                equalTo: self.view.topAnchor, constant: 100),
+            textView.leadingAnchor.constraint(
+                equalTo: self.view.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20),
+        ])
+    }
+    
+ 
+    func noActionPlacement(textView: BreadPartnerLinkText, fontSize: Int) {
+        // Apply font size to the attributed text while preserving HTML formatting
+        if let attributedText = textView.attributedText {
+            let mutableAttributedString = NSMutableAttributedString(attributedString: attributedText)
+            let fullRange = NSRange(location: 0, length: mutableAttributedString.length)
+            
+            // Set base text color to black
+            mutableAttributedString.addAttribute(.foregroundColor, value: UIColor.black, range: fullRange)
+            
+            // Update font sizes while preserving traits (bold, italic, superscript, etc.)
+            mutableAttributedString.enumerateAttributes(in: fullRange, options: []) { attributes, range, _ in
+                // Check if this is superscript by looking for baseline offset
+                let baselineOffset = attributes[.baselineOffset] as? NSNumber
+                let isSuperscript = (baselineOffset?.floatValue ?? 0) > 0
+                
+                if let currentFont = attributes[.font] as? UIFont {
+                    // Use smaller size for superscript, regular size for normal text
+                    let newSize = CGFloat(fontSize)
+
+                    // Preserve font traits (bold, italic)
+                    let fontDescriptor = currentFont.fontDescriptor
+                    let newFontDescriptor = fontDescriptor.withSize(newSize)
+                    let newFont = UIFont(descriptor: newFontDescriptor, size: newSize)
+                    
+                    mutableAttributedString.addAttribute(.font, value: newFont, range: range)
+                } else {
+                    // If no font attribute, add default font
+                    let defaultSize = CGFloat(fontSize)
+                    let defaultFont = UIFont.systemFont(ofSize: defaultSize)
+                    mutableAttributedString.addAttribute(.font, value: defaultFont, range: range)
+                }
+            }
+            
+            textView.attributedText = mutableAttributedString
+        }
+
+        NSLayoutConstraint.activate([
+            textView.centerXAnchor.constraint(
+                equalTo: self.view.centerXAnchor),
+            textView.topAnchor.constraint(
+                equalTo: self.view.topAnchor, constant: 100),
+            textView.leadingAnchor.constraint(
+                equalTo: self.view.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(
+                equalTo: self.view.trailingAnchor, constant: -20),
+        ])
+    }
+  
+
     
     func openExperienceFlow() {
         let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType6"]!

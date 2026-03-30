@@ -162,6 +162,9 @@ internal class Logger: NSObject {
         lines.append("Content Text      : \(model.contentText ?? "N/A")")
         lines.append("Action Link       : \(model.actionLink ?? "N/A")")
         lines.append("Action Content ID : \(model.actionContentId ?? "N/A")")
+        if let htmlContent = model.htmlContent {
+            lines.append("HTML Content      : \(htmlContent)")
+        }
         lines.append("\(dashLineFifty)\n")
         
         let message = lines.joined(separator: "\n")

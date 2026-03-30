@@ -41,6 +41,9 @@ internal class HTMLContentParser {
             "data-action-target")
         let actionType = try document.select("[data-action-type]").attr(
             "data-action-type")
+        
+        // Extract HTML content (preserving formatting)
+        let htmlContentWithFormatting = try document.select(".ep-text-placement").html()
 
         // Extract text content
         let actionLink = try document.select(".epjs-body-action a").text()
@@ -75,7 +78,8 @@ internal class HTMLContentParser {
             actionTarget: actionTarget.isEmpty ? nil : actionTarget,
             contentText: finalContentText.isEmpty ? nil : finalContentText,
             actionLink: actionLink.isEmpty ? nil : actionLink,
-            actionContentId: actionContentId.isEmpty ? nil : actionContentId
+            actionContentId: actionContentId.isEmpty ? nil : actionContentId,
+            htmlContent: htmlContentWithFormatting.isEmpty ? nil : htmlContentWithFormatting
         )
     }
 
