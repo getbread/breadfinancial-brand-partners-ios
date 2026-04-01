@@ -51,9 +51,15 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         view.addSubview(closeButton)
 
         let config = WKWebViewConfiguration()
-        let preferences = WKWebpagePreferences()
-        preferences.allowsContentJavaScript = true
-        config.defaultWebpagePreferences = preferences
+        
+        if #available(iOS 14.0, *) {
+            let preferences = WKWebpagePreferences()
+            preferences.allowsContentJavaScript = true
+            config.defaultWebpagePreferences = preferences
+        } else {
+            // For iOS versions below 14.0, JavaScript is enabled by default
+            config.preferences.javaScriptEnabled = true
+        }
 
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
