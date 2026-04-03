@@ -43,4 +43,5 @@ TODO: Add long description of the pod here.
   # Dependencies
   s.dependency 'SwiftSoup', '~> 2.7.5'
   s.dependency 'RecaptchaEnterprise', '18.6.0'
+  s.dependency 'RecaptchaInterop', '~> 100.0.0'
 end
