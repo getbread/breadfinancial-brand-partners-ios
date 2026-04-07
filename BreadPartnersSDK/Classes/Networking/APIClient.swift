@@ -43,6 +43,7 @@ internal class APIClient: @unchecked Sendable {
         urlString: String,
         method: HTTPMethod = .POST,
         headers: [String: String]? = nil,
+        cookies: String? = nil,
         body: Any? = nil
     ) async throws -> AnySendable {
         // Validate the URL
@@ -65,8 +66,12 @@ internal class APIClient: @unchecked Sendable {
             Constants.headerOriginKey: Constants.headerOriginValue
         ]
 
-        let updatedHeaders = (headers ?? [:]).merging(
+        var updatedHeaders = (headers ?? [:]).merging(
             genericHeader, uniquingKeysWith: { first, _ in first })
+        
+        if(cookies != nil) {
+            updatedHeaders["Cookie"] = cookies
+        }
 
         for (key, value) in updatedHeaders {
             request.setValue(value, forHTTPHeaderField: key)

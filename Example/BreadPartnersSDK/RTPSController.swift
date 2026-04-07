@@ -101,9 +101,11 @@ class RTPSController: UIViewController {
                 birthDate: "1974-08-21",
                 billingAddress: BreadPartnersAddress(
                     address1: "3075 Loyalty Cir",
-                    locality: "Columbus",
-                    region: "OH",
-                    postalCode: "43219")
+                    address2: "Columbus",
+                    country: "US",
+                    locality: "OH",
+                    region: "43219",
+                    postalCode: "43219"),
             ),
             storeNumber: "8883",
             env: BreadPartnersEnvironment.stage,
@@ -111,8 +113,8 @@ class RTPSController: UIViewController {
 
         Task {
             await BreadPartnersSDK.shared.setup(
-                environment: .stage,
-                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                environment: .uat,
+                integrationKey: "3735d557-c08e-4335-abd6-2b8292188c6f",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.silentRTPSRequest(

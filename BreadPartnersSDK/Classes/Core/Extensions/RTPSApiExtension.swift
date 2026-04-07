@@ -56,6 +56,7 @@ extension BreadPartnersSDK {
         openPlacementExperience: Bool = false,
         forSwiftUI: Bool = false,
         logger: Logger,
+        cookies: String? = nil,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -126,9 +127,16 @@ extension BreadPartnersSDK {
 
             let headers: [String: String] = [
                 Constants.headerClientKey: integrationKey,
-                Constants.headerRequestedWithKey: Constants
-                    .headerRequestedWithValue,
+                Constants.headerRequestedWithKey: Constants.headerRequestedWithValue,
+                "X-Bread-Testing": "captcha"
             ]
+            
+            if(cookies != nil) {
+                logger.printLog("Attaching cookies to RTPS request: \(cookies!)")
+            } else {
+                logger.printLog("No Cookies")
+            }
+            
 
             let rtpsRequestBuilt = requestBuilder.build()
 
@@ -136,6 +144,7 @@ extension BreadPartnersSDK {
                 urlString: apiUrl,
                 method: .POST,
                 headers: headers,
+                cookies: cookies,
                 body: rtpsRequestBuilt
             )
 
@@ -173,7 +182,8 @@ extension BreadPartnersSDK {
                 openPlacementExperience: openPlacementExperience,
                 forSwiftUI: forSwiftUI,
                 logger: logger,
-                callback: callback)
+                callback: callback,
+            )
 
         } catch let error as NSError {
             if error.domain == "IncapsulaChallenge" {
@@ -186,17 +196,18 @@ extension BreadPartnersSDK {
                     htmlContent: htmlContent,
                     originalURL: url,
                     callback: callback,
-                    retryRequest: { [weak self] in
+                    retryRequest: { cookie in
                         Task { @MainActor in
                             // Restart from rtpsCall to get fresh reCAPTCHA token
                             // and clean WebKit process
-                            await self?.rtpsCall(
+                            await self.rtpsCall(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
                                 splitTextAndAction: splitTextAndAction,
                                 openPlacementExperience: openPlacementExperience,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
+                                cookies: cookie, // Pass any relevant cookies if neede
                                 callback: callback
                             )
                         }
@@ -226,6 +237,7 @@ extension BreadPartnersSDK {
         openPlacementExperience: Bool = false,
         forSwiftUI: Bool = false,
         logger: Logger,
+        cookies: String? = nil,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -262,7 +274,10 @@ extension BreadPartnersSDK {
             )
 
             let response = try await APIClient(logger: logger).request(
-                urlString: apiUrl, method: .POST, body: request
+                urlString: apiUrl,
+                method: .POST,
+                cookies: cookies,
+                body: request // Pass any relevant cookies if needed
             )
             await handleRTPSPlacementResponse(
                 merchantConfiguration: merchantConfiguration,

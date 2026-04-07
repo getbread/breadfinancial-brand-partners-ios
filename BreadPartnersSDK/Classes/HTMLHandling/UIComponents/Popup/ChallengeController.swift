@@ -12,17 +12,29 @@
 
 import WebKit
 
-internal class ChallengeController: UIViewController, WKNavigationDelegate {
+internal class ChallengeController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController,
+                               didReceive message: WKScriptMessage) {
+        webView.getCookies(for: "incap_ses_") { data in
+              print("=========================================")
+              print("\(self.originalURL)")
+              print(data)
+            self.retryRequest?("COOKIE FROM GETCOOKIES: \(data)")
+        }
+    }
+    
 
     private var webView: WKWebView!
     private var closeButton: UIButton!
     private let htmlContent: String
     private let originalURL: String
     private let callback: ((BreadPartnerEvents) -> Void)?
-    private let retryRequest: (() -> Void)?
+    private let retryRequest: ((_ cookie: String) -> Void)?
     private var hasInitialLoadCompleted = false
 
-    init(htmlContent: String, originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil, retryRequest: (() -> Void)? = nil) {
+    init(htmlContent: String,
+         originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil,
+         retryRequest: ((String) -> Void)? = nil) {
         self.htmlContent = htmlContent
         self.originalURL = originalURL
         self.callback = callback
@@ -51,6 +63,10 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         view.addSubview(closeButton)
 
         let config = WKWebViewConfiguration()
+        let source = "document.addEventListener('click', function(){ window.webkit.messageHandlers.iosListener.postMessage('click clack!'); })"
+          let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+          config.userContentController.addUserScript(script)
+          config.userContentController.add(self, name: "iosListener")
         
         if #available(iOS 14.0, *) {
             let preferences = WKWebpagePreferences()
@@ -95,7 +111,8 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
     // MARK: - WKNavigationDelegate
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.cancel)
@@ -111,7 +128,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
                 decisionHandler(.cancel)
 
                 self.dismiss(animated: true) {
-                    self.retryRequest?()
+                    self.retryRequest?("this is a string in callback")
                 }
                 return
             }
@@ -144,5 +161,25 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print("ChallengeController: Navigation failed - \(error.localizedDescription)")
+    }
+}
+
+extension WKWebView {
+    private var httpCookieStore: WKHTTPCookieStore  { return WKWebsiteDataStore.default().httpCookieStore }
+
+    func getCookies(for domain: String? = nil, completion: @escaping ([String : Any])->())  {
+        var cookieDict = [String : AnyObject]()
+        httpCookieStore.getAllCookies { cookies in
+            for cookie in cookies {
+                if let domain = domain {
+                    if cookie.name.contains(domain) {
+                        cookieDict[cookie.name] = cookie.properties as AnyObject?
+                    }
+                } else {
+                    cookieDict[cookie.name] = cookie.properties as AnyObject?
+                }
+            }
+            completion(cookieDict)
+        }
     }
 }
