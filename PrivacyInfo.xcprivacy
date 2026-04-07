@@ -154,5 +154,24 @@
 			</array>
 		</dict>
 	</array>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryFileTimestampAPIs</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>DDA9.1</string>
+            </array>
+        </dict>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryWebKit</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>NSPrivacyAccessedAPICategoryWebKitReasonWebViewFunctionality</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>
