@@ -69,12 +69,13 @@ internal class APIClient: @unchecked Sendable {
         var updatedHeaders = (headers ?? [:]).merging(
             genericHeader, uniquingKeysWith: { first, _ in first })
         
-        if(cookies != nil) {
-            updatedHeaders["Cookie"] = cookies
-        }
-
+    
         for (key, value) in updatedHeaders {
             request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        if(cookies != nil) {
+            request.setValue(cookies, forHTTPHeaderField: "Cookie")
         }
 
         // Add body if provided

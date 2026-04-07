@@ -15,11 +15,21 @@ import WebKit
 internal class ChallengeController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController,
                                didReceive message: WKScriptMessage) {
-        webView.getCookies(for: "incap_ses_") { data in
-              print("=========================================")
-              print("\(self.originalURL)")
-              print(data)
-            self.retryRequest?("COOKIE FROM GETCOOKIES: \(data)")
+//        webView.getCookies(for: "incap_ses_") { data in
+//              print("=========================================")
+//              print("\(self.originalURL)")
+//              print(data)
+//            self.retryRequest?("COOKIE FROM GETCOOKIES: \(data)")
+//        }
+        
+        webView.getCookie(named: "incap_ses_") { cookie in
+            print("=========================================")
+            print("\(self.originalURL)")
+            print(cookie ?? "No cookie found")
+             if let cookie = cookie {
+                 let cookieString = "name=\(cookie.name); value=\(cookie.value)"
+                 self.retryRequest?("\(cookieString)")
+             }
         }
     }
     
@@ -165,7 +175,9 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKSc
 }
 
 extension WKWebView {
-    private var httpCookieStore: WKHTTPCookieStore  { return WKWebsiteDataStore.default().httpCookieStore }
+    private var httpCookieStore: WKHTTPCookieStore {
+        return WKWebsiteDataStore.default().httpCookieStore
+    }
 
     func getCookies(for domain: String? = nil, completion: @escaping ([String : Any])->())  {
         var cookieDict = [String : AnyObject]()
@@ -179,7 +191,17 @@ extension WKWebView {
                     cookieDict[cookie.name] = cookie.properties as AnyObject?
                 }
             }
+//            
+//            let headerFields = HTTPCookie.requestHeaderFields(with: cookies)
+//            let cookieString = headerFields["Cookie"]
             completion(cookieDict)
+        }
+    }
+    
+    func getCookie(named cookieName: String, completion: @escaping (HTTPCookie?) -> Void) {
+        httpCookieStore.getAllCookies { cookies in
+            let foundCookie = cookies.first { $0.name.contains(cookieName) }
+            completion(foundCookie)
         }
     }
 }
