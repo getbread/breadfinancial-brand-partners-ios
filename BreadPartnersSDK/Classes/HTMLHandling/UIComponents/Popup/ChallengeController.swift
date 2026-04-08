@@ -15,22 +15,36 @@ import WebKit
 internal class ChallengeController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController,
                                didReceive message: WKScriptMessage) {
-//        webView.getCookies(for: "incap_ses_") { data in
+        webView.getCookies() { data in
+            self.retryRequest?(data)
 //              print("=========================================")
 //              print("\(self.originalURL)")
-//              print(data)
-//            self.retryRequest?("COOKIE FROM GETCOOKIES: \(data)")
-//        }
-        
-        webView.getCookie(named: "incap_ses_") { cookie in
-            print("=========================================")
-            print("\(self.originalURL)")
-            print(cookie ?? "No cookie found")
-             if let cookie = cookie {
-                 let cookieString = "name=\(cookie.name); value=\(cookie.value)"
-                 self.retryRequest?("\(cookieString)")
-             }
+//            
+//            
+//            for cookie in NSHTTPCookieStorage.sharedHTTPCookieStorage().cookies! {
+//                print(cookie.name + " - " + cookie.value + "-" + cookie.version)
+//            }
+//            
+////            let cookieString = data.map { key, value in
+////                  "\(key)=\(value)"
+////              }.joined(separator: " ")
+//            
+//            print("=========================================")
+//            
+//              print(cookieString)
+//            print("cookieString")
+//            self.retryRequest?(cookieString)
         }
+        
+//        webView.getCookie(named: "incap_ses_") { cookie in
+//            print("=========================================")
+//            print("\(self.originalURL)")
+//            print(cookie ?? "No cookie found")
+//             if let cookie = cookie {
+//                 let cookieString = "name=\(cookie.name); value=\(cookie.value)"
+//                 self.retryRequest?("\(cookieString)")
+//             }
+//        }
     }
     
 
@@ -179,10 +193,13 @@ extension WKWebView {
         return WKWebsiteDataStore.default().httpCookieStore
     }
 
-    func getCookies(for domain: String? = nil, completion: @escaping ([String : Any])->())  {
+    func getCookies(for domain: String? = nil, completion: @escaping (String)->())  {
         var cookieDict = [String : AnyObject]()
+        var cookieString = ""
         httpCookieStore.getAllCookies { cookies in
             for cookie in cookies {
+                cookieString.append( "\(cookie.name)=\(cookie.value) ")
+
                 if let domain = domain {
                     if cookie.name.contains(domain) {
                         cookieDict[cookie.name] = cookie.properties as AnyObject?
@@ -191,10 +208,12 @@ extension WKWebView {
                     cookieDict[cookie.name] = cookie.properties as AnyObject?
                 }
             }
-//            
-//            let headerFields = HTTPCookie.requestHeaderFields(with: cookies)
-//            let cookieString = headerFields["Cookie"]
-            completion(cookieDict)
+            
+            print("=========================================")
+            print(cookieString)
+            print("=========================================")
+            
+            completion(cookieString)
         }
     }
     
