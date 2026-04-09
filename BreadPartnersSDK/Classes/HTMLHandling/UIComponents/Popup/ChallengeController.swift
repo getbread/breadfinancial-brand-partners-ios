@@ -23,7 +23,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKSc
     private var pageLoadTime: Date?
     private let mainQueue = DispatchQueue.main
     private var cookieCheckRunnable: (() -> Void)?
-    private let minimumWaitTimeMs: TimeInterval = 3.0 // 3 seconds
+    private let minimumWaitTimeMs: TimeInterval = 3
     
     private var webView: WKWebView!
     private var closeButton: UIButton!
@@ -42,6 +42,15 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKSc
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        // Stop cookie monitoring before deallocation
+        cookieCheckRunnable = nil
+        
+        // Clean up web view
+        webView?.navigationDelegate = nil
+        webView?.configuration.userContentController.removeAllUserScripts()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -156,6 +165,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKSc
     }
     
     private func startCookieMonitoring(_ webView: WKWebView) {
+        print("Started Cookie Monitoring...")
         cookieCheckRunnable = { [weak self] in
             guard let self = self, !self.challengeCompleted else { return }
             
@@ -245,10 +255,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKSc
         // Handle script messages if needed
     }
     
-    deinit {
-        // Clean up cookie monitoring
-        webView?.configuration.userContentController.removeAllUserScripts()
-    }
+  
 }
 
 extension WKWebView {
