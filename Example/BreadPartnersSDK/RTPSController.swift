@@ -101,6 +101,7 @@ class RTPSController: UIViewController {
                 birthDate: "1974-08-21",
                 billingAddress: BreadPartnersAddress(
                     address1: "3075 Loyalty Cir",
+                    country: "USA",
                     locality: "Columbus",
                     region: "OH",
                     postalCode: "43219")
