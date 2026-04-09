@@ -195,7 +195,6 @@ extension BreadPartnersSDK {
                 let challengeController = ChallengeController(
                     htmlContent: htmlContent,
                     originalURL: url,
-                    callback: callback,
                     retryRequest: { cookie in
                         Task { @MainActor in
                             // Restart from rtpsCall to get fresh reCAPTCHA token
