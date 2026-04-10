@@ -22,8 +22,8 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private let callback: ((BreadPartnerEvents) -> Void)?
     private let retryRequest: ((String) -> Void)?
     private let mainQueue = DispatchQueue.main
-    private let challengeCompleted = false
     private var hasInitialLoadCompleted = false
+    private var isCheckingForCompletion = false
 
     init(htmlContent: String, originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil, retryRequest: ((String) -> Void)? = nil) {
         self.htmlContent = htmlContent
@@ -101,42 +101,40 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
     // MARK: - WKNavigationDelegate
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.cancel)
             return
         }
 
-        // After initial page load, prevent all navigation attempts
-        // Check if this navigation is due to captcha completion
-        
-        if hasInitialLoadCompleted && !challengeCompleted {
-            mainQueue.asyncAfter(deadline: .now() + 0.5) {
-                self.checkForCompletionNow()
-            }
-            
+
+        // After initial page load and challenge not completed, block navigation and check for completion
+        if hasInitialLoadCompleted && !isCheckingForCompletion {
+            self.checkForCompletionNow()
             decisionHandler(.cancel)
             return
         }
-       
-        // Allow necessary domains
-          let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com"]
-          
-          if let host = url.host {
-              if allowedDomains.contains(where: { host.contains($0) }) {
-                  decisionHandler(.allow)
-                  return
-              }
-          }
-          
-          // Allow data URIs and about:blank
-          if url.scheme == "data" || url.scheme == "about" {
-              decisionHandler(.allow)
-              return
-          }
-          
-          decisionHandler(.cancel)
+        
+        // Allow necessary domains first (these are safe)
+        let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com"]
+        
+        if let host = url.host {
+            if allowedDomains.contains(where: { host.contains($0) }) {
+                decisionHandler(.allow)
+                return
+            }
+        }
+        
+        // Allow data URIs and about:blank
+        if url.scheme == "data" || url.scheme == "about" {
+            decisionHandler(.allow)
+            return
+        }
+        
+        // Block all other navigation
+        decisionHandler(.cancel)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -152,6 +150,13 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     }
 
     private func checkForCompletionNow() {
+        // Prevent multiple simultaneous checks
+        if isCheckingForCompletion {
+            return
+        }
+        
+        isCheckingForCompletion = true
+        
         webView.getCookies { [weak self] currentCookies in
             guard let self = self else { return }
 
@@ -160,22 +165,13 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
                 // Give a small delay for any final cookies to settle
                 self.mainQueue.asyncAfter(deadline: .now() + 0.5) {
-                    self.completeCaptcha()
+                    self.dismiss(animated: true) { [weak self] in
+                        self?.retryRequest?(currentCookies)
+                    }
                 }
             } else {
                 print("[ChallengeController] No cookies available - cannot complete")
-            }
-        }
-    }
-
-    private func completeCaptcha() {
-        webView.getCookies { [weak self] cookies in
-            guard let self = self else { return }
-
-            print("[ChallengeController] Completing captcha with cookies: \(cookies.prefix(100))...")
-
-            self.dismiss(animated: true) { [weak self] in
-                self?.retryRequest?(cookies)
+                self.isCheckingForCompletion = false
             }
         }
     }
