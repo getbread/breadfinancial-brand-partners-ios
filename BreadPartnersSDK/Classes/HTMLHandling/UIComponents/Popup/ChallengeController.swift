@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+///------------------------------------------------------------------------------
 //  File:          ChallengeController.swift
 //  Author(s):     Bread Financial
 //  Date:          3 December 2025
@@ -10,7 +10,6 @@
 //  © 2025 Bread Financial
 //------------------------------------------------------------------------------
 
-
 import WebKit
 
 internal class ChallengeController: UIViewController, WKNavigationDelegate {
@@ -21,9 +20,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private let originalURL: String
     private let callback: ((BreadPartnerEvents) -> Void)?
     private let retryRequest: ((String) -> Void)?
-    private let mainQueue = DispatchQueue.main
     private var hasInitialLoadCompleted = false
-    private var isCheckingForCompletion = false
 
     init(htmlContent: String, originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil, retryRequest: ((String) -> Void)? = nil) {
         self.htmlContent = htmlContent
@@ -46,7 +43,6 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private func setupUI() {
         view.backgroundColor = .white
 
-        // Setup close button
         closeButton = UIButton(type: .system)
         closeButton.setTitle("✕", for: .normal)
         closeButton.titleLabel?.font = .systemFont(ofSize: 24)
@@ -54,14 +50,15 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(closeButton)
 
-        // Setup WebView configuration
         let config = WKWebViewConfiguration()
-        config.preferences.javaScriptEnabled = true
-
+        
         if #available(iOS 14.0, *) {
             let preferences = WKWebpagePreferences()
             preferences.allowsContentJavaScript = true
             config.defaultWebpagePreferences = preferences
+        } else {
+            // For iOS versions below 14.0, JavaScript is enabled by default
+            config.preferences.javaScriptEnabled = true
         }
 
         webView = WKWebView(frame: .zero, configuration: config)
@@ -74,7 +71,6 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
         view.addSubview(webView)
 
-        // Setup constraints - full screen modal
         NSLayoutConstraint.activate([
             closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
@@ -89,9 +85,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     }
 
     private func loadHTMLContent() {
-        if let originalURL = URL(string: originalURL) {
-            webView.loadHTMLString(htmlContent, baseURL: originalURL)
-        }
+        webView.loadHTMLString(htmlContent, baseURL: URL(string: originalURL))
     }
 
     @objc private func closeButtonTapped() {
@@ -101,98 +95,54 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
     // MARK: - WKNavigationDelegate
 
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.cancel)
             return
         }
 
+        let urlString = url.absoluteString
 
-        // After initial page load and challenge not completed, block navigation and check for completion
-        if hasInitialLoadCompleted && !isCheckingForCompletion {
-            self.checkForCompletionNow()
-            decisionHandler(.cancel)
-            return
+        // Only check for completion after initial load
+        if hasInitialLoadCompleted {
+            // If we navigated back to the original URL after challenge
+            if urlString == originalURL {
+                decisionHandler(.cancel)
+
+                self.dismiss(animated: true) {
+                    self.retryRequest?("")
+                }
+                return
+            }
         }
-        
-        // Allow necessary domains first (these are safe)
+
+        // Allow necessary domains
         let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com"]
-        
+
         if let host = url.host {
             if allowedDomains.contains(where: { host.contains($0) }) {
                 decisionHandler(.allow)
                 return
             }
         }
-        
+
         // Allow data URIs and about:blank
         if url.scheme == "data" || url.scheme == "about" {
             decisionHandler(.allow)
             return
         }
         
-        // Block all other navigation
         decisionHandler(.cancel)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // Page loaded successfully
         if !hasInitialLoadCompleted {
             hasInitialLoadCompleted = true
-            print("[ChallengeController] Page loaded successfully")
         }
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("[ChallengeController] Navigation failed - \(error.localizedDescription)")
-    }
-
-    private func checkForCompletionNow() {
-        // Prevent multiple simultaneous checks
-        if isCheckingForCompletion {
-            return
-        }
-        
-        isCheckingForCompletion = true
-        
-        webView.getCookies { [weak self] currentCookies in
-            guard let self = self else { return }
-
-            if !currentCookies.isEmpty {
-                print("[ChallengeController] Cookies found: \(currentCookies.prefix(100))...")
-
-                // Give a small delay for any final cookies to settle
-                self.mainQueue.asyncAfter(deadline: .now() + 0.5) {
-                    self.dismiss(animated: true) { [weak self] in
-                        self?.retryRequest?(currentCookies)
-                    }
-                }
-            } else {
-                print("[ChallengeController] No cookies available - cannot complete")
-                self.isCheckingForCompletion = false
-            }
-        }
-    }
-
-    deinit {
-        webView?.navigationDelegate = nil
-    }
-}
-
-extension WKWebView {
-    private var httpCookieStore: WKHTTPCookieStore {
-        return WKWebsiteDataStore.default().httpCookieStore
-    }
-    
-    func getCookies(completion: @escaping (String) -> Void) {
-        var cookieString = ""
-        httpCookieStore.getAllCookies { cookies in
-            for cookie in cookies {
-                cookieString.append("\(cookie.name)=\(cookie.value); ")
-            }
-            completion(cookieString)
-        }
+        print("ChallengeController: Navigation failed - \(error.localizedDescription)")
     }
 }
