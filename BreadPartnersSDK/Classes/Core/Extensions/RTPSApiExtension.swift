@@ -187,7 +187,7 @@ extension BreadPartnersSDK {
         } catch let error as NSError {
             if error.domain == Constants.incapsulaChallenge {
                 guard let htmlContent = error.userInfo[Constants.htmlContent] as? String,
-                      let url = error.userInfo[Constants.htmlContent] as? String else {
+                      let url = error.userInfo[Constants.url] as? String else {
                     return callback(.sdkError(error: error))
                 }
 
