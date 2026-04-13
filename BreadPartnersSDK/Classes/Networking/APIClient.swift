@@ -43,7 +43,8 @@ internal class APIClient: @unchecked Sendable {
         urlString: String,
         method: HTTPMethod = .POST,
         headers: [String: String]? = nil,
-        body: Any? = nil
+        cookies: String? = nil,
+        body: Any? = nil,
     ) async throws -> AnySendable {
         // Validate the URL
         guard let url = URL(string: urlString) else {
@@ -59,19 +60,23 @@ internal class APIClient: @unchecked Sendable {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let genericHeader: [String: String] = await [
+        var genericHeader: [String: String] = await [
             Constants.headerContentType: Constants.headerContentTypeValue,
             Constants.headerUserAgentKey: CommonUtils().getUserAgent(),
-            Constants.headerOriginKey: Constants.headerOriginValue
+            Constants.headerOriginKey: Constants.headerOriginValue,
         ]
-
-        let updatedHeaders = (headers ?? [:]).merging(
+        
+        var updatedHeaders = (headers ?? [:]).merging(
             genericHeader, uniquingKeysWith: { first, _ in first })
+        
+        if(cookies != nil) {
+            updatedHeaders["Cookie"] = cookies
+        }
 
         for (key, value) in updatedHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
-
+        
         // Add body if provided
         if let body = body {
             do {

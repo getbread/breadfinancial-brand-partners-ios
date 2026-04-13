@@ -270,11 +270,8 @@ class ViewController: UIViewController {
                 case .onSDKEventLog(_):
                     print("")
                 case .renderPopupView(let view):
-                    DispatchQueue.main.async {
-                        /// Implement some process prior to loading the Web View popup
-                        /// (e.g checking if the customer is authenticated).
-                        self.present(view, animated: true)
-                    }
+                    self.present(view, animated: true)
+                    print("BreadPartnerSDK::Successfully rendered PopupView.")
                 default:
                     print("BreadPartnerSDK:: \(event)")
                     break
@@ -356,7 +353,7 @@ class ViewController: UIViewController {
 
     
     func openExperienceFlow() {
-        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType6"]!
+        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType1"]!
         let placementID = placementRequestType["placementID"] as? String
         let price = (placementRequestType["price"] as? Int)
         let loyaltyId = (placementRequestType["loyaltyId"] as? String)
@@ -482,11 +479,14 @@ class ViewController: UIViewController {
             ),
             storeNumber: "2009"
         )
+        
+        let placementRequestType: [String: Any] = [:]
+        let brandId = placementRequestType["brandId"] as? String
 
         Task {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
-                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                integrationKey: brandId ?? "",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.silentRTPSRequest(

@@ -56,6 +56,7 @@ extension BreadPartnersSDK {
         openPlacementExperience: Bool = false,
         forSwiftUI: Bool = false,
         logger: Logger,
+        cookies: String? = nil,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -126,9 +127,15 @@ extension BreadPartnersSDK {
 
             let headers: [String: String] = [
                 Constants.headerClientKey: integrationKey,
-                Constants.headerRequestedWithKey: Constants
-                    .headerRequestedWithValue,
+                Constants.headerRequestedWithKey: Constants.headerRequestedWithValue,
             ]
+            
+            if(cookies != nil) {
+                logger.printLog("Attaching cookies to RTPS request: \(cookies!)")
+            } else {
+                logger.printLog("No Cookies")
+            }
+            
 
             let rtpsRequestBuilt = requestBuilder.build()
 
@@ -136,6 +143,7 @@ extension BreadPartnersSDK {
                 urlString: apiUrl,
                 method: .POST,
                 headers: headers,
+                cookies: cookies,
                 body: rtpsRequestBuilt
             )
 
@@ -173,35 +181,36 @@ extension BreadPartnersSDK {
                 openPlacementExperience: openPlacementExperience,
                 forSwiftUI: forSwiftUI,
                 logger: logger,
-                callback: callback)
+                callback: callback,
+            )
 
         } catch let error as NSError {
-            if error.domain == "IncapsulaChallenge" {
-                guard let htmlContent = error.userInfo["htmlContent"] as? String,
-                      let url = error.userInfo["url"] as? String else {
+            if error.domain == Constants.incapsulaChallenge {
+                guard let htmlContent = error.userInfo[Constants.htmlContent] as? String,
+                      let url = error.userInfo[Constants.url] as? String else {
                     return callback(.sdkError(error: error))
                 }
 
                 let challengeController = ChallengeController(
                     htmlContent: htmlContent,
                     originalURL: url,
-                    callback: callback,
-                    retryRequest: { [weak self] in
-                        Task { @MainActor in
-                            // Restart from rtpsCall to get fresh reCAPTCHA token
-                            // and clean WebKit process
-                            await self?.rtpsCall(
+                    onComplete: { cookie in
+                        Task {
+                            await self.rtpsCall(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
                                 splitTextAndAction: splitTextAndAction,
                                 openPlacementExperience: openPlacementExperience,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
+                                cookies: cookie,
                                 callback: callback
                             )
                         }
-                    }
+                    },
+                    logger: logger
                 )
+
 
                 return callback(.renderPopupView(view: challengeController))
             } else {
@@ -226,6 +235,7 @@ extension BreadPartnersSDK {
         openPlacementExperience: Bool = false,
         forSwiftUI: Bool = false,
         logger: Logger,
+        cookies: String? = nil,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -262,7 +272,10 @@ extension BreadPartnersSDK {
             )
 
             let response = try await APIClient(logger: logger).request(
-                urlString: apiUrl, method: .POST, body: request
+                urlString: apiUrl,
+                method: .POST,
+                cookies: cookies,
+                body: request
             )
             await handleRTPSPlacementResponse(
                 merchantConfiguration: merchantConfiguration,

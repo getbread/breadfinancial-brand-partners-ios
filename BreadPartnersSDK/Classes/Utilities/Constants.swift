@@ -32,7 +32,8 @@ class Constants {
     static let headerAccessControlRequestHeadersValue = "content-type"
     static let headerAccessControlRequestMethodKey = "Access-Control-Request-Method"
     static let headerAccessControlRequestMethodValue = "POST"
-    
+    static let htmlContent = "htmlContent"
+    static let url = "url"
     static func nativeSDKAlertTitle() -> String {
         return "Bread Partner"
     }
@@ -77,4 +78,6 @@ class Constants {
     static func unableToLoadWebURL(message: String) -> String {
         return "\(error) Web Url Loading Issue: \(message)"
     }
+    
+    static let incapsulaChallenge = "IncapsulaChallenge"
 }

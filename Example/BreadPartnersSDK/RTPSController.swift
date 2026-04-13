@@ -110,10 +110,13 @@ class RTPSController: UIViewController {
             env: BreadPartnersEnvironment.stage,
         )
 
+        let placementRequestType: [String: Any] = [:]
+        let brandId = placementRequestType["brandId"] as? String
+        
         Task {
             await BreadPartnersSDK.shared.setup(
                 environment: .stage,
-                integrationKey: "8a9fcd35-7f4d-4e3c-a9cc-6f6e98064df7",
+                integrationKey: brandId ?? "",
                 enableLog: true)
 
             await BreadPartnersSDK.shared.silentRTPSRequest(
