@@ -478,7 +478,7 @@ class ViewController: UIViewController {
             storeNumber: "2009"
         )
         
-        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType1"]!
+        let placementRequestType: [String: Any] = [:]
         let brandId = placementRequestType["brandId"] as? String
 
         Task {
