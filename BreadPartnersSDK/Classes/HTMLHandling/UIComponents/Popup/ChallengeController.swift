@@ -19,15 +19,21 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private let htmlContent: String
     private let originalURL: String
     private let callback: ((BreadPartnerEvents) -> Void)?
-    private let retryRequest: ((String) -> Void)?
+    private let retryRequest: (String) -> Void
     private var hasInitialLoadCompleted = false
-    private let mainQueue = DispatchQueue.main
+    private let logger: Logger
     
-    init(htmlContent: String, originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil, retryRequest: ((String) -> Void)? = nil) {
+    init(htmlContent: String,
+         originalURL: String,
+         callback: ((BreadPartnerEvents) -> Void)? = nil,
+         retryRequest: @escaping (String) -> Void,
+         logger: Logger,
+    ) {
         self.htmlContent = htmlContent
         self.originalURL = originalURL
         self.callback = callback
         self.retryRequest = retryRequest
+        self.logger = logger
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -139,28 +145,28 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
             }
             
             if !cookieString.isEmpty {
-                self.mainQueue.asyncAfter(deadline: .now() + 1) {
-                    self.dismiss(animated: true)
-
-                    self.retryRequest?(cookieString)
-                }
+                self.logger.printLog("Completing captcha with cookies: \(cookieString)")
+                self.retryRequest(cookieString)
+                self.dismiss(animated: true)
+                
+                self.webView.navigationDelegate = nil
+                self.webView.uiDelegate = nil
+                self.webView.removeFromSuperview()
+                self.webView = nil
+            } else {
+                self.logger.printLog("No cookies found after captcha completion.")
             }
         }
-        
-        self.webView.navigationDelegate = nil
-        self.webView.uiDelegate = nil
-        self.webView.removeFromSuperview()
-        self.webView = nil
     }
     
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
-    }
-
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if !hasInitialLoadCompleted {
             hasInitialLoadCompleted = true
         }
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {

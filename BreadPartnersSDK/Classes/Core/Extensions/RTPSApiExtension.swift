@@ -197,8 +197,6 @@ extension BreadPartnersSDK {
                     originalURL: url,
                     retryRequest: { cookie in
                         Task {
-                            // Restart from rtpsCall to get fresh reCAPTCHA token
-                            // and clean WebKit process
                             await self.rtpsCall(
                                 merchantConfiguration: merchantConfiguration,
                                 placementsConfiguration: placementsConfiguration,
@@ -206,13 +204,14 @@ extension BreadPartnersSDK {
                                 openPlacementExperience: openPlacementExperience,
                                 forSwiftUI: forSwiftUI,
                                 logger: logger,
-                                cookies: cookie, // Pass any relevant cookies if neede
+                                cookies: cookie,
                                 callback: callback
                             )
                         }
-
-                    }
+                    },
+                    logger: logger
                 )
+
 
                 return callback(.renderPopupView(view: challengeController))
             } else {
