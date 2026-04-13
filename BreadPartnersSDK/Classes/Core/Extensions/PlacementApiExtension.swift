@@ -53,8 +53,7 @@ extension BreadPartnersSDK {
                 urlString: apiUrl,
                 method: .POST,
                 cookies: cookie,
-                body: request,
-                useTestHeaders: true)
+                body: request)
             
             await handlePlacementResponse(
                 response,
@@ -67,8 +66,8 @@ extension BreadPartnersSDK {
                 callback: callback)
         } catch let error as NSError {
             if error.domain == Constants.incapsulaChallenge {
-                guard let htmlContent = error.userInfo["htmlContent"] as? String,
-                      let url = error.userInfo["url"] as? String else {
+                guard let htmlContent = error.userInfo[Constants.htmlContent] as? String,
+                      let url = error.userInfo[Constants.url] as? String else {
                     return callback(.sdkError(error: error))
                 }
 

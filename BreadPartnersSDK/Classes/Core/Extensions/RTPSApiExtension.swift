@@ -128,7 +128,6 @@ extension BreadPartnersSDK {
             let headers: [String: String] = [
                 Constants.headerClientKey: integrationKey,
                 Constants.headerRequestedWithKey: Constants.headerRequestedWithValue,
-                "X-Bread-Testing": "captcha"
             ]
             
             if(cookies != nil) {
@@ -187,8 +186,8 @@ extension BreadPartnersSDK {
 
         } catch let error as NSError {
             if error.domain == Constants.incapsulaChallenge {
-                guard let htmlContent = error.userInfo["htmlContent"] as? String,
-                      let url = error.userInfo["url"] as? String else {
+                guard let htmlContent = error.userInfo[Constants.htmlContent] as? String,
+                      let url = error.userInfo[Constants.htmlContent] as? String else {
                     return callback(.sdkError(error: error))
                 }
 

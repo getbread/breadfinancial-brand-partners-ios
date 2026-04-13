@@ -45,8 +45,6 @@ internal class APIClient: @unchecked Sendable {
         headers: [String: String]? = nil,
         cookies: String? = nil,
         body: Any? = nil,
-        useTestHeaders: Bool = false,
-        
     ) async throws -> AnySendable {
         // Validate the URL
         guard let url = URL(string: urlString) else {
@@ -66,27 +64,19 @@ internal class APIClient: @unchecked Sendable {
             Constants.headerContentType: Constants.headerContentTypeValue,
             Constants.headerUserAgentKey: CommonUtils().getUserAgent(),
             Constants.headerOriginKey: Constants.headerOriginValue,
-       
         ]
         
-        if (useTestHeaders) {
-            genericHeader["X-Bread-Testing"] = "captcha"
-        }
-
         var updatedHeaders = (headers ?? [:]).merging(
             genericHeader, uniquingKeysWith: { first, _ in first })
-        
         
         if(cookies != nil) {
             updatedHeaders["Cookie"] = cookies
         }
 
-    
         for (key, value) in updatedHeaders {
             request.setValue(value, forHTTPHeaderField: key)
         }
         
-    
         // Add body if provided
         if let body = body {
             do {
