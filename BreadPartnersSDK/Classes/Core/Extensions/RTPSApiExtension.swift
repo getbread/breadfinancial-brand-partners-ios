@@ -275,7 +275,7 @@ extension BreadPartnersSDK {
                 urlString: apiUrl,
                 method: .POST,
                 cookies: cookies,
-                body: request // Pass any relevant cookies if needed
+                body: request
             )
             await handleRTPSPlacementResponse(
                 merchantConfiguration: merchantConfiguration,
