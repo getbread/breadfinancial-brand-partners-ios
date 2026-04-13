@@ -196,7 +196,7 @@ extension BreadPartnersSDK {
                     htmlContent: htmlContent,
                     originalURL: url,
                     retryRequest: { cookie in
-                        Task { @MainActor in
+                        Task {
                             // Restart from rtpsCall to get fresh reCAPTCHA token
                             // and clean WebKit process
                             await self.rtpsCall(
@@ -210,6 +210,7 @@ extension BreadPartnersSDK {
                                 callback: callback
                             )
                         }
+
                     }
                 )
 

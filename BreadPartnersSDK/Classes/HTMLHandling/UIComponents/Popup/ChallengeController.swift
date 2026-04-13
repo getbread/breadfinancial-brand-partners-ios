@@ -21,7 +21,8 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private let callback: ((BreadPartnerEvents) -> Void)?
     private let retryRequest: ((String) -> Void)?
     private var hasInitialLoadCompleted = false
-
+    private let mainQueue = DispatchQueue.main
+    
     init(htmlContent: String, originalURL: String, callback: ((BreadPartnerEvents) -> Void)? = nil, retryRequest: ((String) -> Void)? = nil) {
         self.htmlContent = htmlContent
         self.originalURL = originalURL
@@ -70,7 +71,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         }
 
         view.addSubview(webView)
-
+        
         NSLayoutConstraint.activate([
             closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             closeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
@@ -102,21 +103,6 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
             return
         }
 
-        let urlString = url.absoluteString
-
-        // Only check for completion after initial load
-        if hasInitialLoadCompleted {
-            // If we navigated back to the original URL after challenge
-            if urlString == originalURL {
-                decisionHandler(.cancel)
-
-                self.dismiss(animated: true) {
-                    self.retryRequest?("")
-                }
-                return
-            }
-        }
-
         // Allow necessary domains
         let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com"]
 
@@ -134,6 +120,41 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         }
         
         decisionHandler(.cancel)
+        return
+    }
+    
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        if hasInitialLoadCompleted {
+            checkCookiesAndValidate()
+        }
+    }
+    
+    func checkCookiesAndValidate() {
+        let cookieStore = webView.configuration.websiteDataStore.httpCookieStore
+        cookieStore.getAllCookies { cookies in
+            var cookieString = ""
+            
+            for cookie in cookies {
+                cookieString.append("\(cookie.name)=\(cookie.value); ")
+            }
+            
+            if !cookieString.isEmpty {
+                self.mainQueue.asyncAfter(deadline: .now() + 1) {
+                    self.dismiss(animated: true)
+
+                    self.retryRequest?(cookieString)
+                }
+            }
+        }
+        
+        self.webView.navigationDelegate = nil
+        self.webView.uiDelegate = nil
+        self.webView.removeFromSuperview()
+        self.webView = nil
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
