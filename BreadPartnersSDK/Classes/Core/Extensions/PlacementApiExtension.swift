@@ -33,6 +33,7 @@ extension BreadPartnersSDK {
         openPlacementExperience: Bool = false,
         forSwiftUI: Bool = false,
         logger: Logger,
+        cookie: String? = nil,
         callback: @Sendable @escaping (
             BreadPartnerEvents
         ) -> Void
@@ -49,7 +50,12 @@ extension BreadPartnersSDK {
             request = builder.build()
 
             let response = try await APIClient(logger: logger).request(
-                urlString: apiUrl, method: .POST, body: request)
+                urlString: apiUrl,
+                method: .POST,
+                cookies: cookie,
+                body: request,
+                useTestHeaders: true)
+            
             await handlePlacementResponse(
                 response,
                 merchantConfiguration: merchantConfiguration,
@@ -59,15 +65,45 @@ extension BreadPartnersSDK {
                 forSwiftUI: forSwiftUI,
                 logger: logger,
                 callback: callback)
-        } catch {
-            return callback(
-                .sdkError(
-                    error: NSError(
-                        domain: "", code: 500,
-                        userInfo: [
-                            NSLocalizedDescriptionKey: Constants.apiError(
-                                message: error.localizedDescription)
-                        ])))
+        } catch let error as NSError {
+            if error.domain == "IncapsulaChallenge" {
+                guard let htmlContent = error.userInfo["htmlContent"] as? String,
+                      let url = error.userInfo["url"] as? String else {
+                    return callback(.sdkError(error: error))
+                }
+
+                let challengeController = ChallengeController(
+                    htmlContent: htmlContent,
+                    originalURL: url,
+                    retryRequest: { cookie in
+                        Task {
+                            await self.fetchPlacementData(
+                                merchantConfiguration: merchantConfiguration,
+                                placementsConfiguration: placementsConfiguration,
+                                splitTextAndAction: splitTextAndAction,
+                                openPlacementExperience: openPlacementExperience,
+                                forSwiftUI: forSwiftUI,
+                                logger: logger,
+                                cookie: cookie,
+                                callback: callback
+                            )
+                        }
+                    },
+                    logger: logger
+                )
+
+
+                return callback(.renderPopupView(view: challengeController))
+            } else {
+                return callback(
+                    .sdkError(
+                        error: NSError(
+                            domain: "", code: 500,
+                            userInfo: [
+                                NSLocalizedDescriptionKey: Constants.apiError(
+                                    message: error.localizedDescription)
+                            ])))
+            }
         }
     }
 

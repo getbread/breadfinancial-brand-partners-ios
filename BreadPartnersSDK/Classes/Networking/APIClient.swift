@@ -44,7 +44,9 @@ internal class APIClient: @unchecked Sendable {
         method: HTTPMethod = .POST,
         headers: [String: String]? = nil,
         cookies: String? = nil,
-        body: Any? = nil
+        body: Any? = nil,
+        useTestHeaders: Bool = false,
+        
     ) async throws -> AnySendable {
         // Validate the URL
         guard let url = URL(string: urlString) else {
@@ -60,11 +62,16 @@ internal class APIClient: @unchecked Sendable {
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let genericHeader: [String: String] = await [
+        var genericHeader: [String: String] = await [
             Constants.headerContentType: Constants.headerContentTypeValue,
             Constants.headerUserAgentKey: CommonUtils().getUserAgent(),
-            Constants.headerOriginKey: Constants.headerOriginValue
+            Constants.headerOriginKey: Constants.headerOriginValue,
+       
         ]
+        
+        if (useTestHeaders) {
+            genericHeader["X-Bread-Testing"] = "captcha"
+        }
 
         var updatedHeaders = (headers ?? [:]).merging(
             genericHeader, uniquingKeysWith: { first, _ in first })

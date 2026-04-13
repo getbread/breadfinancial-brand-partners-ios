@@ -12,7 +12,7 @@
 
 import WebKit
 
-internal class ChallengeController: UIViewController, WKNavigationDelegate {
+internal class ChallengeController: UIViewController, WKNavigationDelegate, WKHTTPCookieStoreObserver {
 
     private var webView: WKWebView!
     private var closeButton: UIButton!
@@ -22,6 +22,9 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
     private let retryRequest: (String) -> Void
     private var hasInitialLoadCompleted = false
     private let logger: Logger
+    private var calledCaptchaCompleted: Bool = false
+    private var hasFinisedLoading: Bool = false
+    
     
     init(htmlContent: String,
          originalURL: String,
@@ -39,6 +42,11 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        // Important: Remove the observer manually
+        webView.configuration.websiteDataStore.httpCookieStore.remove(self)
     }
 
     override func viewDidLoad() {
@@ -71,7 +79,8 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false
-
+        webView.configuration.websiteDataStore.httpCookieStore.add(self)
+        
         if #available(iOS 16.4, *) {
             webView.isInspectable = true
         }
@@ -100,9 +109,8 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         dismiss(animated: true)
     }
 
-    // MARK: - WKNavigationDelegate
-
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.cancel)
@@ -110,7 +118,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         }
 
         // Allow necessary domains
-        let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com"]
+        let allowedDomains = ["comenity.net", "breadfinancial.com", "hcaptcha.com", "gstatic.com", "newassets.hcaptcha.com", "brands.kmsmep.com"]
 
         if let host = url.host {
             if allowedDomains.contains(where: { host.contains($0) }) {
@@ -128,45 +136,34 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         decisionHandler(.cancel)
         return
     }
+    
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.hasFinisedLoading = true
+    }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if hasInitialLoadCompleted {
-            completeCaptcha()
-        }
-        
         if !hasInitialLoadCompleted {
             hasInitialLoadCompleted = true
         }
     }
-    
-    func completeCaptcha() {        
-        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-            var cookieString = ""
-            
-            for cookie in cookies {
-                cookieString.append("\(cookie.name)=\(cookie.value); ")
-            }
-            
-            if !cookieString.isEmpty {
-                self.logger.printLog("Completing captcha with cookies: \(cookieString)")
-                self.retryRequest(cookieString)
-                self.dismiss(animated: true)
-                
-                self.webView.navigationDelegate = nil
-                self.webView.uiDelegate = nil
-                self.webView.removeFromSuperview()
-                self.webView = nil
-            } else {
-                self.logger.printLog("No cookies found after captcha completion.")
-            }
-        }
-    }
-    
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        logger.printLog("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
-    }
 
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        logger.printLog("ChallengeController: Navigation failed - \(error.localizedDescription)")
-    }
+    // This method is called whenever cookies change
+   func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
+       if hasInitialLoadCompleted  {
+           cookieStore.getAllCookies { cookies in
+               var cookieString = ""
+               
+               for cookie in cookies {
+                   cookieString.append("\(cookie.name)=\(cookie.value); ")
+               }
+       
+               if cookieString.contains("incap_ses") && !self.calledCaptchaCompleted && self.hasFinisedLoading {
+                   self.calledCaptchaCompleted = true
+                   self.logger.printLog("Completing captcha with cookies: \(cookieString)")
+                   self.retryRequest(cookieString)
+                   self.dismiss(animated: true)
+               }
+           }
+       }
+   }
 }

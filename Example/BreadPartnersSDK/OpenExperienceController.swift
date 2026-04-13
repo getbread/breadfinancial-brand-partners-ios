@@ -9,7 +9,7 @@ class OpenExperienceController: UIViewController {
     }
 
     func openExperienceFlow() {
-        let placementRequestType: [String: Any] = [:]
+        let placementRequestType: [String: Any] = TestData.shared.placementConfigurations["textPlacementRequestType1"]!
         let placementID = placementRequestType["placementID"] as? String
         let price = (placementRequestType["price"] as? Int)
         let loyaltyId = (placementRequestType["loyaltyId"] as? String)
