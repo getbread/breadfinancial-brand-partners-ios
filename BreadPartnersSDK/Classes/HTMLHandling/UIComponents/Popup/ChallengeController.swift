@@ -128,16 +128,19 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         decisionHandler(.cancel)
         return
     }
-    
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if hasInitialLoadCompleted {
-            checkCookiesAndValidate()
+            completeCaptcha()
+        }
+        
+        if !hasInitialLoadCompleted {
+            hasInitialLoadCompleted = true
         }
     }
     
-    func checkCookiesAndValidate() {
-        let cookieStore = webView.configuration.websiteDataStore.httpCookieStore
-        cookieStore.getAllCookies { cookies in
+    func completeCaptcha() {        
+        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
             var cookieString = ""
             
             for cookie in cookies {
@@ -159,17 +162,11 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate {
         }
     }
     
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if !hasInitialLoadCompleted {
-            hasInitialLoadCompleted = true
-        }
-    }
-    
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
+        logger.printLog("ChallengeController: Provisional navigation failed - \(error.localizedDescription)")
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("ChallengeController: Navigation failed - \(error.localizedDescription)")
+        logger.printLog("ChallengeController: Navigation failed - \(error.localizedDescription)")
     }
 }
