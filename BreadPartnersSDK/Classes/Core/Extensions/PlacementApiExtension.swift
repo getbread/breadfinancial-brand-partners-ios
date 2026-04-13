@@ -66,7 +66,7 @@ extension BreadPartnersSDK {
                 logger: logger,
                 callback: callback)
         } catch let error as NSError {
-            if error.domain == "IncapsulaChallenge" {
+            if error.domain == Constants.incapsulaChallenge {
                 guard let htmlContent = error.userInfo["htmlContent"] as? String,
                       let url = error.userInfo["url"] as? String else {
                     return callback(.sdkError(error: error))
@@ -75,7 +75,7 @@ extension BreadPartnersSDK {
                 let challengeController = ChallengeController(
                     htmlContent: htmlContent,
                     originalURL: url,
-                    retryRequest: { cookie in
+                    onComplete: { cookie in
                         Task {
                             await self.fetchPlacementData(
                                 merchantConfiguration: merchantConfiguration,

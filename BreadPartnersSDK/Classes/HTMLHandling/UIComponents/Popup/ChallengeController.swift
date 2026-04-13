@@ -19,7 +19,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKHT
     private let htmlContent: String
     private let originalURL: String
     private let callback: ((BreadPartnerEvents) -> Void)?
-    private let retryRequest: (String) -> Void
+    private let onComplete: (String) -> Void
     private var hasInitialLoadCompleted = false
     private let logger: Logger
     private var calledCaptchaCompleted: Bool = false
@@ -29,13 +29,13 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKHT
     init(htmlContent: String,
          originalURL: String,
          callback: ((BreadPartnerEvents) -> Void)? = nil,
-         retryRequest: @escaping (String) -> Void,
+         onComplete: @escaping (String) -> Void,
          logger: Logger,
     ) {
         self.htmlContent = htmlContent
         self.originalURL = originalURL
         self.callback = callback
-        self.retryRequest = retryRequest
+        self.onComplete = onComplete
         self.logger = logger
         super.init(nibName: nil, bundle: nil)
     }
@@ -160,7 +160,7 @@ internal class ChallengeController: UIViewController, WKNavigationDelegate, WKHT
                if cookieString.contains("incap_ses") && !self.calledCaptchaCompleted && self.hasFinisedLoading {
                    self.calledCaptchaCompleted = true
                    self.logger.printLog("Completing captcha with cookies: \(cookieString)")
-                   self.retryRequest(cookieString)
+                   self.onComplete(cookieString)
                    self.dismiss(animated: true)
                }
            }

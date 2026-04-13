@@ -77,4 +77,6 @@ class Constants {
     static func unableToLoadWebURL(message: String) -> String {
         return "\(error) Web Url Loading Issue: \(message)"
     }
+    
+    static let incapsulaChallenge = "IncapsulaChallenge"
 }
