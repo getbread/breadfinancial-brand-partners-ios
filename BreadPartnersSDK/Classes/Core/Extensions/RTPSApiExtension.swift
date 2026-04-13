@@ -63,22 +63,22 @@ extension BreadPartnersSDK {
     ) async {
         do {
             // Check for Batch Prescreen Flow when prescreen id has to be entered by user.
-            if (placementsConfiguration.rtpsData?.customerAcceptedOffer == true) {
-                return await fetchRTPSData(
-                    merchantConfiguration: merchantConfiguration,
-                    placementsConfiguration: placementsConfiguration,
-                    splitTextAndAction: splitTextAndAction,
-                    openPlacementExperience: openPlacementExperience,
-                    forSwiftUI: forSwiftUI,
-                    logger: logger,
-                    callback: callback)
-            }
+//            if (placementsConfiguration.rtpsData?.customerAcceptedOffer == true) {
+//                return await fetchRTPSData(
+//                    merchantConfiguration: merchantConfiguration,
+//                    placementsConfiguration: placementsConfiguration,
+//                    splitTextAndAction: splitTextAndAction,
+//                    openPlacementExperience: openPlacementExperience,
+//                    forSwiftUI: forSwiftUI,
+//                    logger: logger,
+//                    callback: callback)
+//            }
             
             // Check if it is a regular RTPS flow or Batch Prescreen (prescreenId is known).
             let isPrescreen = placementsConfiguration.rtpsData?.prescreenId == nil
             
             // Validate required fields for prescreen requests
-            if isPrescreen {
+//            if isPrescreen {
                 let buyer = merchantConfiguration.buyer
                 let billingAddress = buyer?.billingAddress
                 
@@ -102,18 +102,18 @@ extension BreadPartnersSDK {
                         )
                     )
                 }
-            }
+//            }
             
             // Only obtain reCaptcha token for prescreen requests
             let reCaptchaToken: String?
-            if isPrescreen {
+//            if isPrescreen {
                 reCaptchaToken = try await executeSecurityCheck(
                     merchantConfiguration: merchantConfiguration,
                     logger: logger
                 )
-            } else {
-                reCaptchaToken = nil
-            }
+//            } else {
+//                reCaptchaToken = nil
+//            }
             
             let apiUrl = APIUrl(
                 urlType: isPrescreen ? .prescreen : .virtualLookup
@@ -244,20 +244,20 @@ extension BreadPartnersSDK {
             let apiUrl = APIUrl(urlType: .generatePlacements).url
 
             let webURL: String?
-            if placementsConfiguration.rtpsData?.customerAcceptedOffer == true {
-                webURL = await CommonUtils().buildBpsWebURL(
-                    integrationKey: integrationKey,
-                    merchantConfiguration: merchantConfiguration,
-                    placementConfiguration: placementsConfiguration
-                )?.absoluteString
-            } else {
+//            if placementsConfiguration.rtpsData?.customerAcceptedOffer == true {
+//                webURL = await CommonUtils().buildBpsWebURL(
+//                    integrationKey: integrationKey,
+//                    merchantConfiguration: merchantConfiguration,
+//                    placementConfiguration: placementsConfiguration
+//                )?.absoluteString
+//            } else {
                 webURL = await CommonUtils().buildRTPSWebURL(
                     integrationKey: integrationKey,
                     merchantConfiguration: merchantConfiguration,
                     rtpsData: placementsConfiguration.rtpsData!,
                     prescreenId: placementsConfiguration.rtpsData!.prescreenId
                 )?.absoluteString
-            }
+//            }
 
             let request = PlacementRequest(
                 placements: [

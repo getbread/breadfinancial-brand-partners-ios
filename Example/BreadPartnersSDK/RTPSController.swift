@@ -101,11 +101,10 @@ class RTPSController: UIViewController {
                 birthDate: "1974-08-21",
                 billingAddress: BreadPartnersAddress(
                     address1: "3075 Loyalty Cir",
-                    address2: "Columbus",
-                    country: "US",
-                    locality: "OH",
-                    region: "43219",
-                    postalCode: "43219"),
+                    country: "USA",
+                    locality: "Columbus",
+                    region: "OH",
+                    postalCode: "43219")
             ),
             storeNumber: "8883",
             env: BreadPartnersEnvironment.stage,
