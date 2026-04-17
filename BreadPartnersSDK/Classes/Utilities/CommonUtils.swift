@@ -124,98 +124,98 @@ actor CommonUtils: NSObject {
     ///   - merchantConfiguration: The merchant configuration containing buyer and merchant-specific data.
     ///   - placementConfiguration: The placement configuration containing placement or RTPS data.
     /// - Returns: A URL constructed with the given parameters, or nil if the URL could not be built.
-//    func buildBpsWebURL(
-//        integrationKey: String,
-//        merchantConfiguration: MerchantConfiguration,
-//        placementConfiguration: PlacementConfiguration
-//    ) async -> URL? {
-//        let mockResponseValue = placementConfiguration.rtpsData?.mockResponse?.rawValue
-//
-//        // Extract buyer information
-//        let buyer = merchantConfiguration.buyer
-//        let billingAddress = buyer?.billingAddress
-//
-//        // Extract order data from RTPS or placement data
-//        let order = placementConfiguration.rtpsData?.order ?? placementConfiguration.placementData?.order
-//
-//        // Extract location - prioritize RTPS location over placement location
-//        let location = placementConfiguration.rtpsData?.locationType?.rawValue
-//            ?? placementConfiguration.placementData?.locationType?.rawValue
-//
-//        // Extract channel - prioritize RTPS channel over merchant channel
-//        let channel = placementConfiguration.rtpsData?.channel ?? merchantConfiguration.channel
-//        let subchannel = placementConfiguration.rtpsData?.subChannel ?? merchantConfiguration.subchannel
-//
-//        let queryParams: [String: String?] = [
-//            "mockMO": mockResponseValue.takeIfNotEmpty(),
-//            "mockPA": mockResponseValue.takeIfNotEmpty(),
-//            "mockVL": mockResponseValue.takeIfNotEmpty(),
-//            "embedded": "true",
-//            "clientKey": integrationKey,
-//            "prescreenId": placementConfiguration.rtpsData?.prescreenId.map { String($0) },
-//            "firstName": buyer?.givenName,
-//            "middleInitial": buyer?.additionalName,
-//            "lastName": buyer?.familyName,
-//            "address1": billingAddress?.address1,
-//            "address2": billingAddress?.address2,
-//            "city": billingAddress?.locality,
-//            "state": billingAddress?.region,
-//            "zip": billingAddress?.postalCode,
-//            "emailAddress": buyer?.email,
-//            "mobilePhone": buyer?.phone,
-//            "alternativePhone": buyer?.alternativePhone,
-//            "cardType": placementConfiguration.rtpsData?.cardType,
-//            "storeNumber": merchantConfiguration.storeNumber,
-//            "loyaltyNumber": merchantConfiguration.loyaltyID,
-//            "customerNumber": nil,
-//            "cartAmount": order?.subTotal?.value.map { String($0) },
-//            "productAmount": order?.items?.first?.unitPrice?.value.map { String($0) },
-//            "checkoutAmount": order?.totalPrice?.value.map { String($0) },
-//            "urlPath": nil,
-//            "location": location,
-//            "category": order?.items?.first?.category,
-//            "sku": order?.items?.first?.sku,
-//            "correlationData": placementConfiguration.rtpsData?.correlationData,
-//            "epId": nil,
-//            "epPlacementId": nil,
-//            "epSessionId": nil,
-//            "epMessageId": nil,
-//            "channel": channel,
-//            "subchannel": subchannel,
-//            "clientVariable1": merchantConfiguration.clientVariable1,
-//            "clientVariable2": merchantConfiguration.clientVariable2,
-//            "clientVariable3": merchantConfiguration.clientVariable3,
-//            "clientVariable4": merchantConfiguration.clientVariable4,
-//            "selectedCardKey": placementConfiguration.placementData?.selectedCardKey,
-//            "defaultSelectedCardKey": placementConfiguration.placementData?.defaultSelectedCardKey,
-//            "departmentId": merchantConfiguration.departmentId,
-//            "overrideKey": merchantConfiguration.overrideKey,
-//            "cardChoiceCode": nil,
-//            "associateId": merchantConfiguration.clerkId,
-//            "carrier": nil,
-//            "keyword": nil,
-//            "shortCode": nil,
-//            "channelId": nil,
-//            "applicationSubType": nil,
-//            "splitPayment": nil
-//        ]
-//
-//        guard
-//            var urlComponents = URLComponents(
-//                string: APIUrl(urlType: .bpsWebUrl).url)
-//        else {
-//            return nil
-//        }
-//
-//        await Task {
-//            urlComponents.queryItems = queryParams.compactMap { key, value in
-//                guard let value = value, !value.isEmpty else { return nil }
-//                return URLQueryItem(name: key, value: value)
-//            }
-//        }.value
-//
-//        return urlComponents.url
-//    }
+    func buildBpsWebURL(
+        integrationKey: String,
+        merchantConfiguration: MerchantConfiguration,
+        placementConfiguration: PlacementConfiguration
+    ) async -> URL? {
+        let mockResponseValue = placementConfiguration.rtpsData?.mockResponse?.rawValue
+
+        // Extract buyer information
+        let buyer = merchantConfiguration.buyer
+        let billingAddress = buyer?.billingAddress
+
+        // Extract order data from RTPS or placement data
+        let order = placementConfiguration.rtpsData?.order ?? placementConfiguration.placementData?.order
+
+        // Extract location - prioritize RTPS location over placement location
+        let location = placementConfiguration.rtpsData?.locationType?.rawValue
+            ?? placementConfiguration.placementData?.locationType?.rawValue
+
+        // Extract channel - prioritize RTPS channel over merchant channel
+        let channel = placementConfiguration.rtpsData?.channel ?? merchantConfiguration.channel
+        let subchannel = placementConfiguration.rtpsData?.subChannel ?? merchantConfiguration.subchannel
+
+        let queryParams: [String: String?] = [
+            "mockMO": mockResponseValue.takeIfNotEmpty(),
+            "mockPA": mockResponseValue.takeIfNotEmpty(),
+            "mockVL": mockResponseValue.takeIfNotEmpty(),
+            "embedded": "true",
+            "clientKey": integrationKey,
+            "prescreenId": placementConfiguration.rtpsData?.prescreenId.map { String($0) },
+            "firstName": buyer?.givenName,
+            "middleInitial": buyer?.additionalName,
+            "lastName": buyer?.familyName,
+            "address1": billingAddress?.address1,
+            "address2": billingAddress?.address2,
+            "city": billingAddress?.locality,
+            "state": billingAddress?.region,
+            "zip": billingAddress?.postalCode,
+            "emailAddress": buyer?.email,
+            "mobilePhone": buyer?.phone,
+            "alternativePhone": buyer?.alternativePhone,
+            "cardType": placementConfiguration.rtpsData?.cardType,
+            "storeNumber": merchantConfiguration.storeNumber,
+            "loyaltyNumber": merchantConfiguration.loyaltyID,
+            "customerNumber": nil,
+            "cartAmount": order?.subTotal?.value.map { String($0) },
+            "productAmount": order?.items?.first?.unitPrice?.value.map { String($0) },
+            "checkoutAmount": order?.totalPrice?.value.map { String($0) },
+            "urlPath": nil,
+            "location": location,
+            "category": order?.items?.first?.category,
+            "sku": order?.items?.first?.sku,
+            "correlationData": placementConfiguration.rtpsData?.correlationData,
+            "epId": nil,
+            "epPlacementId": nil,
+            "epSessionId": nil,
+            "epMessageId": nil,
+            "channel": channel,
+            "subchannel": subchannel,
+            "clientVariable1": merchantConfiguration.clientVariable1,
+            "clientVariable2": merchantConfiguration.clientVariable2,
+            "clientVariable3": merchantConfiguration.clientVariable3,
+            "clientVariable4": merchantConfiguration.clientVariable4,
+            "selectedCardKey": placementConfiguration.placementData?.selectedCardKey,
+            "defaultSelectedCardKey": placementConfiguration.placementData?.defaultSelectedCardKey,
+            "departmentId": merchantConfiguration.departmentId,
+            "overrideKey": merchantConfiguration.overrideKey,
+            "cardChoiceCode": nil,
+            "associateId": merchantConfiguration.clerkId,
+            "carrier": nil,
+            "keyword": nil,
+            "shortCode": nil,
+            "channelId": nil,
+            "applicationSubType": nil,
+            "splitPayment": nil
+        ]
+
+        guard
+            var urlComponents = URLComponents(
+                string: APIUrl(urlType: .bpsWebUrl).url)
+        else {
+            return nil
+        }
+
+        await Task {
+            urlComponents.queryItems = queryParams.compactMap { key, value in
+                guard let value = value, !value.isEmpty else { return nil }
+                return URLQueryItem(name: key, value: value)
+            }
+        }.value
+
+        return urlComponents.url
+    }
 
     @MainActor func getUserAgent() -> String {
         let systemName = UIDevice.current.systemName // e.g., "iOS"

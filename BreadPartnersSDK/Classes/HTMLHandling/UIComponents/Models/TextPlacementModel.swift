@@ -17,7 +17,7 @@ internal struct TextPlacementModel {
     let contentText: String?
     let actionLink: String?
     let actionContentId: String?
-//    let htmlContent: String?
+    let htmlContent: String?
 }
 
 /// Enum representing the different action types associated with a placement.
@@ -27,6 +27,6 @@ internal enum PlacementActionType: String {
     case breadApply = "BREAD_APPLY"
     case redirectInternal = "REDIRECT_INTERNAL"
     case versatileEco = "VERSATILE_ECO"
-//    case noAction = "NO_ACTION"
+    case noAction = "NO_ACTION"
 }
 
