@@ -60,6 +60,21 @@ public enum BreadPartnerEvents {
     /// Provides an error result from the web view, such as a failure response.
     /// - Parameter error: error object detailing the issue.
     case webViewFailure(error: Error)
+    
+    /// Provides a result with offers from the UPQ flow.
+    /// - Parameter result: The result object returned.
+    case unifiedOffersReceived(result: Any)
+    
+    /// Provides a result from the UPQ flow after applying for credit card.
+    /// - Parameter result: The result object returned.
+    case receivePrequalApplicationResult(result: Any)
+    
+    /// Provides a result from the UPQ flow after applying for installment product.
+    /// - Parameter result: The result object returned.
+    case receiveUnifiedCheckoutApplicationResult(result: Any)
+    
+    /// Detects when application for credit card was submitted from UPQ flow.
+    case submitPrequalApplication
 
     /// Detects when the popup is closed at any point and provides a callback.
     case popupClosed

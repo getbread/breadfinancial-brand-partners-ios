@@ -149,6 +149,31 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
                     callback(.webViewSuccess(result: payload))
                 }
                 
+            case "UNIFIED_OFFERS_RECEIVED":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.logApplicationResultDetails(payload)
+                    callback(.webViewSuccess(result: payload))
+                    callback(.unifiedOffersReceived(result: payload))
+                }
+                
+            case "RECEIVE_PREQUAL_APPLICATION_RESULT":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.logApplicationResultDetails(payload)
+                    callback(.webViewSuccess(result: payload))
+                    callback(.receivePrequalApplicationResult(result: payload))
+                }
+                
+            case "RECEIVE_UNIFIED_CHECKOUT_APPLICATION_RESULT":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.logApplicationResultDetails(payload)
+                    callback(.webViewSuccess(result: payload))
+                    callback(.receiveUnifiedCheckoutApplicationResult(result: payload))
+                }
+                
+            case "SUBMIT_PREQUAL_APPLICATION":
+                callback(.submitPrequalApplication)
+                
+                
             case "APPLICATION_COMPLETED":
                 callback(.screenName(name: "application-completed"))
                 callback(.applicationCompleted)
