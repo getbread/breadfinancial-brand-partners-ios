@@ -151,13 +151,22 @@ internal class BreadFinancialWebViewInterstitial: NSObject,
                 
             case "APPLICATION_COMPLETED":
                 callback(.screenName(name: "application-completed"))
+                callback(.applicationCompleted)
                 callback(.popupClosed)
+                
             case "OFFER_RESPONSE":
                 if let payload = action["payload"] as? String {
                     if(payload == "NO" || payload == "NOT_ME" ){
                         callback(.popupClosed)
                     }
-                }                
+                }
+                
+            case "RECEIVE_ACCOUNT_EXISTS":
+                if let payload = action["payload"] as? [String: Any] {
+                    logger.printLog("BreadPartnersSDK: RECEIVE_ACCOUNT_EXISTS: \(message.body)")
+                    callback(.receiveAccountExist(result: payload))
+                }
+            
             default:
                 logger.printLog("BreadPartnersSDK: WebViewMessage: \(message.body)")
             }

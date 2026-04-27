@@ -20,14 +20,15 @@ class OpenExperienceController: UIViewController {
         let env = placementRequestType["env"] as? BreadPartnersEnvironment
         let location = placementRequestType["location"] as? BreadPartnersLocationType
         let financingType = placementRequestType["financingType"] as? BreadPartnersFinancingType
+        let allowCheckout = placementRequestType["allowCheckout"] as? Bool
 
         let placementData = PlacementData(
             financingType: financingType,
             locationType: location,
             placementId: placementID,
-            domID: "123",
+            allowCheckout: allowCheckout,
             order: Order(
-                subTotal: CurrencyValue(currency: "USD", value: 0),
+                subTotal: CurrencyValue(currency: "USD", value: 150000),
                 totalDiscounts: CurrencyValue(currency: "USD", value: 0),
                 totalPrice: CurrencyValue(
                     currency: "USD", value: Double(price ?? 0)),
@@ -95,8 +96,10 @@ class OpenExperienceController: UIViewController {
                     DispatchQueue.main.async {
                         self.present(view, animated: true)
                     }
-                case .onSDKEventLog(_):
-                    print("")
+                case .applicationCompleted:
+                    print("Experience completed")
+                case .onSDKEventLog(let log):
+                    print("SDK Log: \(log)")
                 default:
                     break
                 }
