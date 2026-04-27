@@ -74,4 +74,10 @@ public enum BreadPartnerEvents {
     
     /// Logs requests, responses, errors, and successes.
     case onSDKEventLog(logs: String)
+    
+    /// Provides account information in account lookup call (ECO).
+    case receiveAccountExist(result: Any)
+    
+    /// Fires when application have been submitted in different flows.
+    case applicationCompleted
 }
